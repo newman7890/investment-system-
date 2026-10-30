@@ -168,6 +168,17 @@
 
   const appState = loadState();
 
+  // Sync logged in session if present
+  try {
+    const sessionRaw = localStorage.getItem('coinbase_auth_session');
+    if (sessionRaw) {
+      const sess = JSON.parse(sessionRaw);
+      if (sess && sess.name) appState.user.name = sess.name;
+      if (sess && sess.email) appState.user.email = sess.email;
+    }
+  } catch (e) {}
+
+
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
@@ -1185,7 +1196,7 @@
           </div>
         </div>
 
-        <button onclick="closeActiveModal(); showToast('Signed out', 'Session finished', '👋');" style="width:100%; background:#FFF0F0; color:#CF202F; border:none; border-radius:9999px; padding:12px; font-weight:700; cursor:pointer;">
+        <button onclick="closeActiveModal(); localStorage.removeItem('coinbase_auth_session'); showToast('Signed out', 'Redirecting to sign in...', '👋'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; background:#FFF0F0; color:#CF202F; border:none; border-radius:9999px; padding:12px; font-weight:700; cursor:pointer;">
           Sign Out
         </button>
       </div>
