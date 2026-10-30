@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Coinbase - Home</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coinbase: {
+              blue: '#0052FF',
+              blueHover: '#0045D8',
+              lightBlue: '#EEF3FF',
+              dark: '#0A0B0D',
+              grayBg: '#F5F8FF',
+              pillGray: '#EEF0F3',
+              subtext: '#5B616E',
+              border: '#ECEFF1',
+              green: '#098551',
+              red: '#CF202F',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles -->
+<style data-purpose="custom-layout">
+    body {
+      background-color: #FFFFFF;
+      color: #0A0B0D;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Mobile safe-area and responsive adjustments */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @media (max-width: 1023px) {
+      body {
+        padding-bottom: 70px;
+      }
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 9999px;
+    }
+  </style>
+<link rel="stylesheet" href="coinbase-app.css">
+</head>
+<body class="min-h-screen flex flex-col font-sans select-none antialiased">
+<div class="flex flex-1 min-h-screen">
+<!-- BEGIN: LeftSidebar -->
+<aside class="hidden lg:flex w-[232px] border-r border-[#ECEFF1] flex-col justify-between shrink-0 bg-white px-4 py-5 h-screen sticky top-0" data-purpose="desktop-sidebar">
+<div>
+<!-- Coinbase Logo Header -->
+<div class="px-3 mb-6 flex items-center">
+<svg class="w-9 h-9 text-coinbase-blue" fill="currentColor" viewbox="0 0 36 36">
+<path clip-rule="evenodd" d="M18 36C27.9411 36 36 27.9411 36 18C36 8.05887 27.9411 0 18 0C8.05887 0 0 8.05887 0 18C0 27.9411 8.05887 36 18 36ZM13.8 11.2C12.3641 11.2 11.2 12.3641 11.2 13.8V22.2C11.2 23.6359 12.3641 24.8 13.8 24.8H22.2C23.6359 24.8 24.8 23.6359 24.8 22.2V13.8C24.8 12.3641 23.6359 11.2 22.2 11.2H13.8Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1" data-purpose="sidebar-nav">
+<!-- Active Home Item -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full bg-[#EEF2F6]/75 font-semibold text-[#0052FF] text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 text-coinbase-blue fill-current" viewbox="0 0 24 24">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+</svg>
+<span>Home</span>
+</a>
+<!-- My Assets -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<polyline points="12 7 12 12 15 15"></polyline>
+</svg>
+<span>My assets</span>
+</a>
+<!-- Transactions -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#0A0B0D] stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<rect height="16" rx="2" width="18" x="3" y="4"></rect>
+<line x1="7" x2="17" y1="9" y2="9"></line>
+<line x1="7" x2="13" y1="13" y2="13"></line>
+</svg>
+<span>Transactions</span>
+</a>
+<!-- Explore -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+</svg>
+<span>Explore</span>
+</a>
+<!-- Perpetuals -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path>
+</svg>
+<span>Perpetuals</span>
+</a>
+<!-- Learning rewards -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+<span>Learning rewards</span>
+</a>
+<!-- Coinbase One -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M4.93 4.93l14.14 14.14"></path>
+</svg>
+<span>Coinbase One</span>
+</a>
+<!-- Invite friends -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+<circle cx="8.5" cy="7" r="4"></circle>
+<line x1="20" x2="20" y1="8" y2="14"></line>
+<line x1="23" x2="17" y1="11" y2="11"></line>
+</svg>
+<span>Invite friends</span>
+</a>
+<!-- More -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="1"></circle>
+<circle cx="12" cy="5" r="1"></circle>
+<circle cx="12" cy="19" r="1"></circle>
+</svg>
+<span>More</span>
+</a>
+</nav>
+</div>
+<!-- Advanced Toggle Switch at bottom -->
+<div class="pt-4 border-t border-[#ECEFF1] flex items-center justify-between px-2 mb-2 cursor-pointer select-none" data-purpose="advanced-mode-switch" onclick="toggleAdvancedMode()">
+<div class="flex items-center gap-2.5">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<line x1="4" x2="4" y1="21" y2="14"></line>
+<line x1="4" x2="4" y1="10" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="12"></line>
+<line x1="12" x2="12" y1="8" y2="3"></line>
+<line x1="20" x2="20" y1="21" y2="16"></line>
+<line x1="20" x2="20" y1="12" y2="3"></line>
+<line x1="1" x2="7" y1="14" y2="14"></line>
+<line x1="9" x2="15" y1="8" y2="8"></line>
+<line x1="17" x2="23" y1="16" y2="16"></line>
+</svg>
+<span class="text-[15px] font-semibold text-[#0A0B0D]">Advanced</span>
+</div>
+<!-- Toggle button -->
+<button class="advanced-toggle-track w-11 h-6 bg-[#DCDFE4] rounded-full p-0.5 transition-all relative flex items-center cursor-pointer" type="button" aria-label="Toggle Advanced Mode">
+<div class="advanced-toggle-knob w-5 h-5 bg-white rounded-full shadow-sm transform transition-all duration-200"></div>
+</button>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- Main Container -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- BEGIN: TopBar -->
+<!-- Mobile Top App Bar (Visible on mobile/tablet < 1024px) -->
+<header class="lg:hidden sticky top-0 bg-white/95 backdrop-blur-md z-30 px-4 py-3 border-b border-[#ECEFF1] flex items-center justify-between gap-3 shadow-xs">
+  <div class="flex items-center gap-2">
+    <div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+      <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 5.524 4.477 10 10 10 5.524 0 10-4.476 10-10 0-5.523-4.476-10-10-10zm0 14.8a4.8 4.8 0 110-9.6 4.8 4.8 0 010 9.6z"/>
+      </svg>
+    </div>
+  </div>
+  <div class="flex-1 relative">
+    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+    </div>
+    <input oninput="filterAssets(this.value)" class="w-full bg-[#EEF0F3] text-sm text-gray-800 placeholder-gray-500 rounded-full pl-9 pr-3 py-1.5 border-none focus:ring-2 focus:ring-[#0052FF] focus:bg-white transition-all" placeholder="Search an asset" type="search"/>
+  </div>
+  <div class="flex items-center space-x-1">
+    <button onclick="openNotificationsModal()" aria-label="Notifications" class="p-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative" type="button">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#0052FF] rounded-full ring-2 ring-white"></span>
+    </button>
+    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-8 h-8 rounded-full bg-[#2C6ECB] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm" type="button">
+      C
+    </button>
+  </div>
+</header>
+
+<!-- Desktop TopBar (Hidden on mobile) -->
+<header class="hidden lg:flex h-20 px-8 items-center justify-between shrink-0 bg-white" data-purpose="top-navigation-bar">
+<!-- Page Title -->
+<h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D]">Home</h1>
+<!-- Header Actions: Search, Notifications, App grid, Avatar -->
+<div class="flex items-center gap-3">
+<!-- Search input box -->
+<div class="relative w-[340px]">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+<svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<input id="asset-search-input" oninput="filterAssets(this.value)" class="w-full pl-10 pr-4 py-2.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue transition-all" placeholder="Search for an asset" type="text"/>
+</div>
+<!-- Notification Bell -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+</svg>
+</button>
+<!-- Help Question Mark -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 stroke-[2.2] stroke-current fill-none" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+</button>
+<!-- App Grid Launcher -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<circle cx="5" cy="5" r="1.75"></circle>
+<circle cx="12" cy="5" r="1.75"></circle>
+<circle cx="19" cy="5" r="1.75"></circle>
+<circle cx="5" cy="12" r="1.75"></circle>
+<circle cx="12" cy="12" r="1.75"></circle>
+<circle cx="19" cy="12" r="1.75"></circle>
+<circle cx="5" cy="19" r="1.75"></circle>
+<circle cx="12" cy="19" r="1.75"></circle>
+<circle cx="19" cy="19" r="1.75"></circle>
+</svg>
+</button>
+<!-- User Profile Avatar -->
+<button onclick="openProfileModal()" class="w-10 h-10 rounded-full bg-[#2C6ECB] text-white flex items-center justify-center font-medium text-sm hover:opacity-90">
+  C
+</button>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- Main Layout Body (Two Columns) -->
+<main class="flex-1 flex overflow-y-auto" data-purpose="main-layout-columns">
+<!-- Left / Primary Column (Feed, Chart, Prices) -->
+<div class="flex-1 px-4 sm:px-6 lg:px-8 pb-12 pt-2 overflow-x-hidden min-w-0">
+<!-- BEGIN: PortfolioBalanceChart -->
+<section class="mb-10" data-purpose="portfolio-balance-section">
+<div class="flex items-center justify-between h-[80px]">
+<div>
+<div>
+  <div class="flex items-baseline gap-3">
+    <h2 class="portfolio-total text-4xl font-semibold tracking-tight text-[#0A0B0D]">$1.90</h2>
+  </div>
+  <div class="text-xs text-[#5B616E] font-medium mt-1">USD Balance</div>
+</div>
+</div>
+<!-- Flat / Spike Chart Representation matching screenshot -->
+<div class="w-28 sm:w-64 h-14 sm:h-16 flex items-end shrink-0">
+<svg class="w-full h-full" fill="none" viewbox="0 0 240 60">
+<path d="M 0 45 L 140 45 L 145 42 L 148 10 L 152 45 L 156 45" stroke="#0052FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</div>
+</div>
+
+<!-- Asset Breakdown Rows (Crypto & Cash) -->
+<div class="mt-6 space-y-4">
+<!-- Crypto row -->
+<div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-gray-100">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-[#F5F8FF] flex items-center justify-center">
+<svg class="w-5 h-5 text-[#0A0B0D] stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+<polyline points="17 6 23 6 23 12"></polyline>
+</svg>
+</div>
+<span class="font-bold text-base text-[#0A0B0D]">Crypto</span>
+</div>
+<div class="text-left w-36">
+<span class="text-xs text-[#5B616E] font-medium block">Balance</span>
+<span class="text-sm font-semibold text-[#0A0B0D]">$1.90</span>
+</div>
+<div class="hidden sm:block text-left w-48 shrink-0">
+<span class="text-xs text-[#5B616E] font-medium block">Staking</span>
+<span class="text-sm font-semibold text-[#098551]">Earn up to 2.45% APY</span>
+</div>
+<div>
+<svg class="w-5 h-5 text-[#5B616E]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Cash row -->
+<div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-gray-100">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-[#F5F8FF] flex items-center justify-center">
+<svg class="w-5 h-5 text-[#0A0B0D] stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<circle cx="12" cy="7" r="3"></circle>
+<circle cx="6.5" cy="16" r="3"></circle>
+<circle cx="17.5" cy="16" r="3"></circle>
+</svg>
+</div>
+<span class="font-bold text-base text-[#0A0B0D]">Cash</span>
+</div>
+<div class="text-left w-36">
+<span class="text-xs text-[#5B616E] font-medium block">Balance</span>
+<span class="text-sm font-semibold text-[#0A0B0D]">$0.00</span>
+</div>
+<div class="hidden sm:block text-left w-48 shrink-0">
+<span class="text-xs text-[#5B616E] font-medium block">Earn</span>
+<span class="text-sm font-semibold text-[#098551]">Earn up to 4.70% APY</span>
+</div>
+<div>
+<svg class="w-5 h-5 text-[#5B616E]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- END: PortfolioBalanceChart -->
+<!-- Mobile Quick Action Pills (Visible on mobile/tablet < 1024px) -->
+<section class="lg:hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-3 my-2" data-purpose="mobile-quick-actions">
+  <button onclick="openOrderReviewModal()" class="flex items-center gap-1.5 px-4 py-2 bg-[#0052FF] text-white font-semibold text-xs rounded-full shadow-sm hover:bg-[#0045D8] whitespace-nowrap active:scale-95 transition-all">
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+    Buy
+  </button>
+  <button onclick="openOrderReviewModal()" class="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">Sell</button>
+  <button onclick="openOrderReviewModal()" class="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">Convert</button>
+  <button onclick="openSendCryptoModal()" class="flex items-center gap-1 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+    Send
+  </button>
+  <button onclick="openReceiveCryptoModal()" class="flex items-center gap-1 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+    Receive
+  </button>
+</section>
+
+<hr class="border-[#ECEFF1] my-8"/>
+<!-- BEGIN: ForYouSection -->
+<section class="mb-10" data-purpose="for-you-promo-carousel">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold text-[#0A0B0D]">For you</h3>
+<!-- Carousel Navigation Buttons -->
+<div class="flex items-center gap-2">
+<button class="p-1 rounded-full text-[#5B616E] hover:text-[#0A0B0D]">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<polyline points="15 18 9 12 15 6"></polyline>
+</svg>
+</button>
+<button class="p-1 rounded-full text-[#0A0B0D] hover:text-black">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</button>
+</div>
+</div>
+<!-- Two Promo Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Promo Card 1: Perpetuals -->
+<div class="relative bg-[#EEF2F6]/60 hover:bg-[#EEF2F6] rounded-2xl p-5 flex items-center gap-4 transition-colors cursor-pointer">
+<!-- Graphic badge -->
+<div class="w-14 h-14 shrink-0 rounded-2xl bg-[#0052FF] flex items-center justify-center overflow-hidden relative shadow-sm">
+<div class="w-full h-full bg-gradient-to-tr from-green-400 via-blue-500 to-indigo-600 rounded-full scale-110"></div>
+</div>
+<div class="pr-6">
+<h4 class="font-bold text-[15px] text-[#0A0B0D] leading-snug">Trade perpetuals now</h4>
+<p class="text-xs text-[#5B616E] mt-1 leading-relaxed">Fees as low as 0.00% for a limited time</p>
+</div>
+<!-- Close cross -->
+<button class="absolute top-4 right-4 text-[#5B616E] hover:text-[#0A0B0D]">
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</div>
+<!-- Promo Card 2: SWIFT -->
+<div class="relative bg-[#EEF2F6]/60 hover:bg-[#EEF2F6] rounded-2xl p-5 flex items-center gap-4 transition-colors cursor-pointer">
+<!-- Graphic bank icon -->
+<div class="w-14 h-14 shrink-0 rounded-2xl bg-blue-100 flex items-center justify-center relative">
+<svg class="w-8 h-8 text-[#0052FF]" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2L2 7v2h20V7L12 2zm-8 8v8h3v-8H4zm5 0v8h3v-8H9zm5 0v8h3v-8h-3zm5 0v8h3v-8h-3zM2 20v2h20v-2H2z"></path>
+</svg>
+<div class="absolute -bottom-1 -left-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[11px] font-bold">
+                    +
+                  </div>
+</div>
+<div class="pr-6">
+<h4 class="font-bold text-[15px] text-[#0A0B0D] leading-snug">Transfer USD with SWIFT</h4>
+<p class="text-xs text-[#5B616E] mt-1 leading-relaxed">Send USD to and from your bank via international wires</p>
+</div>
+<!-- Close cross -->
+<button class="absolute top-4 right-4 text-[#5B616E] hover:text-[#0A0B0D]">
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</div>
+</div>
+</section>
+<!-- END: ForYouSection -->
+<hr class="border-[#ECEFF1] my-8"/>
+<!-- BEGIN: PricesSection -->
+<section class="mb-10" data-purpose="prices-watchlist-table">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold text-[#0A0B0D]">Prices</h3>
+<!-- Watchlist pill filter -->
+<button class="flex items-center gap-2 px-3.5 py-1.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full text-sm font-semibold text-[#0A0B0D] transition-colors">
+<span>Watchlist</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+</div>
+<!-- Price Rows -->
+<div class="space-y-2">
+<!-- Bitcoin Row -->
+<div onclick="window.location.href='desktop-asset-bitcoin.html'" title="Click to view Bitcoin details" class="flex items-center justify-between py-3 px-2 sm:px-3 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors hover:shadow-sm gap-2">
+<!-- Coin icon & title -->
+<div class="flex items-center gap-2.5 sm:gap-3.5 w-auto sm:w-44 shrink-0">
+<div class="w-9 h-9 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+                    ₿
+                  </div>
+<div>
+<h5 class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">Bitcoin</h5>
+<span class="text-xs font-semibold text-[#5B616E]">BTC</span>
+</div>
+</div>
+<!-- Sparkline -->
+<div class="hidden sm:block w-20 md:w-24 h-6 shrink-0">
+<svg class="w-full h-full" fill="none" viewbox="0 0 100 24">
+<path d="M 0 4 Q 15 2, 25 10 T 50 18 T 75 14 T 100 22" fill="none" stroke="#CF202F" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Price & Change (Mobile-friendly stacked or desktop-aligned) -->
+<div class="text-right sm:text-left sm:w-32 shrink-0">
+  <div class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">$91,694.54</div>
+  <div class="sm:hidden text-xs font-semibold text-[#CF202F]">↘ 4.38%</div>
+</div>
+<!-- 24h change (Desktop) -->
+<div class="hidden sm:flex w-20 text-right text-sm font-semibold text-[#CF202F] items-center justify-end gap-1 shrink-0">
+<span>↘</span>
+<span>4.38%</span>
+</div>
+<!-- Buy Action Button -->
+<div class="shrink-0">
+<button class="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0052FF] sm:bg-transparent text-white sm:text-[#0052FF] hover:bg-blue-600 sm:hover:bg-blue-50 font-bold text-xs sm:text-sm transition-colors shadow-xs sm:shadow-none">
+                    Buy
+                  </button>
+</div>
+<!-- Star & Handle (Desktop) -->
+<div class="hidden md:flex items-center gap-3 text-[#5B616E] shrink-0">
+<button class="text-coinbase-blue hover:scale-110 transition-transform">
+<svg class="w-4 h-4 fill-[#0052FF]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+<button class="text-gray-300 hover:text-gray-500">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<circle cx="8" cy="6" r="1.5"></circle>
+<circle cx="16" cy="6" r="1.5"></circle>
+<circle cx="8" cy="12" r="1.5"></circle>
+<circle cx="16" cy="12" r="1.5"></circle>
+<circle cx="8" cy="18" r="1.5"></circle>
+<circle cx="16" cy="18" r="1.5"></circle>
+</svg>
+</button>
+</div>
+</div>
+<!-- Ethereum Row -->
+<div class="flex items-center justify-between py-3 px-2 sm:px-3 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors hover:shadow-sm gap-2">
+<!-- Coin icon & title -->
+<div class="flex items-center gap-2.5 sm:gap-3.5 w-auto sm:w-44 shrink-0">
+<div class="w-9 h-9 rounded-full bg-[#627EEA] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 32 32">
+<path d="M16 2L6 17.5L16 22.5L26 17.5L16 2Z" fill-opacity="0.8"></path>
+<path d="M16 23.5L6 18.5L16 31L26 18.5L16 23.5Z"></path>
+</svg>
+</div>
+<div>
+<h5 class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">Ethereum</h5>
+<span class="text-xs font-semibold text-[#5B616E]">ETH</span>
+</div>
+</div>
+<!-- Sparkline -->
+<div class="hidden sm:block w-20 md:w-24 h-6 shrink-0">
+<svg class="w-full h-full" fill="none" viewbox="0 0 100 24">
+<path d="M 0 6 Q 18 4, 30 18 T 60 16 T 85 22 T 100 20" fill="none" stroke="#627EEA" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Price & Change (Mobile-friendly stacked or desktop-aligned) -->
+<div class="text-right sm:text-left sm:w-32 shrink-0">
+  <div class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">$3,314.62</div>
+  <div class="sm:hidden text-xs font-semibold text-[#CF202F]">↘ 5.46%</div>
+</div>
+<!-- 24h change (Desktop) -->
+<div class="hidden sm:flex w-20 text-right text-sm font-semibold text-[#CF202F] items-center justify-end gap-1 shrink-0">
+<span>↘</span>
+<span>5.46%</span>
+</div>
+<!-- Buy Action Button -->
+<div class="shrink-0">
+<button class="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0052FF] sm:bg-transparent text-white sm:text-[#0052FF] hover:bg-blue-600 sm:hover:bg-blue-50 font-bold text-xs sm:text-sm transition-colors shadow-xs sm:shadow-none">
+                    Buy
+                  </button>
+</div>
+<!-- Star & Handle (Desktop) -->
+<div class="hidden md:flex items-center gap-3 text-[#5B616E] shrink-0">
+<button class="text-coinbase-blue hover:scale-110 transition-transform">
+<svg class="w-4 h-4 fill-[#0052FF]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+<button class="text-gray-300 hover:text-gray-500">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<circle cx="8" cy="6" r="1.5"></circle>
+<circle cx="16" cy="6" r="1.5"></circle>
+<circle cx="8" cy="12" r="1.5"></circle>
+<circle cx="16" cy="12" r="1.5"></circle>
+<circle cx="8" cy="18" r="1.5"></circle>
+<circle cx="16" cy="18" r="1.5"></circle>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- END: PricesSection -->
+<hr class="border-[#ECEFF1] my-8"/>
+<!-- BEGIN: TopMoversHeading -->
+<section data-purpose="top-movers-header">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-[#0A0B0D]">Top movers</h3>
+<div class="flex items-center gap-2">
+<button class="p-1 rounded-full text-[#5B616E] hover:text-[#0A0B0D]">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<polyline points="15 18 9 12 15 6"></polyline>
+</svg>
+</button>
+<button class="p-1 rounded-full text-[#0A0B0D] hover:text-black">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</button>
+</div>
+</div>
+</section>
+<!-- END: TopMoversHeading -->
+</div>
+<!-- BEGIN: RightOrderPanel -->
+<aside class="hidden xl:flex w-[430px] border-l border-[#ECEFF1] px-8 py-4 shrink-0 flex-col justify-between" data-purpose="trade-order-card">
+<div>
+<!-- Order Form Card Container -->
+<div class="w-full">
+<!-- Segmented Tabs: Buy / Sell / Convert -->
+<div class="flex items-center bg-[#EEF0F3] p-1 rounded-full max-w-[260px] mb-6">
+<button class="flex-1 py-1.5 px-4 bg-[#0A0B0D] text-white text-sm font-semibold rounded-full shadow-sm text-center">
+                  Buy
+                </button>
+<button class="flex-1 py-1.5 px-4 text-[#0A0B0D] hover:text-black text-sm font-semibold text-center">
+                  Sell
+                </button>
+<button class="flex-1 py-1.5 px-4 text-[#0A0B0D] hover:text-black text-sm font-semibold text-center">
+                  Convert
+                </button>
+</div>
+<!-- Order Type Selector: One-time order -->
+<div class="mb-8">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] text-xs font-bold text-[#0A0B0D] transition-colors">
+<span>One-time order</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+</div>
+<!-- Order Amount Input: USD with Max Button -->
+<div class="flex items-center justify-between mb-2">
+  <div class="flex items-baseline flex-1 min-w-0">
+    <span class="text-4xl sm:text-5xl font-bold text-[#0A0B0D] mr-1">$</span>
+    <input type="number" id="trade-amount-input" value="100" min="1" step="10" placeholder="0" class="text-5xl sm:text-6xl font-bold tracking-tight text-[#0A0B0D] leading-none w-36 sm:w-44 border-b-2 border-transparent focus:border-[#0052FF] focus:outline-none p-0 bg-transparent" />
+    <span class="text-4xl sm:text-5xl font-light text-[#BAC0CD] ml-1 tracking-tight select-none">USD</span>
+  </div>
+  <button id="trade-max-btn" type="button" class="px-3.5 py-1.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] text-[#0A0B0D] font-bold text-xs rounded-full transition-colors cursor-pointer select-none">
+    Max
+  </button>
+</div>
+<!-- Dynamic Crypto Equivalent Conversion -->
+<div class="mb-8">
+  <div class="inline-flex items-center gap-1.5 text-xs font-bold text-coinbase-blue">
+    <svg class="w-3.5 h-3.5 fill-none stroke-current stroke-[2.5]" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    <span id="trade-crypto-equiv">≈ 0.00109 BTC</span>
+  </div>
+</div>
+<!-- Payment and Target Asset Rows -->
+<div class="space-y-3 mb-8">
+  <!-- Pay with USD Wallet Row -->
+  <div class="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-gray-100">
+    <div class="flex items-center gap-3.5">
+      <div class="w-8 h-8 rounded-full bg-coinbase-blue text-white flex items-center justify-center font-bold text-xs tracking-tighter shadow-sm">
+        $
+      </div>
+      <div>
+        <div class="font-bold text-sm text-[#0A0B0D] leading-tight">Pay with</div>
+        <div class="text-xs text-[#5B616E]">USD Wallet</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="text-right">
+        <div class="font-bold text-xs text-[#0A0B0D] leading-tight">$1.15</div>
+        <div class="text-[11px] text-[#5B616E]">Available</div>
+      </div>
+      <svg class="w-4 h-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+  </div>
+  <!-- Target asset -->
+  <div class="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-gray-100">
+    <div class="flex items-center gap-3.5">
+      <div class="w-8 h-8 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+        ₿
+      </div>
+      <div>
+        <div class="font-bold text-sm text-[#0A0B0D] leading-tight">Buy</div>
+        <div class="text-xs text-[#5B616E]">Bitcoin</div>
+      </div>
+    </div>
+    <svg class="w-4 h-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </div>
+</div>
+<!-- CTA Primary Button: Top up USD wallet -->
+<button class="w-full py-4 rounded-full bg-coinbase-blue hover:bg-coinbase-blueHover text-white font-bold text-base shadow-sm transition-colors text-center cursor-pointer">
+  Top up USD wallet
+</button>
+</div>
+<!-- Quick Action Links Below Order Box -->
+<div class="mt-8 pt-6 border-t border-[#ECEFF1] space-y-4" data-purpose="quick-actions-list">
+<!-- Send crypto -->
+<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
+<div class="w-9 h-9 rounded-full bg-coinbase-blue flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+<svg class="w-4 h-4 stroke-[2.5] stroke-current fill-none" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="19" y2="5"></line>
+<polyline points="5 12 12 5 19 12"></polyline>
+</svg>
+</div>
+<span class="font-bold text-[15px] text-[#0A0B0D]">Send crypto</span>
+</a>
+<!-- Receive crypto -->
+<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
+<div class="w-9 h-9 rounded-full bg-coinbase-blue flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+<svg class="w-4 h-4 stroke-[2.5] stroke-current fill-none" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<polyline points="19 12 12 19 5 12"></polyline>
+</svg>
+</div>
+<span class="font-bold text-[15px] text-[#0A0B0D]">Receive crypto</span>
+</a>
+<!-- Deposit cash -->
+<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
+<div class="w-9 h-9 rounded-full bg-coinbase-blue flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M12 2L2 7v2h20V7L12 2zm-8 8v8h3v-8H4zm5 0v8h3v-8H9zm5 0v8h3v-8h-3zm5 0v8h3v-8h-3zM2 20v2h20v-2H2z"></path>
+</svg>
+</div>
+<span class="font-bold text-[15px] text-[#0A0B0D]">Deposit cash</span>
+</a>
+<!-- Withdraw cash -->
+<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
+<div class="w-9 h-9 rounded-full bg-coinbase-blue flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+<svg class="w-4 h-4 stroke-[2.2] stroke-current fill-none" viewbox="0 0 24 24">
+<rect height="12" rx="2" width="20" x="2" y="6"></rect>
+<circle cx="12" cy="12" r="2.5"></circle>
+<line x1="6" x2="6.01" y1="12" y2="12"></line>
+<line x1="18" x2="18.01" y1="12" y2="12"></line>
+</svg>
+</div>
+<span class="font-bold text-[15px] text-[#0A0B0D]">Withdraw cash</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- END: RightOrderPanel -->
+</main>
+</div>
+</div>
+
+<!-- Mobile Fixed Bottom Navigation Bar (Visible on mobile/tablet < 1024px) -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEFF1] px-3 pt-2 pb-safe z-40 flex justify-around items-center text-[10px] font-semibold text-[#5B616E] shadow-lg" data-purpose="mobile-bottom-nav">
+  <a class="flex flex-col items-center gap-1 text-[#0052FF] flex-1 text-center" href="index.html">
+    <svg class="w-5 h-5 fill-[#0052FF]" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span>Home</span>
+  </a>
+  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="desktop-asset-bitcoin.html">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    <span>Assets</span>
+  </a>
+  <a onclick="openAssetSelectorModal()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Trade</span>
+  </a>
+  <a onclick="showToast('Explore Cryptos', 'Browsing top trending tokens on Coinbase', '🔍')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+    <span>Explore</span>
+  </a>
+  <a onclick="openAppsModal()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    <span>More</span>
+  </a>
+</nav>
+
+
+<!-- Deposit Modal -->
+<div id="deposit-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 text-center animate-in fade-in duration-200">
+    <div class="w-16 h-16 rounded-full bg-blue-50 text-coinbase-blue flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+      $
+    </div>
+    <h3 class="text-xl font-bold text-gray-900 mb-1">Top up USD Wallet</h3>
+    <p class="text-sm text-gray-500 mb-6">Deposit funds instantly via PayNow or FAST bank transfer</p>
+    
+    <div class="bg-gray-50 rounded-2xl p-4 text-left space-y-3 mb-6 border border-gray-100 text-sm">
+      <div class="flex justify-between">
+        <span class="text-gray-500">Method</span>
+        <span class="font-bold text-gray-900">FAST Transfer</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Current Balance</span>
+        <span class="font-bold text-gray-900">$0.00</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Processing Time</span>
+        <span class="font-bold text-green-600">Instant</span>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button onclick="document.getElementById('deposit-modal').classList.add('hidden')" class="flex-1 py-3 px-4 rounded-full border border-gray-200 hover:bg-gray-50 font-bold text-sm text-gray-700 transition-colors cursor-pointer">
+        Close
+      </button>
+      <button onclick="alert('Virtual account details copied to clipboard!')" class="flex-1 py-3 px-4 rounded-full bg-coinbase-blue hover:bg-blue-700 font-bold text-sm text-white transition-colors cursor-pointer shadow-sm">
+        Copy Account
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterAssets(query) {
+    const q = query.toLowerCase().trim();
+    const rows = document.querySelectorAll('[data-purpose="prices-watchlist-table"] .space-y-2 > div');
+    rows.forEach(r => {
+      const text = r.textContent.toLowerCase();
+      if (!q || text.includes(q)) {
+        r.style.display = 'flex';
+      } else {
+        r.style.display = 'none';
+      }
+    });
+  }
+
+  // Hook Top up button
+  document.querySelectorAll('button').forEach(btn => {
+    if (btn.textContent.trim() === 'Top up USD wallet') {
+      btn.addEventListener('click', () => {
+        document.getElementById('deposit-modal').classList.remove('hidden');
+      });
+    }
+  });
+</script>
+
+<script src="coinbase-app.js"></script>
+</body></html>

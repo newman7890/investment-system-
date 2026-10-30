@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Coinbase - Explore</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coinbase: {
+              blue: '#0052FF',
+              blueHover: '#0045D8',
+              lightBlue: '#EEF3FF',
+              dark: '#0A0B0D',
+              grayBg: '#F5F8FF',
+              pillGray: '#EEF0F3',
+              subtext: '#5B616E',
+              border: '#ECEFF1',
+              green: '#098551',
+              red: '#CF202F',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles -->
+<style data-purpose="custom-layout">
+    body {
+      background-color: #FFFFFF;
+      color: #0A0B0D;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Mobile safe-area and responsive adjustments */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @media (max-width: 1023px) {
+      body {
+        padding-bottom: 70px;
+      }
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 9999px;
+    }
+
+    /* Table row hover reveals buy button */
+    .market-row .buy-btn-inline {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .market-row:hover .buy-btn-inline {
+      opacity: 1;
+    }
+    .market-row:hover {
+      background-color: #F9FAFB;
+    }
+  </style>
+<link rel="stylesheet" href="coinbase-app.css">
+</head>
+<body class="min-h-screen flex flex-col font-sans select-none antialiased">
+<div class="flex flex-1 min-h-screen">
+<!-- BEGIN: LeftSidebar -->
+<aside class="hidden lg:flex w-[232px] border-r border-[#ECEFF1] flex-col justify-between shrink-0 bg-white px-4 py-5 h-screen sticky top-0" data-purpose="desktop-sidebar">
+<div>
+<!-- Coinbase Logo Header -->
+<div class="px-3 mb-6 flex items-center">
+<svg class="w-9 h-9 text-coinbase-blue" fill="currentColor" viewbox="0 0 36 36">
+<path clip-rule="evenodd" d="M18 36C27.9411 36 36 27.9411 36 18C36 8.05887 27.9411 0 18 0C8.05887 0 0 8.05887 0 18C0 27.9411 8.05887 36 18 36ZM13.8 11.2C12.3641 11.2 11.2 12.3641 11.2 13.8V22.2C11.2 23.6359 12.3641 24.8 13.8 24.8H22.2C23.6359 24.8 24.8 23.6359 24.8 22.2V13.8C24.8 12.3641 23.6359 11.2 22.2 11.2H13.8Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1" data-purpose="sidebar-nav">
+<!-- Home -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="index.html">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+</svg>
+<span>Home</span>
+</a>
+<!-- My Assets -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="desktop-asset-bitcoin.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<polyline points="12 7 12 12 15 15"></polyline>
+</svg>
+<span>My assets</span>
+</a>
+<!-- Transactions -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#0A0B0D] stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<rect height="16" rx="2" width="18" x="3" y="4"></rect>
+<line x1="7" x2="17" y1="9" y2="9"></line>
+<line x1="7" x2="13" y1="13" y2="13"></line>
+</svg>
+<span>Transactions</span>
+</a>
+<!-- Explore (ACTIVE) -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full bg-[#EEF2F6]/75 font-semibold text-[#0052FF] text-[15px] transition-colors" href="explore.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0052FF]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+</svg>
+<span>Explore</span>
+</a>
+<!-- Perpetuals -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path>
+</svg>
+<span>Perpetuals</span>
+</a>
+<!-- Learning rewards -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+<span>Learning rewards</span>
+</a>
+<!-- Coinbase One -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M4.93 4.93l14.14 14.14"></path>
+</svg>
+<span>Coinbase One</span>
+</a>
+<!-- Invite friends -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+<circle cx="8.5" cy="7" r="4"></circle>
+<line x1="20" x2="20" y1="8" y2="14"></line>
+<line x1="23" x2="17" y1="11" y2="11"></line>
+</svg>
+<span>Invite friends</span>
+</a>
+<!-- More -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="1"></circle>
+<circle cx="12" cy="5" r="1"></circle>
+<circle cx="12" cy="19" r="1"></circle>
+</svg>
+<span>More</span>
+</a>
+</nav>
+</div>
+<!-- Advanced Toggle Switch at bottom -->
+<div class="pt-4 border-t border-[#ECEFF1] flex items-center justify-between px-2 mb-2 cursor-pointer select-none" data-purpose="advanced-mode-switch" onclick="toggleAdvancedMode()">
+<div class="flex items-center gap-2.5">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<line x1="4" x2="4" y1="21" y2="14"></line>
+<line x1="4" x2="4" y1="10" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="12"></line>
+<line x1="12" x2="12" y1="8" y2="3"></line>
+<line x1="20" x2="20" y1="21" y2="16"></line>
+<line x1="20" x2="20" y1="12" y2="3"></line>
+<line x1="1" x2="7" y1="14" y2="14"></line>
+<line x1="9" x2="15" y1="8" y2="8"></line>
+<line x1="17" x2="23" y1="16" y2="16"></line>
+</svg>
+<span class="text-[15px] font-semibold text-[#0A0B0D]">Advanced</span>
+</div>
+<!-- Toggle button -->
+<button class="advanced-toggle-track w-11 h-6 bg-[#DCDFE4] rounded-full p-0.5 transition-all relative flex items-center cursor-pointer" type="button" aria-label="Toggle Advanced Mode">
+<div class="advanced-toggle-knob w-5 h-5 bg-white rounded-full shadow-sm transform transition-all duration-200"></div>
+</button>
+</div>
+<!-- Live API Status Button -->
+<div class="pt-2 border-t border-[#ECEFF1] flex items-center px-2">
+  <button id="live-api-status-btn" class="flex items-center gap-2 py-1 px-2 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full" onclick="openApiSettingsModal()">
+    <span id="live-api-status-dot" class="inline-block w-2 h-2 bg-emerald-500 rounded-full"></span>
+    <span id="live-api-status-label" class="text-sm font-medium text-[#0A0B0D]">Live API</span>
+  </button>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+
+<!-- Main Container -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- BEGIN: TopBar -->
+<!-- Mobile Top App Bar (Visible on mobile/tablet < 1024px) -->
+<header class="lg:hidden sticky top-0 bg-white/95 backdrop-blur-md z-30 px-4 py-3 border-b border-[#ECEFF1] flex items-center justify-between gap-3 shadow-xs">
+  <div class="flex items-center gap-2">
+    <div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+      <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 5.524 4.477 10 10 10 5.524 0 10-4.476 10-10 0-5.523-4.476-10-10-10zm0 14.8a4.8 4.8 0 110-9.6 4.8 4.8 0 010 9.6z"/>
+      </svg>
+    </div>
+  </div>
+  <div class="flex-1 relative">
+    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+    </div>
+    <input id="explore-search-mobile" oninput="filterExplore(this.value)" class="w-full bg-[#EEF0F3] text-sm text-gray-800 placeholder-gray-500 rounded-full pl-9 pr-3 py-1.5 border-none focus:ring-2 focus:ring-[#0052FF] focus:bg-white transition-all" placeholder="Search crypto assets..." type="search"/>
+  </div>
+  <div class="flex items-center space-x-1">
+    <button onclick="openNotificationsModal()" aria-label="Notifications" class="p-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative" type="button">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+      <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#0052FF] rounded-full ring-2 ring-white"></span>
+    </button>
+    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-8 h-8 rounded-full bg-[#2C6ECB] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm" type="button">
+      C
+    </button>
+  </div>
+</header>
+
+<!-- Desktop TopBar -->
+<header class="hidden lg:flex h-20 px-8 items-center justify-between shrink-0 bg-white" data-purpose="top-navigation-bar">
+<!-- Page Title -->
+<h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D]">Explore</h1>
+<!-- Header Actions -->
+<div class="flex items-center gap-3">
+<!-- Search input box -->
+<div class="relative w-[340px]">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+<svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<input id="explore-search-input" oninput="filterExplore(this.value)" class="w-full pl-10 pr-4 py-2.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue transition-all" placeholder="Search crypto assets..." type="text"/>
+</div>
+<!-- Notification Bell -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+</svg>
+</button>
+<!-- Help Question Mark -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 stroke-[2.2] stroke-current fill-none" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+</button>
+<!-- App Grid Launcher -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<circle cx="5" cy="5" r="1.75"></circle>
+<circle cx="12" cy="5" r="1.75"></circle>
+<circle cx="19" cy="5" r="1.75"></circle>
+<circle cx="5" cy="12" r="1.75"></circle>
+<circle cx="12" cy="12" r="1.75"></circle>
+<circle cx="19" cy="12" r="1.75"></circle>
+<circle cx="5" cy="19" r="1.75"></circle>
+<circle cx="12" cy="19" r="1.75"></circle>
+<circle cx="19" cy="19" r="1.75"></circle>
+</svg>
+</button>
+<!-- User Profile Avatar -->
+<button onclick="openProfileModal()" class="w-10 h-10 rounded-full bg-[#2C6ECB] text-white flex items-center justify-center font-medium text-sm hover:opacity-90">
+  C
+</button>
+</div>
+</header>
+<!-- END: TopBar -->
+
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-16 pt-6 min-w-0" data-purpose="explore-main-content">
+
+  <!-- ===== SEARCH BAR (inline, below topbar on mobile too) ===== -->
+  <div class="relative max-w-xl mb-8 lg:hidden">
+    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+      <svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+      </svg>
+    </div>
+    <input oninput="filterExplore(this.value)" class="w-full pl-11 pr-4 py-3 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue transition-all" placeholder="Search crypto assets..." type="text"/>
+  </div>
+  <!-- Desktop-only search bar row (full-width below topbar) -->
+  <div class="hidden lg:block relative max-w-xl mb-8">
+    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+      <svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+      </svg>
+    </div>
+    <input id="explore-search-main" oninput="filterExplore(this.value)" class="w-full pl-11 pr-4 py-3 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue transition-all" placeholder="Search crypto assets..." type="text"/>
+  </div>
+
+  <!-- ===== SECTION: Trending ===== -->
+  <section class="mb-10" data-section="trending">
+    <h2 class="text-xl font-bold text-[#0A0B0D] mb-4">Trending</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+      <!-- BTC Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors group" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">₿</div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">Bitcoin</div>
+            <div class="text-xs font-semibold text-[#5B616E]">BTC</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$97,412.55</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#098551] text-xs font-bold">
+            ↑ 3.24%
+          </span>
+        </div>
+      </div>
+
+      <!-- ETH Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors group" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#627EEA] text-white flex items-center justify-center font-bold shadow-sm shrink-0">
+            <svg class="w-5 h-5 fill-current" viewbox="0 0 32 32"><path d="M16 2L6 17.5L16 22.5L26 17.5L16 2Z" fill-opacity="0.8"></path><path d="M16 23.5L6 18.5L16 31L26 18.5L16 23.5Z"></path></svg>
+          </div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">Ethereum</div>
+            <div class="text-xs font-semibold text-[#5B616E]">ETH</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$3,528.14</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#098551] text-xs font-bold">
+            ↑ 2.11%
+          </span>
+        </div>
+      </div>
+
+      <!-- SOL Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors group" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#9945FF] to-[#14F195] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">◎</div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">Solana</div>
+            <div class="text-xs font-semibold text-[#5B616E]">SOL</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$186.73</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[#CF202F] text-xs font-bold">
+            ↓ 1.87%
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION: Top by Market Cap ===== -->
+  <section class="mb-10" data-section="market-cap">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-[#0A0B0D]">Top by Market Cap</h2>
+      <button class="text-sm font-semibold text-[#0052FF] hover:underline">See all</button>
+    </div>
+
+    <!-- Table Header (desktop) -->
+    <div class="hidden sm:grid grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 px-3 pb-2 border-b border-[#ECEFF1] text-xs font-semibold text-[#5B616E] uppercase tracking-wide">
+      <span>#</span>
+      <span>Name</span>
+      <span class="text-right">Price</span>
+      <span class="text-right">24h Change</span>
+      <span class="text-right">Market Cap</span>
+      <span></span>
+    </div>
+
+    <div class="divide-y divide-[#ECEFF1]" id="market-cap-list">
+
+      <!-- BTC Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">1</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">₿</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Bitcoin</div>
+            <div class="text-xs font-semibold text-[#5B616E]">BTC</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$97,412.55</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 3.24%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$1.93T</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- ETH Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">2</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#627EEA] text-white flex items-center justify-center font-bold shadow-sm shrink-0">
+            <svg class="w-4 h-4 fill-current" viewbox="0 0 32 32"><path d="M16 2L6 17.5L16 22.5L26 17.5L16 2Z" fill-opacity="0.8"></path><path d="M16 23.5L6 18.5L16 31L26 18.5L16 23.5Z"></path></svg>
+          </div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Ethereum</div>
+            <div class="text-xs font-semibold text-[#5B616E]">ETH</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$3,528.14</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 2.11%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$424.8B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- BNB Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">3</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#F3BA2F] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">BNB</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">BNB</div>
+            <div class="text-xs font-semibold text-[#5B616E]">BNB</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$614.38</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#CF202F]">↓ 0.93%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$89.4B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- XRP Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">4</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#346AA9] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">XRP</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">XRP</div>
+            <div class="text-xs font-semibold text-[#5B616E]">XRP</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$2.31</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 4.57%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$132.1B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- SOL Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">5</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#9945FF] to-[#14F195] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">◎</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Solana</div>
+            <div class="text-xs font-semibold text-[#5B616E]">SOL</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$186.73</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#CF202F]">↓ 1.87%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$87.6B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- DOGE Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">6</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#C2A633] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">Ð</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Dogecoin</div>
+            <div class="text-xs font-semibold text-[#5B616E]">DOGE</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$0.3841</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 6.12%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$56.3B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- ADA Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">7</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#0033AD] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">ADA</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Cardano</div>
+            <div class="text-xs font-semibold text-[#5B616E]">ADA</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$0.9174</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#CF202F]">↓ 2.34%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$32.4B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- AVAX Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">8</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#E84142] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">AVAX</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Avalanche</div>
+            <div class="text-xs font-semibold text-[#5B616E]">AVAX</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$38.62</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 5.48%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$15.9B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- MATIC Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">9</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#8247E5] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">POL</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Polygon</div>
+            <div class="text-xs font-semibold text-[#5B616E]">MATIC</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$0.5247</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 3.89%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$5.2B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+      <!-- LINK Row -->
+      <div class="market-row grid grid-cols-[32px_1fr_auto] sm:grid-cols-[32px_1fr_130px_110px_130px_90px] gap-2 items-center px-3 py-3.5 cursor-pointer rounded-xl transition-colors" onclick="openOrderReviewModal()">
+        <span class="text-sm font-semibold text-[#5B616E]">10</span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#2A5ADA] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">⬡</div>
+          <div>
+            <div class="font-bold text-sm text-[#0A0B0D]">Chainlink</div>
+            <div class="text-xs font-semibold text-[#5B616E]">LINK</div>
+          </div>
+        </div>
+        <div class="text-right font-bold text-sm text-[#0A0B0D]">$14.87</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#098551]">↑ 7.23%</div>
+        <div class="hidden sm:block text-right text-sm font-semibold text-[#0A0B0D]">$9.1B</div>
+        <div class="hidden sm:flex justify-end">
+          <button class="buy-btn-inline px-4 py-1.5 rounded-full bg-[#0052FF] text-white font-bold text-xs hover:bg-[#0045D8] transition-colors shadow-sm" onclick="event.stopPropagation(); openOrderReviewModal()">Buy</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION: Gainers Today ===== -->
+  <section class="mb-10" data-section="gainers">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-[#0A0B0D]">Gainers today</h2>
+      <button class="text-sm font-semibold text-[#0052FF] hover:underline">See all</button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- LINK Gainer Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#2A5ADA] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">⬡</div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">Chainlink</div>
+            <div class="text-xs font-semibold text-[#5B616E]">LINK</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$14.87</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#098551] text-xs font-bold">
+            ↑ 7.23%
+          </span>
+        </div>
+      </div>
+
+      <!-- DOGE Gainer Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#C2A633] text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">Ð</div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">Dogecoin</div>
+            <div class="text-xs font-semibold text-[#5B616E]">DOGE</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$0.3841</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#098551] text-xs font-bold">
+            ↑ 6.12%
+          </span>
+        </div>
+      </div>
+
+      <!-- AVAX Gainer Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#E84142] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">AVAX</div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">Avalanche</div>
+            <div class="text-xs font-semibold text-[#5B616E]">AVAX</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$38.62</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#098551] text-xs font-bold">
+            ↑ 5.48%
+          </span>
+        </div>
+      </div>
+
+      <!-- XRP Gainer Card -->
+      <div class="bg-[#F9FAFB] hover:bg-[#EEF2F6] border border-[#ECEFF1] rounded-2xl p-5 cursor-pointer transition-colors" onclick="openOrderReviewModal()">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#346AA9] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">XRP</div>
+          <div>
+            <div class="font-bold text-[15px] text-[#0A0B0D]">XRP</div>
+            <div class="text-xs font-semibold text-[#5B616E]">XRP</div>
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="font-bold text-lg text-[#0A0B0D]">$2.31</div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#098551] text-xs font-bold">
+            ↑ 4.57%
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+</div>
+</div>
+
+<!-- Mobile Fixed Bottom Navigation Bar -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEFF1] px-3 pt-2 pb-safe z-40 flex justify-around items-center text-[10px] font-semibold text-[#5B616E] shadow-lg" data-purpose="mobile-bottom-nav">
+  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="index.html">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Home</span>
+  </a>
+  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="desktop-asset-bitcoin.html">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    <span>Assets</span>
+  </a>
+  <a onclick="openAssetSelectorModal()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Trade</span>
+  </a>
+  <a class="flex flex-col items-center gap-1 text-[#0052FF] flex-1 text-center" href="explore.html">
+    <svg class="w-5 h-5 stroke-[#0052FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#0052FF" stroke="none"/></svg>
+    <span>Explore</span>
+  </a>
+  <a onclick="openAppsModal()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    <span>More</span>
+  </a>
+</nav>
+
+<script>
+  // Filter explore sections by search query
+  function filterExplore(query) {
+    const q = query.toLowerCase().trim();
+    // Filter market cap rows
+    const rows = document.querySelectorAll('#market-cap-list .market-row');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+    // Filter trending cards
+    const trendingCards = document.querySelectorAll('[data-section="trending"] > div > div');
+    trendingCards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+    // Filter gainer cards
+    const gainerCards = document.querySelectorAll('[data-section="gainers"] > div > div');
+    gainerCards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  }
+
+  // Sync all search inputs
+  document.querySelectorAll('input[type="text"], input[type="search"]').forEach(input => {
+    if (input.hasAttribute('oninput')) {
+      input.addEventListener('input', function() {
+        // sync sibling search inputs
+        document.querySelectorAll('input[oninput*="filterExplore"]').forEach(other => {
+          if (other !== this) other.value = this.value;
+        });
+      });
+    }
+  });
+</script>
+
+<script src="coinbase-app.js"></script>
+</body></html>
