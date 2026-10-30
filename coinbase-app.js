@@ -6,6 +6,112 @@
   // --- Storage Key ---
   const STORAGE_KEY = 'coinbase_investment_system_v3';
 
+  // --- Supabase Client Integration ---
+  const SUPABASE_URL = 'https://ipgjutlmdnrmzesulkqd.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwZ2p1dGxtZG5ybXplc3Vsa3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzOTk3MzksImV4cCI6MjEwODk3NTczOX0.XFUsDIpESFBzA77C5pNDEXtsA7o_iqn15RqISsoi_Pw';
+  
+  let supabase = null;
+  if (typeof window !== 'undefined' && window.supabase) {
+    try {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.__supabase = supabase;
+    } catch (e) {
+      console.warn('Failed to initialize Supabase client:', e);
+    }
+  }
+
+  // Asynchronously sync state with Supabase cloud
+  async function syncFromSupabase() {
+    if (!supabase) return;
+    try {
+      // 1. Try to load user profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (profile) {
+        if (profile.name) appState.user.name = profile.name;
+        if (profile.email) appState.user.email = profile.email;
+        if (profile.tier) appState.user.tier = profile.tier;
+      }
+
+      // 2. Try to load balances
+      const { data: balanceData } = await supabase
+        .from('balances')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (balanceData) {
+        if (balanceData.usd !== undefined) appState.balances.USD = parseFloat(balanceData.usd);
+        if (balanceData.btc !== undefined) appState.balances.BTC = parseFloat(balanceData.btc);
+        if (balanceData.eth !== undefined) appState.balances.ETH = parseFloat(balanceData.eth);
+        if (balanceData.sol !== undefined) appState.balances.SOL = parseFloat(balanceData.sol);
+        if (balanceData.doge !== undefined) appState.balances.DOGE = parseFloat(balanceData.doge);
+      }
+
+      // 3. Try to load transactions
+      const { data: txList } = await supabase
+        .from('transactions')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(25);
+
+      if (txList && txList.length > 0) {
+        appState.transactions = txList.map(t => ({
+          id: t.id || ('TX-' + Math.floor(1000 + Math.random() * 9000)),
+          type: t.type,
+          asset: t.asset,
+          cryptoAmount: parseFloat(t.crypto_amount || t.cryptoAmount || 0),
+          usdAmount: parseFloat(t.usd_amount || t.usdAmount || 0),
+          price: parseFloat(t.price || 0),
+          date: t.date || new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          status: t.status || 'Completed'
+        }));
+      }
+
+      saveState();
+      updateAllUI();
+    } catch (err) {
+      console.log('Supabase read skipped or table pending setup:', err.message);
+    }
+  }
+
+  async function syncToSupabase(changeType, payload) {
+    if (!supabase) return;
+    try {
+      if (changeType === 'transaction' && payload) {
+        await supabase.from('transactions').insert([{
+          id: payload.id,
+          type: payload.type,
+          asset: payload.asset,
+          crypto_amount: payload.cryptoAmount,
+          usd_amount: payload.usdAmount,
+          price: payload.price,
+          status: payload.status,
+          date: payload.date
+        }]);
+      }
+
+      if (changeType === 'balances') {
+        await supabase.from('balances').upsert([{
+          id: 'user_wallet',
+          usd: appState.balances.USD,
+          btc: appState.balances.BTC,
+          eth: appState.balances.ETH,
+          sol: appState.balances.SOL,
+          doge: appState.balances.DOGE || 0,
+          updated_at: new Date().toISOString()
+        }]);
+      }
+    } catch (err) {
+      console.log('Supabase sync background notice:', err.message);
+    }
+  }
+
+
   // --- Master State ---
   const defaultState = {
     theme: 'light',
@@ -65,6 +171,7 @@
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      syncToSupabase('balances');
     } catch (e) {
       console.warn('Could not save state:', e);
     }
@@ -1572,6 +1679,7 @@
     // Start live market fluctuations and initial sync
     startLiveMarketFeed();
     updateAllUI();
+    syncFromSupabase();
   }
 
   // Auto initialize
