@@ -4,7 +4,7 @@
   'use strict';
 
   // --- Storage Key ---
-  const STORAGE_KEY = 'nexuspro_investment_system_v3';
+  const STORAGE_KEY = 'coinbase_investment_system_v3';
 
   // --- Supabase Client Integration ---
   const SUPABASE_URL = 'https://ipgjutlmdnrmzesulkqd.supabase.co';
@@ -499,10 +499,10 @@
   };
 
   // --- Live API & Real-Time Market Streaming Engine ---
-  const API_STORAGE_KEY = 'nexuspro_live_api_config';
+  const API_STORAGE_KEY = 'coinbase_live_api_config';
 
   const defaultApiConfig = {
-    provider: 'nexuspro', // 'nexuspro' | 'binance' | 'coingecko' | 'coincap' | 'custom'
+    provider: 'coinbase', // 'nexuspro' | 'binance' | 'coingecko' | 'coincap' | 'custom'
     apiKey: 'dbidtf9r01qie36n5cogdbidtf9r01qie36n5cp0',
     apiSecret: '',
     status: 'connecting', // 'connected' | 'connecting' | 'disconnected'
@@ -583,14 +583,14 @@
       connectCoinCapWS();
     } else {
       // Default: NexusPro Exchange WebSocket
-      connectNexusProWS();
+      connectCoinbaseWS();
     }
   }
 
-  function connectNexusProWS() {
+  function connectCoinbaseWS() {
     apiConfig.activeProviderName = 'NexusPro Exchange WS';
     try {
-      const ws = new WebSocket('wss://ws-feed.exchange.nexuspro.com');
+      const ws = new WebSocket('wss://ws-feed.exchange.coinbase.com');
       activeWebSocket = ws;
 
       ws.onopen = () => {
@@ -712,7 +712,7 @@
   function connectCoinCapWS() {
     apiConfig.activeProviderName = 'CoinCap WS';
     try {
-      const ws = new WebSocket('wss://ws-feed.exchange.nexuspro.com');
+      const ws = new WebSocket('wss://ws-feed.exchange.coinbase.com');
       activeWebSocket = ws;
       ws.onopen = () => updateApiStatusUI('connected', 'Live: CoinCap');
       ws.onmessage = (event) => {
@@ -729,9 +729,9 @@
           }
         } catch (e) {}
       };
-      ws.onerror = () => connectNexusProWS();
+      ws.onerror = () => connectCoinbaseWS();
     } catch (e) {
-      connectNexusProWS();
+      connectCoinbaseWS();
     }
   }
 
@@ -808,7 +808,7 @@
         <div style="margin-bottom:14px;">
           <label style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Data Feed Provider</label>
           <select id="api-provider-select" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:14px; font-weight:600; outline:none;">
-            <option value="nexuspro" ${apiConfig.provider === 'nexuspro' ? 'selected' : ''}>NexusPro Exchange WebSocket (Official Spot Feed)</option>
+            <option value="coinbase" ${apiConfig.provider === 'coinbase' ? 'selected' : ''}>NexusPro Exchange WebSocket (Official Spot Feed)</option>
             <option value="binance" ${apiConfig.provider === 'binance' ? 'selected' : ''}>Binance Global Mini-Ticker Stream (Sub-second)</option>
             <option value="coingecko" ${apiConfig.provider === 'coingecko' ? 'selected' : ''}>CoinGecko API (Supports Pro & Demo Keys)</option>
             <option value="coincap" ${apiConfig.provider === 'coincap' ? 'selected' : ''}>CoinCap Public Streaming Feed</option>
@@ -845,7 +845,7 @@
   };
 
   window.testAndSaveApiKey = function () {
-    const provider = document.getElementById('api-provider-select')?.value || 'nexuspro';
+    const provider = document.getElementById('api-provider-select')?.value || 'coinbase';
     const key = document.getElementById('api-key-input')?.value.trim() || '';
     const secret = document.getElementById('api-secret-input')?.value.trim() || '';
 
@@ -1407,7 +1407,7 @@
           </div>
 
           <!-- 2. NexusPro Elite -->
-          <div onclick="closeActiveModal(); window.location.href='nexuspro-elite.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+          <div onclick="closeActiveModal(); window.location.href='coinbase-one.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: #F8FAFC; color: #0A0B0D; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
               <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
             </div>
@@ -1466,7 +1466,7 @@
   };
 
   window.openInviteFriendsModal = function () {
-    const link = 'https://nexuspro.com/join/chris_wong';
+    const link = 'https://nexuspro.app/join/chris_wong';
     openModal(`
       <div style="padding: 24px; text-align:center;">
         <div style="font-size:40px; margin-bottom:8px;">🎁</div>
@@ -1616,9 +1616,9 @@
         } else if (text.includes('learning')) {
           e.preventDefault();
           window.location.href = 'learning-rewards.html';
-        } else if (text.includes('nexuspro one')) {
+        } else if (text.includes('nexuspro elite')) {
           e.preventDefault();
-          window.location.href = 'nexuspro-elite.html';
+          window.location.href = 'coinbase-one.html';
         } else if (text.includes('30-level') || text.includes('platform') || text.includes('packages')) {
           e.preventDefault();
           window.location.href = 'levels.html';
@@ -1803,17 +1803,17 @@
       btn.onclick = (e) => {
         e.stopPropagation();
         const polygon = btn.querySelector('polygon, path');
-        const isFilled = polygon && (polygon.getAttribute('fill') === '#0052FF' || btn.classList.contains('text-nexus-blue'));
+        const isFilled = polygon && (polygon.getAttribute('fill') === '#0052FF' || btn.classList.contains('text-coinbase-blue'));
 
         if (isFilled) {
           if (polygon) polygon.setAttribute('fill', 'none');
           if (polygon) polygon.setAttribute('stroke', '#BAC0CD');
-          btn.classList.remove('text-nexus-blue');
+          btn.classList.remove('text-coinbase-blue');
           btn.classList.add('text-gray-300');
           showToast('Removed from Watchlist', '', '☆');
         } else {
           if (polygon) polygon.setAttribute('fill', '#0052FF');
-          btn.classList.add('text-nexus-blue');
+          btn.classList.add('text-coinbase-blue');
           btn.classList.remove('text-gray-300');
           showToast('Added to Watchlist', '', '★');
         }

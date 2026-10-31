@@ -11,7 +11,7 @@
       theme: {
         extend: {
           colors: {
-            nexuspro: {
+            coinbase: {
               blue: '#0052FF',
               blueHover: '#0045D8',
               lightBlue: '#EEF3FF',
@@ -42,13 +42,13 @@
   <!-- Header with NexusPro Logo -->
   <header class="w-full px-6 py-6 sm:px-12 flex items-center justify-between border-b border-[#ECEFF1]">
     <a href="index.html" class="flex items-center gap-2">
-      <svg class="w-9 h-9 text-nexus-blue" fill="currentColor" viewBox="0 0 36 36">
+      <svg class="w-9 h-9 text-coinbase-blue" fill="currentColor" viewBox="0 0 36 36">
         <path clip-rule="evenodd" d="M18 36C27.9411 36 36 27.9411 36 18C36 8.05887 27.9411 0 18 0C8.05887 0 0 8.05887 0 18C0 27.9411 8.05887 36 18 36ZM13.8 11.2C12.3641 11.2 11.2 12.3641 11.2 13.8V22.2C11.2 23.6359 12.3641 24.8 13.8 24.8H22.2C23.6359 24.8 24.8 23.6359 24.8 22.2V13.8C24.8 12.3641 23.6359 11.2 22.2 11.2H13.8Z" fill-rule="evenodd"></path>
       </svg>
       <span class="text-xl font-bold tracking-tight text-[#0052FF]">nexuspro</span>
     </a>
     <div class="text-xs text-[#5B616E] font-medium">
-      Need help? <a href="#" onclick="openHelpModal()" class="text-nexus-blue hover:underline font-semibold">Contact Support</a>
+      Need help? <a href="#" onclick="openHelpModal()" class="text-coinbase-blue hover:underline font-semibold">Contact Support</a>
     </div>
   </header>
 
@@ -80,23 +80,23 @@
         <!-- Full Name (Only visible for Create Account) -->
         <div id="fullname-container" class="hidden">
           <label class="block text-xs font-bold text-[#5B616E] uppercase tracking-wider mb-1.5" for="auth-fullname">Full Name</label>
-          <input id="auth-fullname" type="text" placeholder="Chris Wong" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-nexuspro-blue focus:ring-1 focus:ring-nexuspro-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
+          <input id="auth-fullname" type="text" placeholder="Chris Wong" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
         </div>
 
         <!-- Email -->
         <div>
           <label class="block text-xs font-bold text-[#5B616E] uppercase tracking-wider mb-1.5" for="auth-email">Email Address</label>
-          <input id="auth-email" type="email" required placeholder="name@example.com" value="chris.wong@example.com" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-nexuspro-blue focus:ring-1 focus:ring-nexuspro-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
+          <input id="auth-email" type="email" required placeholder="name@example.com" value="chris.wong@example.com" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
         </div>
 
         <!-- Password -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-xs font-bold text-[#5B616E] uppercase tracking-wider" for="auth-password">Password</label>
-            <a href="#" onclick="showToast('Password Reset', 'Check your email inbox for instructions', '📧')" class="text-xs text-nexus-blue hover:underline font-semibold">Forgot password?</a>
+            <a href="#" onclick="showToast('Password Reset', 'Check your email inbox for instructions', '📧')" class="text-xs text-coinbase-blue hover:underline font-semibold">Forgot password?</a>
           </div>
           <div class="relative">
-            <input id="auth-password" type="password" required placeholder="••••••••••••" value="NexusProDemo2026!" class="w-full px-4 py-3 pr-12 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-nexuspro-blue focus:ring-1 focus:ring-nexuspro-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
+            <input id="auth-password" type="password" required placeholder="••••••••••••" value="NexusProDemo2026!" class="w-full px-4 py-3 pr-12 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
             <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600">
               <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
             </button>
@@ -119,7 +119,7 @@
 
       <!-- Legal / Terms -->
       <p class="text-[11px] text-[#5B616E] text-center mt-6 leading-relaxed">
-        By signing in, you agree to NexusPro's <a href="#" class="text-nexus-blue underline">User Agreement</a> and <a href="#" class="text-nexus-blue underline">Privacy Policy</a>.
+        By signing in, you agree to NexusPro's <a href="#" class="text-coinbase-blue underline">User Agreement</a> and <a href="#" class="text-coinbase-blue underline">Privacy Policy</a>.
       </p>
 
     </div>
