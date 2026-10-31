@@ -1363,10 +1363,7 @@
             <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748B;">Total Portfolio</div>
             <div style="font-size:18px; font-weight:800; color:#0F172A; margin-top:2px;">$${totalPortfolio.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748B;">Cash (USD)</div>
-            <div style="font-size:15px; font-weight:700; color:#098551; margin-top:2px;">$${appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-          </div>
+
         </div>
 
         <!-- Settings & Navigation List -->
