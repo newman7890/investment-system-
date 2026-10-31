@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Bond Capital | Bond Capital Elite</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coinbase: {
+              blue: '#0052FF',
+              blueHover: '#0045D8',
+              lightBlue: '#EEF3FF',
+              dark: '#0A0B0D',
+              grayBg: '#F5F8FF',
+              pillGray: '#EEF0F3',
+              subtext: '#5B616E',
+              border: '#ECEFF1',
+              green: '#098551',
+              red: '#CF202F',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles -->
+<style data-purpose="custom-layout">
+    body {
+      background-color: #FFFFFF;
+      color: #0A0B0D;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Mobile safe-area and responsive adjustments */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @media (max-width: 1023px) {
+      body {
+        padding-bottom: 70px;
+      }
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 9999px;
+    }
+
+    /* Filter pill active state */
+    .filter-pill.active {
+      background-color: #0052FF;
+      color: #FFFFFF;
+    }
+    .filter-pill:not(.active) {
+      background-color: #EEF0F3;
+      color: #0A0B0D;
+    }
+
+    /* Transaction row hidden state */
+    .tx-row.hidden-row {
+      display: none;
+    }
+  </style>
+<link rel="stylesheet" href="bondcapital-app.css">
+</head>
+<body class="min-h-screen flex flex-col font-sans select-none antialiased">
+<div class="flex flex-1 min-h-screen">
+<!-- BEGIN: LeftSidebar -->
+<aside class="hidden lg:flex w-[232px] border-r border-[#ECEFF1] flex-col justify-between shrink-0 bg-white px-4 py-5 h-screen sticky top-0" data-purpose="desktop-sidebar">
+<div>
+<!-- Bond Capital Logo Header -->
+<div class="px-3 mb-6 flex items-center">
+<div style="display:flex; align-items:center; gap:10px; text-decoration:none;" class="flex items-center gap-2.5">
+  <div style="width:36px; height:36px; background:#0A0B0D; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+    <span style="color:#FFFFFF; font-size:13px; font-weight:900; letter-spacing:-0.5px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">BC</span>
+  </div>
+  <span style="font-size:16px; font-weight:800; color:#0A0B0D; letter-spacing:-0.03em; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">Bond Capital</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1" data-purpose="sidebar-nav">
+<!-- Home -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="index.html">
+<svg class="w-5 h-5 fill-current text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+</svg>
+<span>Home</span>
+</a>
+<!-- My Assets -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="desktop-asset-bitcoin.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<polyline points="12 7 12 12 15 15"></polyline>
+</svg>
+<span>My assets</span>
+</a>
+<!-- Transactions (Active) -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="transactions.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<rect height="16" rx="2" width="18" x="3" y="4"></rect>
+<line x1="7" x2="17" y1="9" y2="9"></line>
+<line x1="7" x2="13" y1="13" y2="13"></line>
+</svg>
+<span>Transactions</span>
+</a>
+<!-- 30-Level Platform -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="levels.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24">
+<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+</svg>
+<span>30-Level Platform</span>
+</a>
+<!-- Explore -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="explore.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+</svg>
+<span>Explore</span>
+</a>
+<!-- Perpetuals -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="perpetuals.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path>
+</svg>
+<span>Perpetuals</span>
+</a>
+<!-- Learning rewards -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="learning-rewards.html">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+<span>Learning rewards</span>
+</a>
+<!-- Bond Capital Elite -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full bg-[#EEF2F6]/75 font-semibold text-[#0052FF] text-[15px] transition-colors" href="coinbase-one.html">
+<svg class="w-5 h-5 text-coinbase-blue stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M4.93 4.93l14.14 14.14"></path>
+</svg>
+<span>Bond Capital Elite</span>
+</a>
+<!-- Invite friends -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+<circle cx="8.5" cy="7" r="4"></circle>
+<line x1="20" x2="20" y1="8" y2="14"></line>
+<line x1="23" x2="17" y1="11" y2="11"></line>
+</svg>
+<span>Invite friends</span>
+</a>
+<!-- More -->
+<a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="#" onclick="openAppsModal()">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="1"></circle>
+<circle cx="12" cy="5" r="1"></circle>
+<circle cx="12" cy="19" r="1"></circle>
+</svg>
+<span>More</span>
+</a>
+</nav>
+</div>
+<!-- Advanced Toggle Switch at bottom -->
+<div class="pt-4 border-t border-[#ECEFF1] flex items-center justify-between px-2 mb-2 cursor-pointer select-none" data-purpose="advanced-mode-switch" onclick="toggleAdvancedMode()">
+<div class="flex items-center gap-2.5">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewbox="0 0 24 24">
+<line x1="4" x2="4" y1="21" y2="14"></line>
+<line x1="4" x2="4" y1="10" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="12"></line>
+<line x1="12" x2="12" y1="8" y2="3"></line>
+<line x1="20" x2="20" y1="21" y2="16"></line>
+<line x1="20" x2="20" y1="12" y2="3"></line>
+<line x1="1" x2="7" y1="14" y2="14"></line>
+<line x1="9" x2="15" y1="8" y2="8"></line>
+<line x1="17" x2="23" y1="16" y2="16"></line>
+</svg>
+<span class="text-[15px] font-semibold text-[#0A0B0D]">Advanced</span>
+</div>
+<!-- Toggle button -->
+<button class="advanced-toggle-track w-11 h-6 bg-[#DCDFE4] rounded-full p-0.5 transition-all relative flex items-center cursor-pointer" type="button" aria-label="Toggle Advanced Mode">
+<div class="advanced-toggle-knob w-5 h-5 bg-white rounded-full shadow-sm transform transition-all duration-200"></div>
+</button>
+</div>
+<!-- Live API Status Button -->
+<div class="pt-2 border-t border-[#ECEFF1] flex items-center px-2">
+  <button id="live-api-status-btn" class="flex items-center gap-2 py-1 px-2 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full" onclick="openApiSettingsModal()">
+    <span id="live-api-status-dot" class="inline-block w-2 h-2 bg-emerald-500 rounded-full"></span>
+    <span id="live-api-status-label" class="text-sm font-medium text-[#0A0B0D]">Live API</span>
+  </button>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+
+<!-- Main Container -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- BEGIN: TopBar -->
+<!-- Mobile Top App Bar (Visible on mobile/tablet < 1024px) -->
+<header class="lg:hidden sticky top-0 bg-white/95 backdrop-blur-md z-30 px-4 py-3 border-b border-[#ECEFF1] flex items-center justify-between gap-3 shadow-xs">
+  <div class="flex items-center gap-2">
+    <div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+      <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 5.524 4.477 10 10 10 5.524 0 10-4.476 10-10 0-5.523-4.476-10-10-10zm0 14.8a4.8 4.8 0 110-9.6 4.8 4.8 0 010 9.6z"/>
+      </svg>
+    </div>
+  </div>
+  <div class="flex-1 flex items-center justify-center">
+    <h1 class="text-[18px] font-bold text-[#0A0B0D]">Transactions</h1>
+  </div>
+  <div class="flex items-center space-x-1">
+    <!-- Notification Bell -->
+    <button onclick="openNotificationsModal()" aria-label="Notifications" class="p-2.5 text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative cursor-pointer" type="button">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <span class="absolute top-2 right-2 w-2 h-2 bg-[#0052FF] rounded-full ring-2 ring-white"></span>
+    </button>
+    <!-- Help Icon -->
+    <button onclick="openHelpModal()" aria-label="Help" class="p-2.5 text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" type="button">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+    <!-- Grid App Launcher -->
+    <button onclick="openAppsModal()" aria-label="Applications menu" class="p-2.5 text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" type="button">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <circle cx="5" cy="5" r="1.5"></circle><circle cx="10" cy="5" r="1.5"></circle><circle cx="15" cy="5" r="1.5"></circle>
+        <circle cx="5" cy="10" r="1.5"></circle><circle cx="10" cy="10" r="1.5"></circle><circle cx="15" cy="10" r="1.5"></circle>
+        <circle cx="5" cy="15" r="1.5"></circle><circle cx="10" cy="15" r="1.5"></circle><circle cx="15" cy="15" r="1.5"></circle>
+      </svg>
+    </button>
+    <!-- User Avatar Circle -->
+    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-9 h-9 rounded-full bg-[#1652f0] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm hover:opacity-95 cursor-pointer" type="button">
+      C
+    </button>
+  </div>
+</header>
+
+<!-- Desktop TopBar (Hidden on mobile) -->
+<header class="hidden lg:flex h-20 px-8 items-center justify-between shrink-0 bg-white" data-purpose="top-navigation-bar">
+<!-- Page Title -->
+<h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D]">Bond Capital Elite</h1>
+<!-- Header Actions: Search, Notifications, App grid, Avatar -->
+<div class="flex items-center gap-3">
+<!-- Search input box -->
+<div class="relative w-[340px]">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+<svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<input id="tx-search-input" oninput="filterTransactions(this.value)" class="w-full pl-10 pr-4 py-2.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue transition-all" placeholder="Search transactions" type="text"/>
+</div>
+<!-- Notification Bell -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 stroke-[2] stroke-current fill-none" viewbox="0 0 24 24">
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+</svg>
+</button>
+<!-- Help Question Mark -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 stroke-[2.2] stroke-current fill-none" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+</button>
+<!-- App Grid Launcher -->
+<button class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<circle cx="5" cy="5" r="1.75"></circle>
+<circle cx="12" cy="5" r="1.75"></circle>
+<circle cx="19" cy="5" r="1.75"></circle>
+<circle cx="5" cy="12" r="1.75"></circle>
+<circle cx="12" cy="12" r="1.75"></circle>
+<circle cx="19" cy="12" r="1.75"></circle>
+<circle cx="5" cy="19" r="1.75"></circle>
+<circle cx="12" cy="19" r="1.75"></circle>
+<circle cx="19" cy="19" r="1.75"></circle>
+</svg>
+</button>
+<!-- User Profile Avatar -->
+<button onclick="openProfileModal()" class="w-10 h-10 rounded-full bg-[#2C6ECB] text-white flex items-center justify-center font-medium text-sm hover:opacity-90">
+  C
+</button>
+</div>
+</header>
+<!-- END: TopBar -->
+
+<!-- Main Content -->
+
+    <!-- Main Content Area -->
+    <main class="flex-1 px-4 sm:px-6 lg:px-10 py-6 max-w-5xl overflow-y-auto">
+      <!-- Dark Hero Card -->
+      <div class="rounded-3xl bg-[#0A0B0D] text-white p-8 sm:p-12 mb-8 shadow-xl relative overflow-hidden">
+        <div class="relative z-10 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-white/10 rounded-full text-xs font-bold text-blue-400 mb-4 tracking-wider uppercase">
+            <span>⭐ Official Membership</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-[#0052FF] flex items-center justify-center font-bold text-white text-xl">C</div>
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Bond Capital Elite</h2>
+          </div>
+          <p class="text-gray-400 text-base sm:text-lg mb-8 leading-relaxed">Trade crypto with zero trading fees, boost your staking rewards, and access dedicated 24/7 priority support with account protection.</p>
+          
+          <div class="flex flex-wrap items-baseline gap-2 mb-8">
+            <span class="text-4xl sm:text-5xl font-black text-white">$29.99</span>
+            <span class="text-gray-400 font-medium">/ month</span>
+            <span class="ml-3 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full">30-day free trial</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button onclick="showToast('Bond Capital Elite Active', 'Welcome to 30 days of zero fees!', '⭐')" class="px-8 py-4 bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-base rounded-full shadow-lg hover:shadow-blue-500/25 transition-all text-center">Start 30-Day Free Trial</button>
+            <button onclick="openHelpModal()" class="px-6 py-4 bg-white/10 hover:bg-white/15 text-white font-semibold text-base rounded-full transition-all text-center">Learn More</button>
+          </div>
+        </div>
+
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 opacity-10 sm:opacity-20 pointer-events-none pr-8">
+          <svg class="w-96 h-96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M4.93 4.93l14.14 14.14"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Key Benefits Grid -->
+      <div class="mb-6">
+        <h3 class="text-2xl font-bold text-[#0A0B0D]">Member Benefits</h3>
+        <p class="text-sm text-[#5B616E] mt-1">Everything included in your Bond Capital Elite subscription</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <!-- Benefit 1 -->
+        <div class="bg-white border border-[#ECEFF1] rounded-3xl p-6 hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-bold text-2xl mb-4">0%</div>
+          <h4 class="font-bold text-lg text-[#0A0B0D] mb-2">Zero Trading Fees</h4>
+          <p class="text-sm text-[#5B616E] leading-relaxed">Pay $0 trading fees on hundreds of digital assets up to $10,000 in trading volume every single month.</p>
+        </div>
+
+        <!-- Benefit 2 -->
+        <div class="bg-white border border-[#ECEFF1] rounded-3xl p-6 hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-2xl mb-4">📈</div>
+          <h4 class="font-bold text-lg text-[#0A0B0D] mb-2">Boosted Staking APY</h4>
+          <p class="text-sm text-[#5B616E] leading-relaxed">Earn enhanced staking yields on assets like Ethereum, Solana, and Cosmos with a 0.5% - 1.0% rewards bonus.</p>
+        </div>
+
+        <!-- Benefit 3 -->
+        <div class="bg-white border border-[#ECEFF1] rounded-3xl p-6 hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-2xl mb-4">🛡️</div>
+          <h4 class="font-bold text-lg text-[#0A0B0D] mb-2">Priority 24/7 Support</h4>
+          <p class="text-sm text-[#5B616E] leading-relaxed">Skip the queue with dedicated phone support agents and priority live chat available 24 hours a day, 7 days a week.</p>
+        </div>
+      </div>
+
+      <!-- Feature Checklist Table -->
+      <div class="bg-gray-50 border border-gray-200 rounded-3xl p-6 sm:p-8">
+        <h4 class="text-lg font-bold text-[#0A0B0D] mb-4">Compare Plans</h4>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between py-3 border-b border-gray-200">
+            <span class="text-sm font-medium text-gray-700">Standard Trading Fee</span>
+            <div class="flex items-center gap-8 text-sm font-semibold">
+              <span class="text-gray-500">Standard: 1.49%</span>
+              <span class="text-[#0052FF]">Bond Capital Elite: $0.00</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between py-3 border-b border-gray-200">
+            <span class="text-sm font-medium text-gray-700">Account Protection Guarantee</span>
+            <div class="flex items-center gap-8 text-sm font-semibold">
+              <span class="text-gray-500">Standard: Basic</span>
+              <span class="text-[#0052FF]">Bond Capital Elite: Up to $1M</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between py-3 border-b border-gray-200">
+            <span class="text-sm font-medium text-gray-700">Automated Tax Reporting (CoinTracker)</span>
+            <div class="flex items-center gap-8 text-sm font-semibold">
+              <span class="text-gray-500">Standard: Paid</span>
+              <span class="text-[#0052FF]">Bond Capital Elite: Included Free</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+<!-- /Main Content -->
+
+</div>
+</div>
+
+<!-- Mobile Fixed Bottom Navigation Bar -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEFF1] px-3 pt-2 pb-safe z-40 flex justify-around items-center text-[10px] font-semibold text-[#5B616E] shadow-lg" data-purpose="mobile-bottom-nav">
+  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="index.html">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span>Home</span>
+  </a>
+  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="desktop-asset-bitcoin.html">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    <span>Assets</span>
+  </a>
+  <a onclick="openAssetSelectorModal()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Trade</span>
+  </a>
+  <a class="flex flex-col items-center gap-1 text-[#0052FF] flex-1 text-center" href="transactions.html">
+    <svg class="w-5 h-5 stroke-[2] stroke-[#0052FF] fill-none" viewBox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="4"/><line x1="7" x2="17" y1="9" y2="9"/><line x1="7" x2="13" y1="13" y2="13"/></svg>
+    <span>History</span>
+  </a>
+  <a onclick="openAppsModal()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center cursor-pointer" href="#">
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    <span>More</span>
+  </a>
+</nav>
+
+<script>
+  // ── Filter pill logic ──────────────────────────────────────────────────────
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function setFilter(type) {
+    currentFilter = type;
+    // Update pill UI
+    document.querySelectorAll('.filter-pill').forEach(btn => {
+      if (btn.dataset.filter === type) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    applyFilters();
+  }
+
+  function filterTransactions(query) {
+    currentSearch = query.toLowerCase().trim();
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const rows = document.querySelectorAll('.tx-row');
+    let visible = 0;
+
+    rows.forEach(row => {
+      const typeMatch = currentFilter === 'all' || row.dataset.type === currentFilter;
+      const searchMatch = !currentSearch || row.dataset.search.includes(currentSearch) || row.textContent.toLowerCase().includes(currentSearch);
+      if (typeMatch && searchMatch) {
+        row.style.display = 'flex';
+        visible++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Toggle empty state
+    const emptyState = document.getElementById('tx-empty-state');
+    if (visible === 0) {
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+    }
+
+    // Hide section headers that have no visible rows below them
+    const headers = document.querySelectorAll('.section-header');
+    headers.forEach(header => {
+      let next = header.nextElementSibling;
+      let hasVisible = false;
+      while (next && !next.classList.contains('section-header') && !next.id) {
+        if (next.classList.contains('tx-row') && next.style.display !== 'none') {
+          hasVisible = true;
+          break;
+        }
+        next = next.nextElementSibling;
+      }
+      header.style.display = hasVisible ? 'block' : 'none';
+    });
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="bondcapital-app.js"></script>
+</body></html>
