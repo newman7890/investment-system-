@@ -1998,19 +1998,31 @@
     });
 
     // 17. Mobile Bottom Navigation
-    document.querySelectorAll('nav.fixed.bottom-0 a, nav[data-purpose="bottom-tab-bar"] button, nav[data-purpose="mobile-bottom-nav"] a').forEach(el => {
-      const text = el.textContent.trim().toLowerCase();
+    document.querySelectorAll('nav.fixed.bottom-0 a, nav[data-purpose="bottom-tab-bar"] button, nav[data-purpose="bottom-tab-bar"] a, nav[data-purpose="mobile-bottom-nav"] a').forEach(el => {
       el.classList.add('cb-clickable');
+      const href = el.getAttribute('href');
+      if (href && href !== '#' && !href.startsWith('javascript:')) {
+        el.onclick = (e) => {
+          e.preventDefault();
+          window.location.href = href;
+        };
+        return;
+      }
+      const text = el.textContent.trim().toLowerCase();
       el.onclick = (e) => {
         e.preventDefault();
         if (text.includes('home')) {
           window.location.href = 'index.html';
+        } else if (text.includes('level') || text.includes('30-level') || text.includes('packages')) {
+          window.location.href = 'levels.html';
         } else if (text.includes('asset')) {
           window.location.href = 'desktop-asset-bitcoin.html';
+        } else if (text.includes('history') || text.includes('transaction')) {
+          window.location.href = 'transactions.html';
+        } else if (text.includes('explore')) {
+          window.location.href = 'explore.html';
         } else if (text.includes('trade')) {
           openAssetSelectorModal();
-        } else if (text.includes('explore')) {
-          showToast('Explore Cryptos', 'Browsing top trending tokens on Bond Capital', '🔍');
         } else if (text.includes('more')) {
           openAppsModal();
         }
