@@ -159,8 +159,19 @@ body.dark-mode .cb-modal-card {
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.35);
   animation: cbCardScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cb-modal-card::-webkit-scrollbar,
+.cb-modal-overlay *::-webkit-scrollbar,
+div[id$="-modal"] > div::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 @keyframes cbOverlayFade {
