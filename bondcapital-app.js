@@ -280,10 +280,10 @@
       monthly_limit: 30.00
     },
     balances: {
-      USD: 10000.00,
-      BTC: 0.15,
-      ETH: 1.50,
-      SOL: 12.00
+      USD: 0.00,
+      BTC: 0.00,
+      ETH: 0.00,
+      SOL: 0.00
     },
     assets: {
       BTC: { name: 'Bitcoin', symbol: 'BTC', priceUSD: 91864.73, change24h: -3.87, changeAmount: -3694.67, high24h: 93450.00, low24h: 90210.00, volume24h: '48.2B', marketCap: '1.81T', iconBg: '#F7931A', iconText: '₿' },
@@ -334,10 +334,15 @@
       }
     } catch (e) {}
 
-    let total = packageBal > 0 ? packageBal : appState.balances.USD;
+    // When an allocated package is active, display its balance directly without adding demo crypto
+    if (packageBal > 0) {
+      return packageBal;
+    }
+
+    let total = appState.balances.USD || 0;
     for (const sym in appState.assets) {
       const bal = appState.balances[sym] || 0;
-      total += bal * appState.assets[sym].priceUSD;
+      total += bal * (appState.assets[sym].priceUSD || 0);
     }
     return total;
   }
