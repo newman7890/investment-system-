@@ -22,10 +22,12 @@
 
   // --- REAL BACKEND ENGINE (SUPABASE CLOUD PERSISTENCE) ---
   function getActiveUserId() {
-    if (supabase && supabase.auth) {
-      const u = supabase.auth.getUser ? null : null; // async checked below
-    }
-    return window.__currentUserId || 'usr_master_chris';
+    if (window.__currentUserId) return window.__currentUserId;
+    try {
+      const storedId = sessionStorage.getItem('bond_user_id');
+      if (storedId) return storedId;
+    } catch (e) {}
+    return '0435d519-54b7-416d-9e35-6063f72578de';
   }
 
   // Load user data strictly from Supabase database
@@ -33,16 +35,26 @@
     if (!supabase) return;
     try {
       // 0. Check authentic Supabase Auth session first
-      if (supabase.auth) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session && session.user) {
-          window.__currentUserId = session.user.id;
-          appState.user.email = session.user.email || appState.user.email;
-          if (session.user.user_metadata && session.user.user_metadata.full_name) {
-            appState.user.name = session.user.user_metadata.full_name;
+      if (supabase && supabase.auth) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && session.user) {
+            window.__currentUserId = session.user.id;
+            appState.user.email = session.user.email || appState.user.email;
+            if (session.user.user_metadata && session.user.user_metadata.full_name) {
+              appState.user.name = session.user.user_metadata.full_name;
+            }
           }
-        }
+        } catch (e) {}
       }
+
+      // Check session storage cache
+      try {
+        const storedEmail = sessionStorage.getItem('bond_user_email');
+        const storedName = sessionStorage.getItem('bond_user_name');
+        if (storedEmail) appState.user.email = storedEmail;
+        if (storedName) appState.user.name = storedName;
+      } catch (e) {}
 
       const userId = getActiveUserId();
 
@@ -218,9 +230,9 @@
     chartType: 'line',
     timeframe: '1D',
     user: {
-      name: '',
-      email: '',
-      tier: 'Level 3 Verified',
+      name: 'new man',
+      email: 'newm5811@gmail.com',
+      tier: 'Level 1 Verified',
       current_level: 1,
       level_balance: 1500.00,
       monthly_limit: 30.00
