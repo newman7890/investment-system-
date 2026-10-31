@@ -1616,10 +1616,10 @@
         } else if (text.includes('learning')) {
           e.preventDefault();
           window.location.href = 'learning-rewards.html';
-        } else if (text.includes('bondcapital elite')) {
+        } else if (text.includes('bond capital elite') || text.includes('elite') || text.includes('bondcapital')) {
           e.preventDefault();
           window.location.href = 'coinbase-one.html';
-        } else if (text.includes('30-level') || text.includes('platform') || text.includes('packages')) {
+        } else if (text.includes('30-level') || text.includes('30 level') || text.includes('levels') || text.includes('packages')) {
           e.preventDefault();
           window.location.href = 'levels.html';
         } else if (text.includes('invite')) {
