@@ -4,7 +4,7 @@
   'use strict';
 
   // --- Storage Key ---
-  const STORAGE_KEY = 'coinbase_investment_system_v3';
+  const STORAGE_KEY = 'bondcapital_investment_system_v4';
 
   // --- Supabase Client Integration ---
   const SUPABASE_URL = 'https://ipgjutlmdnrmzesulkqd.supabase.co';
@@ -544,10 +544,10 @@
   };
 
   // --- Live API & Real-Time Market Streaming Engine ---
-  const API_STORAGE_KEY = 'coinbase_live_api_config';
+  const API_STORAGE_KEY = 'bondcapital_live_api_config';
 
   const defaultApiConfig = {
-    provider: 'coinbase', // 'bondcapital' | 'binance' | 'coingecko' | 'coincap' | 'custom'
+    provider: 'binance', // 'bondcapital' | 'binance' | 'coingecko' | 'coincap' | 'custom'
     apiKey: 'dbidtf9r01qie36n5cogdbidtf9r01qie36n5cp0',
     apiSecret: '',
     status: 'connecting', // 'connected' | 'connecting' | 'disconnected'
@@ -628,14 +628,14 @@
       connectCoinCapWS();
     } else {
       // Default: Bond Capital Exchange WebSocket
-      connectCoinbaseWS();
+      connectBinanceWS();
     }
   }
 
-  function connectCoinbaseWS() {
+  function connectBinanceWS() {
     apiConfig.activeProviderName = 'Bond Capital Exchange WS';
     try {
-      const ws = new WebSocket('wss://ws-feed.exchange.coinbase.com');
+      const ws = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr');
       activeWebSocket = ws;
 
       ws.onopen = () => {
@@ -757,7 +757,7 @@
   function connectCoinCapWS() {
     apiConfig.activeProviderName = 'CoinCap WS';
     try {
-      const ws = new WebSocket('wss://ws-feed.exchange.coinbase.com');
+      const ws = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr');
       activeWebSocket = ws;
       ws.onopen = () => updateApiStatusUI('connected', 'Live: CoinCap');
       ws.onmessage = (event) => {
@@ -774,9 +774,9 @@
           }
         } catch (e) {}
       };
-      ws.onerror = () => connectCoinbaseWS();
+      ws.onerror = () => connectBinanceWS();
     } catch (e) {
-      connectCoinbaseWS();
+      connectBinanceWS();
     }
   }
 
@@ -853,7 +853,7 @@
         <div style="margin-bottom:14px;">
           <label style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Data Feed Provider</label>
           <select id="api-provider-select" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:14px; font-weight:600; outline:none;">
-            <option value="coinbase" ${apiConfig.provider === 'coinbase' ? 'selected' : ''}>Bond Capital Exchange WebSocket (Official Spot Feed)</option>
+            <option value="bondcapital" ${apiConfig.provider === 'bondcapital' ? 'selected' : ''}>Bond Capital Exchange WebSocket (Official Spot Feed)</option>
             <option value="binance" ${apiConfig.provider === 'binance' ? 'selected' : ''}>Binance Global Mini-Ticker Stream (Sub-second)</option>
             <option value="coingecko" ${apiConfig.provider === 'coingecko' ? 'selected' : ''}>CoinGecko API (Supports Pro & Free Keys)</option>
             <option value="coincap" ${apiConfig.provider === 'coincap' ? 'selected' : ''}>CoinCap Public Streaming Feed</option>
@@ -890,7 +890,7 @@
   };
 
   window.saveApiKey = function () {
-    const provider = document.getElementById('api-provider-select')?.value || 'coinbase';
+    const provider = document.getElementById('api-provider-select')?.value || 'bondcapital';
     const key = document.getElementById('api-key-input')?.value.trim() || '';
     const secret = document.getElementById('api-secret-input')?.value.trim() || '';
 
@@ -1836,17 +1836,17 @@
       btn.onclick = (e) => {
         e.stopPropagation();
         const polygon = btn.querySelector('polygon, path');
-        const isFilled = polygon && (polygon.getAttribute('fill') === '#0052FF' || btn.classList.contains('text-coinbase-blue'));
+        const isFilled = polygon && (polygon.getAttribute('fill') === '#0052FF' || btn.classList.contains('text-[#0052FF]'));
 
         if (isFilled) {
           if (polygon) polygon.setAttribute('fill', 'none');
           if (polygon) polygon.setAttribute('stroke', '#BAC0CD');
-          btn.classList.remove('text-coinbase-blue');
+          btn.classList.remove('text-[#0052FF]');
           btn.classList.add('text-gray-300');
           showToast('Removed from Watchlist', '', '☆');
         } else {
           if (polygon) polygon.setAttribute('fill', '#0052FF');
-          btn.classList.add('text-coinbase-blue');
+          btn.classList.add('text-[#0052FF]');
           btn.classList.remove('text-gray-300');
           showToast('Added to Watchlist', '', '★');
         }
