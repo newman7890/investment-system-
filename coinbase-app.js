@@ -1642,32 +1642,46 @@
       };
     });
 
-    // 3. Header Action Buttons
+    // 3. Header Action Buttons (Bulletproof event binding with error isolation)
     // Notification Bell
-    document.querySelectorAll('button:has(svg path[d*="M18 8A6 6 0"]), button[aria-label="Notifications"], button:has(svg path[d*="M15 17h5"])').forEach(b => {
-      b.classList.add('cb-clickable');
-      b.onclick = (e) => { e.stopPropagation(); openNotificationsModal(); };
-    });
+    try {
+      document.querySelectorAll('button[aria-label="Notifications"], button[onclick*="openNotificationsModal"]').forEach(b => {
+        b.classList.add('cb-clickable');
+        b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); openNotificationsModal(); };
+      });
+    } catch (e) { console.warn('Notifications button hook error:', e); }
 
     // Help Question Mark
-    document.querySelectorAll('button:has(svg path[d*="M9.09 9a3 3"]), button[aria-label="Help"]').forEach(b => {
-      b.classList.add('cb-clickable');
-      b.onclick = (e) => { e.stopPropagation(); openHelpModal(); };
-    });
+    try {
+      document.querySelectorAll('button[aria-label="Help"], button[onclick*="openHelpModal"]').forEach(b => {
+        b.classList.add('cb-clickable');
+        b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); openHelpModal(); };
+      });
+    } catch (e) { console.warn('Help button hook error:', e); }
 
-    // App Grid
-    document.querySelectorAll('button:has(svg circle[cx="5"]), button[aria-label="Applications menu"]').forEach(b => {
-      b.classList.add('cb-clickable');
-      b.onclick = (e) => { e.stopPropagation(); openAppsModal(); };
-    });
+    // App Grid / Ecosystem
+    try {
+      document.querySelectorAll('button[aria-label="Applications menu"], button[onclick*="openAppsModal"]').forEach(b => {
+        b.classList.add('cb-clickable');
+        b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); openAppsModal(); };
+      });
+    } catch (e) { console.warn('Apps button hook error:', e); }
 
     // User Profile Avatar
-    document.querySelectorAll('button').forEach(b => {
-      if (b.textContent.trim() === 'C' || b.getAttribute('aria-label') === 'User Profile' || b.getAttribute('aria-label') === 'Profile Avatar') {
+    try {
+      document.querySelectorAll('button[aria-label="User Profile"], button[aria-label="Profile Avatar"], button[onclick*="openProfileModal"]').forEach(b => {
         b.classList.add('cb-clickable');
-        b.onclick = (e) => { e.stopPropagation(); openProfileModal(); };
-      }
-    });
+        b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); openProfileModal(); };
+      });
+      // Fallback for avatar buttons with single letter
+      document.querySelectorAll('button').forEach(b => {
+        const txt = b.textContent.trim();
+        if (txt === 'C' || (txt.length === 1 && b.className && b.className.includes('rounded-full') && (b.className.includes('bg-[') || b.className.includes('bg-blue')))) {
+          b.classList.add('cb-clickable');
+          b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); openProfileModal(); };
+        }
+      });
+    } catch (e) { console.warn('Profile button hook error:', e); }
 
     // 4. Quick Action Links: Send, Receive, Deposit, Withdraw
     document.querySelectorAll('a, button, div').forEach(el => {
