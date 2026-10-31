@@ -270,284 +270,216 @@
 </section>
 <!-- END: ActivePackageShowcase -->
 
-<!-- Mobile Quick Action Pills (Visible on mobile/tablet < 1024px) -->
-<section class="lg:hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-3 my-2" data-purpose="mobile-quick-actions">
-  <button onclick="openOrderReviewModal()" class="flex items-center gap-1.5 px-4 py-2 bg-[#0052FF] text-white font-semibold text-xs rounded-full shadow-sm hover:bg-[#0045D8] whitespace-nowrap active:scale-95 transition-all">
-    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
-    Buy
-  </button>
-  <button onclick="openOrderReviewModal()" class="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">Sell</button>
-  <button onclick="openOrderReviewModal()" class="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">Convert</button>
-  <button onclick="openSendCryptoModal()" class="flex items-center gap-1 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">
-    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
-    Send
-  </button>
-  <button onclick="openReceiveCryptoModal()" class="flex items-center gap-1 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs rounded-full whitespace-nowrap active:scale-95 transition-all">
-    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
-    Receive
-  </button>
-</section>
+
 
 <hr class="border-[#ECEFF1] my-8"/>
-<!-- BEGIN: PricesSection -->
-<section class="mb-10" data-purpose="prices-watchlist-table">
-<div class="flex items-center justify-between mb-4">
-<h3 class="text-xl font-bold text-[#0A0B0D]">Prices</h3>
-<!-- Watchlist pill filter -->
-<button class="flex items-center gap-2 px-3.5 py-1.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full text-sm font-semibold text-[#0A0B0D] transition-colors">
-<span>Watchlist</span>
-<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
-<polyline points="6 9 12 15 18 9"></polyline>
-</svg>
-</button>
-</div>
-<!-- Price Rows -->
-<div class="space-y-2">
-<!-- Bitcoin Row -->
-<div onclick="window.location.href='desktop-asset-bitcoin.html'" title="Click to view Bitcoin details" class="flex items-center justify-between py-3 px-2 sm:px-3 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors hover:shadow-sm gap-2">
-<!-- Coin icon & title -->
-<div class="flex items-center gap-2.5 sm:gap-3.5 w-auto sm:w-44 shrink-0">
-<div class="w-9 h-9 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
-                    ₿
-                  </div>
-<div>
-<h5 class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">Bitcoin</h5>
-<span class="text-xs font-semibold text-[#5B616E]">BTC</span>
-</div>
-</div>
-<!-- Sparkline -->
-<div class="hidden sm:block w-20 md:w-24 h-6 shrink-0">
-<svg class="w-full h-full" fill="none" viewbox="0 0 100 24">
-<path d="M 0 4 Q 15 2, 25 10 T 50 18 T 75 14 T 100 22" fill="none" stroke="#CF202F" stroke-linecap="round" stroke-width="2"></path>
-</svg>
-</div>
-<!-- Price & Change (Mobile-friendly stacked or desktop-aligned) -->
-<div class="text-right sm:text-left sm:w-32 shrink-0">
-  <div class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">$91,694.54</div>
-  <div class="sm:hidden text-xs font-semibold text-[#CF202F]">↘ 4.38%</div>
-</div>
-<!-- 24h change (Desktop) -->
-<div class="hidden sm:flex w-20 text-right text-sm font-semibold text-[#CF202F] items-center justify-end gap-1 shrink-0">
-<span>↘</span>
-<span>4.38%</span>
-</div>
-<!-- Buy Action Button -->
-<div class="shrink-0">
-<button class="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0052FF] sm:bg-transparent text-white sm:text-[#0052FF] hover:bg-blue-600 sm:hover:bg-blue-50 font-bold text-xs sm:text-sm transition-colors shadow-xs sm:shadow-none">
-                    Buy
-                  </button>
-</div>
-<!-- Star & Handle (Desktop) -->
-<div class="hidden md:flex items-center gap-3 text-[#5B616E] shrink-0">
-<button class="text-[#0052FF] hover:scale-110 transition-transform">
-<svg class="w-4 h-4 fill-[#0052FF]" viewbox="0 0 24 24">
-<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-</svg>
-</button>
-<button class="text-gray-300 hover:text-gray-500">
-<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
-<circle cx="8" cy="6" r="1.5"></circle>
-<circle cx="16" cy="6" r="1.5"></circle>
-<circle cx="8" cy="12" r="1.5"></circle>
-<circle cx="16" cy="12" r="1.5"></circle>
-<circle cx="8" cy="18" r="1.5"></circle>
-<circle cx="16" cy="18" r="1.5"></circle>
-</svg>
-</button>
-</div>
-</div>
-<!-- Ethereum Row -->
-<div class="flex items-center justify-between py-3 px-2 sm:px-3 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors hover:shadow-sm gap-2">
-<!-- Coin icon & title -->
-<div class="flex items-center gap-2.5 sm:gap-3.5 w-auto sm:w-44 shrink-0">
-<div class="w-9 h-9 rounded-full bg-[#627EEA] text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
-<svg class="w-5 h-5 fill-current" viewbox="0 0 32 32">
-<path d="M16 2L6 17.5L16 22.5L26 17.5L16 2Z" fill-opacity="0.8"></path>
-<path d="M16 23.5L6 18.5L16 31L26 18.5L16 23.5Z"></path>
-</svg>
-</div>
-<div>
-<h5 class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">Ethereum</h5>
-<span class="text-xs font-semibold text-[#5B616E]">ETH</span>
-</div>
-</div>
-<!-- Sparkline -->
-<div class="hidden sm:block w-20 md:w-24 h-6 shrink-0">
-<svg class="w-full h-full" fill="none" viewbox="0 0 100 24">
-<path d="M 0 6 Q 18 4, 30 18 T 60 16 T 85 22 T 100 20" fill="none" stroke="#627EEA" stroke-linecap="round" stroke-width="2"></path>
-</svg>
-</div>
-<!-- Price & Change (Mobile-friendly stacked or desktop-aligned) -->
-<div class="text-right sm:text-left sm:w-32 shrink-0">
-  <div class="font-bold text-sm sm:text-[15px] text-[#0A0B0D] leading-tight">$3,314.62</div>
-  <div class="sm:hidden text-xs font-semibold text-[#CF202F]">↘ 5.46%</div>
-</div>
-<!-- 24h change (Desktop) -->
-<div class="hidden sm:flex w-20 text-right text-sm font-semibold text-[#CF202F] items-center justify-end gap-1 shrink-0">
-<span>↘</span>
-<span>5.46%</span>
-</div>
-<!-- Buy Action Button -->
-<div class="shrink-0">
-<button class="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0052FF] sm:bg-transparent text-white sm:text-[#0052FF] hover:bg-blue-600 sm:hover:bg-blue-50 font-bold text-xs sm:text-sm transition-colors shadow-xs sm:shadow-none">
-                    Buy
-                  </button>
-</div>
-<!-- Star & Handle (Desktop) -->
-<div class="hidden md:flex items-center gap-3 text-[#5B616E] shrink-0">
-<button class="text-[#0052FF] hover:scale-110 transition-transform">
-<svg class="w-4 h-4 fill-[#0052FF]" viewbox="0 0 24 24">
-<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-</svg>
-</button>
-<button class="text-gray-300 hover:text-gray-500">
-<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
-<circle cx="8" cy="6" r="1.5"></circle>
-<circle cx="16" cy="6" r="1.5"></circle>
-<circle cx="8" cy="12" r="1.5"></circle>
-<circle cx="16" cy="12" r="1.5"></circle>
-<circle cx="8" cy="18" r="1.5"></circle>
-<circle cx="16" cy="18" r="1.5"></circle>
-</svg>
-</button>
-</div>
-</div>
-</div>
+<!-- BEGIN: PopularPackagesSection -->
+<section class="mb-10" data-purpose="popular-packages-showcase">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-xl font-bold text-[#0A0B0D]">Featured Investment Packages</h3>
+      <p class="text-xs text-[#5B616E] mt-0.5">Top selected tiers from our 30-Level Digital Packages Platform</p>
+    </div>
+    <a href="levels.html" class="flex items-center gap-1.5 px-4 py-2 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full text-xs font-bold text-[#0052FF] transition-colors">
+      <span>View All 30 Levels</span>
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="space-y-3" id="home-featured-packages">
+
+    <!-- Level 1 Package -->
+    <div onclick="window.location.href='levels.html'" class="flex items-center justify-between p-4 rounded-2xl border border-[#ECEFF1] hover:border-[#0052FF] hover:bg-blue-50/20 cursor-pointer transition-all gap-3 group">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-extrabold text-sm group-hover:bg-[#0052FF] group-hover:text-white transition-colors">
+          1
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h5 class="font-bold text-[15px] text-[#0A0B0D]">Level 1 Package</h5>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-[#0052FF]">Starter</span>
+          </div>
+          <span class="text-xs text-[#5B616E]">Purchase Cost: $500.00 USD • 3× Ratio</span>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="font-bold text-[15px] text-[#0052FF]">$1,500.00 Credit</div>
+        <div class="text-xs font-semibold text-[#098551]">$30.00 / month limit</div>
+      </div>
+      <div class="hidden sm:block">
+        <button class="px-4 py-1.5 rounded-full bg-[#EEF0F3] group-hover:bg-[#0052FF] group-hover:text-white text-[#0A0B0D] font-bold text-xs transition-colors">
+          Select
+        </button>
+      </div>
+    </div>
+
+    <!-- Level 5 Package -->
+    <div onclick="window.location.href='levels.html'" class="flex items-center justify-between p-4 rounded-2xl border border-[#ECEFF1] hover:border-[#0052FF] hover:bg-blue-50/20 cursor-pointer transition-all gap-3 group">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-extrabold text-sm group-hover:bg-[#0052FF] group-hover:text-white transition-colors">
+          5
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h5 class="font-bold text-[15px] text-[#0A0B0D]">Level 5 Package</h5>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-[#098551]">Popular</span>
+          </div>
+          <span class="text-xs text-[#5B616E]">Purchase Cost: $2,500.00 USD • 3× Ratio</span>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="font-bold text-[15px] text-[#0052FF]">$7,500.00 Credit</div>
+        <div class="text-xs font-semibold text-[#098551]">$170.00 / month limit</div>
+      </div>
+      <div class="hidden sm:block">
+        <button class="px-4 py-1.5 rounded-full bg-[#EEF0F3] group-hover:bg-[#0052FF] group-hover:text-white text-[#0A0B0D] font-bold text-xs transition-colors">
+          Upgrade
+        </button>
+      </div>
+    </div>
+
+    <!-- Level 10 Package -->
+    <div onclick="window.location.href='levels.html'" class="flex items-center justify-between p-4 rounded-2xl border border-[#ECEFF1] hover:border-[#0052FF] hover:bg-blue-50/20 cursor-pointer transition-all gap-3 group">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-extrabold text-sm group-hover:bg-[#0052FF] group-hover:text-white transition-colors">
+          10
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h5 class="font-bold text-[15px] text-[#0A0B0D]">Level 10 Package</h5>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Growth</span>
+          </div>
+          <span class="text-xs text-[#5B616E]">Purchase Cost: $5,000.00 USD • 3× Ratio</span>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="font-bold text-[15px] text-[#0052FF]">$15,000.00 Credit</div>
+        <div class="text-xs font-semibold text-[#098551]">$385.00 / month limit</div>
+      </div>
+      <div class="hidden sm:block">
+        <button class="px-4 py-1.5 rounded-full bg-[#EEF0F3] group-hover:bg-[#0052FF] group-hover:text-white text-[#0A0B0D] font-bold text-xs transition-colors">
+          Upgrade
+        </button>
+      </div>
+    </div>
+
+    <!-- Level 15 Package -->
+    <div onclick="window.location.href='levels.html'" class="flex items-center justify-between p-4 rounded-2xl border border-[#ECEFF1] hover:border-[#0052FF] hover:bg-blue-50/20 cursor-pointer transition-all gap-3 group">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-extrabold text-sm group-hover:bg-[#0052FF] group-hover:text-white transition-colors">
+          15
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h5 class="font-bold text-[15px] text-[#0A0B0D]">Level 15 Package</h5>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Gold</span>
+          </div>
+          <span class="text-xs text-[#5B616E]">Purchase Cost: $7,500.00 USD • 3× Ratio</span>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="font-bold text-[15px] text-[#0052FF]">$22,500.00 Credit</div>
+        <div class="text-xs font-semibold text-[#098551]">$580.00 / month limit</div>
+      </div>
+      <div class="hidden sm:block">
+        <button class="px-4 py-1.5 rounded-full bg-[#EEF0F3] group-hover:bg-[#0052FF] group-hover:text-white text-[#0A0B0D] font-bold text-xs transition-colors">
+          Upgrade
+        </button>
+      </div>
+    </div>
+
+    <!-- Level 20 Package -->
+    <div onclick="window.location.href='levels.html'" class="flex items-center justify-between p-4 rounded-2xl border border-[#ECEFF1] hover:border-[#0052FF] hover:bg-blue-50/20 cursor-pointer transition-all gap-3 group">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-full bg-blue-50 text-[#0052FF] flex items-center justify-center font-extrabold text-sm group-hover:bg-[#0052FF] group-hover:text-white transition-colors">
+          20
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h5 class="font-bold text-[15px] text-[#0A0B0D]">Level 20 Package</h5>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">Executive</span>
+          </div>
+          <span class="text-xs text-[#5B616E]">Purchase Cost: $20,000.00 USD • 3× Ratio</span>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="font-bold text-[15px] text-[#0052FF]">$60,000.00 Credit</div>
+        <div class="text-xs font-semibold text-[#098551]">$1,300.00 / month limit</div>
+      </div>
+      <div class="hidden sm:block">
+        <button class="px-4 py-1.5 rounded-full bg-[#EEF0F3] group-hover:bg-[#0052FF] group-hover:text-white text-[#0A0B0D] font-bold text-xs transition-colors">
+          Upgrade
+        </button>
+      </div>
+    </div>
+
+  </div>
 </section>
+<!-- END: PopularPackagesSection -->
 <!-- END: PricesSection -->
 </div>
 <!-- BEGIN: RightOrderPanel -->
-<aside class="hidden xl:flex w-[430px] border-l border-[#ECEFF1] px-8 py-4 shrink-0 flex-col justify-between" data-purpose="trade-order-card">
+<aside class="hidden xl:flex w-[340px] border-l border-[#ECEFF1] flex-col justify-between shrink-0 bg-white p-6 h-screen sticky top-0" data-purpose="desktop-right-panel">
 <div>
-<!-- Order Form Card Container -->
-<div class="w-full">
-<!-- Segmented Tabs: Buy / Sell / Convert -->
-<div class="flex items-center bg-[#EEF0F3] p-1 rounded-full max-w-[260px] mb-6">
-<button class="flex-1 py-1.5 px-4 bg-[#0A0B0D] text-white text-sm font-semibold rounded-full shadow-sm text-center">
-                  Buy
-                </button>
-<button class="flex-1 py-1.5 px-4 text-[#0A0B0D] hover:text-black text-sm font-semibold text-center">
-                  Sell
-                </button>
-<button class="flex-1 py-1.5 px-4 text-[#0A0B0D] hover:text-black text-sm font-semibold text-center">
-                  Convert
-                </button>
-</div>
-<!-- Order Type Selector: One-time order -->
-<div class="mb-8">
-<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] text-xs font-bold text-[#0A0B0D] transition-colors">
-<span>One-time order</span>
-<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
-<polyline points="6 9 12 15 18 9"></polyline>
-</svg>
-</button>
-</div>
-<!-- Order Amount Input: USD with Max Button -->
-<div class="flex items-center justify-between mb-2">
-  <div class="flex items-baseline flex-1 min-w-0">
-    <span class="text-4xl sm:text-5xl font-bold text-[#0A0B0D] mr-1">$</span>
-    <input type="number" id="trade-amount-input" value="100" min="1" step="10" placeholder="0" class="text-5xl sm:text-6xl font-bold tracking-tight text-[#0A0B0D] leading-none w-36 sm:w-44 border-b-2 border-transparent focus:border-[#0052FF] focus:outline-none p-0 bg-transparent" />
-    <span class="text-4xl sm:text-5xl font-light text-[#BAC0CD] ml-1 tracking-tight select-none">USD</span>
+  <!-- Panel Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-lg font-bold text-[#0A0B0D]">Package Overview</h3>
+    <span class="inline-flex items-center gap-1 text-xs font-bold text-[#098551] bg-[#E6F7EF] px-2.5 py-1 rounded-full">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#098551] animate-pulse"></span>
+      Active
+    </span>
   </div>
-  <button id="trade-max-btn" type="button" class="px-3.5 py-1.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] text-[#0A0B0D] font-bold text-xs rounded-full transition-colors cursor-pointer select-none">
-    Max
-  </button>
-</div>
-<!-- Dynamic Crypto Equivalent Conversion -->
-<div class="mb-8">
-  <div class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0052FF]">
-    <svg class="w-3.5 h-3.5 fill-none stroke-current stroke-[2.5]" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-    <span id="trade-crypto-equiv">≈ 0.00109 BTC</span>
+
+  <!-- Package Summary Card -->
+  <div class="bg-gradient-to-br from-[#F5F8FF] to-[#EEF3FF] rounded-2xl p-5 border border-[#ECEFF1] mb-6">
+    <div class="text-xs font-bold uppercase tracking-wider text-[#5B616E] mb-1">Current Allocation</div>
+    <div class="text-3xl font-extrabold text-[#0052FF] mb-2 portfolio-total">$1,500.00</div>
+    <div class="text-xs text-[#5B616E] flex items-center justify-between pt-3 border-t border-[#ECEFF1]/70">
+      <span>Monthly Limit:</span>
+      <b class="text-[#098551] font-bold" id="panel-limit-display">$30.00 / mo</b>
+    </div>
   </div>
-</div>
-<!-- Payment and Target Asset Rows -->
-<div class="space-y-3 mb-8">
-  <!-- Pay with USD Wallet Row -->
-  <div class="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-gray-100">
-    <div class="flex items-center gap-3.5">
-      <div class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center font-bold text-xs tracking-tighter shadow-sm">
-        $
+
+  <!-- Direct Upgrade CTA -->
+  <a href="levels.html" class="w-full py-3.5 px-4 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-sm shadow-sm transition-all text-center flex items-center justify-center gap-2 mb-6">
+    <span>Manage & Upgrade Tiers</span>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </a>
+
+  <!-- Quick Navigation Links -->
+  <div class="space-y-3 pt-6 border-t border-[#ECEFF1]">
+    <div class="text-xs font-bold uppercase tracking-wider text-[#5B616E] mb-2">Quick Actions</div>
+    
+    <a href="levels.html" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors group">
+      <div class="w-9 h-9 rounded-full bg-blue-50 text-[#0052FF] flex items-center justify-center group-hover:scale-105 transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       </div>
       <div>
-        <div class="font-bold text-sm text-[#0A0B0D] leading-tight">Pay with</div>
-        <div class="text-xs text-[#5B616E]">USD Wallet</div>
+        <div class="font-bold text-sm text-[#0A0B0D]">30-Level Platform</div>
+        <div class="text-xs text-[#5B616E]">Explore all available tiers</div>
       </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <div class="text-right">
-        <div class="font-bold text-xs text-[#0A0B0D] leading-tight">$1.15</div>
-        <div class="text-[11px] text-[#5B616E]">Available</div>
-      </div>
-      <svg class="w-4 h-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </div>
-  </div>
-  <!-- Target asset -->
-  <div class="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-gray-100">
-    <div class="flex items-center gap-3.5">
-      <div class="w-8 h-8 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-sm shadow-sm">
-        ₿
+    </a>
+
+    <a href="transactions.html" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors group">
+      <div class="w-9 h-9 rounded-full bg-emerald-50 text-[#098551] flex items-center justify-center group-hover:scale-105 transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="4"/><line x1="7" x2="17" y1="9" y2="9"/><line x1="7" x2="13" y1="13" y2="13"/></svg>
       </div>
       <div>
-        <div class="font-bold text-sm text-[#0A0B0D] leading-tight">Buy</div>
-        <div class="text-xs text-[#5B616E]">Bitcoin</div>
+        <div class="font-bold text-sm text-[#0A0B0D]">Transaction History</div>
+        <div class="text-xs text-[#5B616E]">View payouts & activations</div>
       </div>
-    </div>
-    <svg class="w-4 h-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-      <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
+    </a>
+
+    <a href="desktop-asset-bitcoin.html" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors group">
+      <div class="w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+      </div>
+      <div>
+        <div class="font-bold text-sm text-[#0A0B0D]">My Assets Overview</div>
+        <div class="text-xs text-[#5B616E]">Portfolio distribution</div>
+      </div>
+    </a>
   </div>
-</div>
-<!-- CTA Primary Button: Top up USD wallet -->
-<button class="w-full py-4 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-base shadow-sm transition-colors text-center cursor-pointer">
-  Top up USD wallet
-</button>
-</div>
-<!-- Quick Action Links Below Order Box -->
-<div class="mt-8 pt-6 border-t border-[#ECEFF1] space-y-4" data-purpose="quick-actions-list">
-<!-- Send crypto -->
-<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
-<div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-<svg class="w-4 h-4 stroke-[2.5] stroke-current fill-none" viewbox="0 0 24 24">
-<line x1="12" x2="12" y1="19" y2="5"></line>
-<polyline points="5 12 12 5 19 12"></polyline>
-</svg>
-</div>
-<span class="font-bold text-[15px] text-[#0A0B0D]">Send crypto</span>
-</a>
-<!-- Receive crypto -->
-<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
-<div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-<svg class="w-4 h-4 stroke-[2.5] stroke-current fill-none" viewbox="0 0 24 24">
-<line x1="12" x2="12" y1="5" y2="19"></line>
-<polyline points="19 12 12 19 5 12"></polyline>
-</svg>
-</div>
-<span class="font-bold text-[15px] text-[#0A0B0D]">Receive crypto</span>
-</a>
-<!-- Deposit cash -->
-<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
-<div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
-<path d="M12 2L2 7v2h20V7L12 2zm-8 8v8h3v-8H4zm5 0v8h3v-8H9zm5 0v8h3v-8h-3zm5 0v8h3v-8h-3zM2 20v2h20v-2H2z"></path>
-</svg>
-</div>
-<span class="font-bold text-[15px] text-[#0A0B0D]">Deposit cash</span>
-</a>
-<!-- Withdraw cash -->
-<a class="flex items-center gap-3.5 group cursor-pointer p-1" href="#">
-<div class="w-9 h-9 rounded-full bg-[#0052FF] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-<svg class="w-4 h-4 stroke-[2.2] stroke-current fill-none" viewbox="0 0 24 24">
-<rect height="12" rx="2" width="20" x="2" y="6"></rect>
-<circle cx="12" cy="12" r="2.5"></circle>
-<line x1="6" x2="6.01" y1="12" y2="12"></line>
-<line x1="18" x2="18.01" y1="12" y2="12"></line>
-</svg>
-</div>
-<span class="font-bold text-[15px] text-[#0A0B0D]">Withdraw cash</span>
-</a>
-</div>
 </div>
 </aside>
 <!-- END: RightOrderPanel -->

@@ -18,7 +18,7 @@
   </script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<title>Bitcoin Price &amp; Trade | Bond Capital</title>
+<title>Bond Capital | My Assets & Portfolio</title>
 <!-- Tailwind CSS CDN with forms and container-queries -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
@@ -153,8 +153,8 @@
   <div class="flex items-center space-x-2.5">
 
     <div class="flex items-center space-x-1.5">
-      <h1 class="text-xl font-bold tracking-tight text-slate-900">Bitcoin</h1>
-      <button onclick="showToast('Added to Favorites', 'Bitcoin saved', '★')" aria-label="Favorite asset" class="text-[#0052FF] p-1 rounded-full" type="button">
+      <h1 class="text-xl font-bold tracking-tight text-slate-900">My Assets</h1>
+      <button style="display:none;">
         <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
       </button>
     </div>
@@ -171,8 +171,8 @@
 <header class="hidden lg:flex h-20 border-b border-gray-200 px-8 items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
 <!-- Asset Title & Favorite Star -->
 <div class="flex items-center gap-3">
-<h1 class="text-2xl font-bold tracking-tight text-gray-900">Bitcoin</h1>
-<button aria-label="Favorite asset" class="text-[#0052FF] hover:text-blue-700 p-1 rounded-full transition-colors">
+<h1 class="text-2xl font-bold tracking-tight text-gray-900">My Assets & Portfolio</h1>
+<button style="display:none;">
 <svg class="w-5 h-5 fill-current" viewbox="0 0 20 20">
 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
 </svg>
@@ -206,309 +206,204 @@
 <div class="flex-1 flex overflow-y-auto">
 <!-- Left/Center Primary Asset Details -->
 <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-5xl border-r border-gray-200 overflow-x-hidden">
-<!-- Price & Timeframe Header -->
-<div class="flex items-start justify-between">
-<div>
-<h2 id="btc-hero-price" class="text-4xl font-bold tracking-tight text-gray-900">$91,864.73</h2>
-<div class="flex items-center gap-1.5 mt-2 text-nexus-red font-medium text-base">
-<svg class="w-4 h-4 fill-current stroke-current" viewbox="0 0 24 24">
-<path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
-</svg>
-<span id="btc-hero-change">↓ $3,694.67 (-3.87%)</span>
-</div>
-</div>
-<!-- Timeframe Filter Buttons -->
-<div class="flex items-center gap-1" id="timeframe-buttons">
-<button onclick="selectTimeframe(this, '1H', '-1.12%', '$1,042.10')" class="tf-btn px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer">1H</button>
-<button onclick="selectTimeframe(this, '1D', '-3.87%', '$3,694.67')" class="tf-btn px-3.5 py-1.5 text-xs font-bold rounded-full bg-gray-100 text-gray-900 cursor-pointer">1D</button>
-<button onclick="selectTimeframe(this, '1W', '+5.24%', '$4,520.30')" class="tf-btn px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer">1W</button>
-<button onclick="selectTimeframe(this, '1M', '+12.80%', '$10,410.50')" class="tf-btn px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer">1M</button>
-<button onclick="selectTimeframe(this, '1Y', '+142.15%', '$53,800.00')" class="tf-btn px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer">1Y</button>
-<button onclick="selectTimeframe(this, 'ALL', '+820.40%', '$81,500.00')" class="tf-btn px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer">ALL</button>
-</div>
-</div>
-<!-- BEGIN: ChartContainer -->
-<section class="mt-6 mb-6 relative" data-purpose="asset-chart">
-<div class="w-full h-80 relative">
-<!-- SVG Price Chart Representation -->
-<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 850 300">
-<defs>
-<!-- Gradient fill under line -->
-<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="#E54335" stop-opacity="0.15"></stop>
-<stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0"></stop>
-</lineargradient>
-<!-- Pattern dots for grid background -->
-<pattern height="16" id="dotGrid" patternunits="userSpaceOnUse" width="16" x="0" y="0">
-<circle cx="2" cy="2" fill="#f0c6c1" r="0.75"></circle>
-</pattern>
-</defs>
-<!-- Background area filled with subtle dots under path -->
-<path d="M 0,40 Q 15,35 25,45 T 45,28 T 60,70 T 90,60 T 115,120 T 130,170 T 140,165 T 160,220 T 175,190 T 205,215 T 235,175 T 260,240 T 280,205 T 310,230 T 330,285 T 350,225 T 380,245 T 400,205 T 430,225 T 450,270 T 475,320 T 500,265 T 530,250 T 560,245 T 590,260 T 630,280 T 670,260 T 700,270 L 700,300 L 0,300 Z" fill="url(#dotGrid)" opacity="0.9"></path>
-<!-- Chart Shadow Fill -->
-<path d="M 0,40 Q 15,35 25,45 T 45,28 T 60,70 T 90,60 T 115,120 T 130,170 T 140,165 T 160,220 T 175,190 T 205,215 T 235,175 T 260,240 T 280,205 T 310,230 T 330,285 T 350,225 T 380,245 T 400,205 T 430,225 T 450,270 T 475,320 T 500,265 T 530,250 T 560,245 T 590,260 T 630,280 T 670,260 T 700,270 L 700,300 L 0,300 Z" fill="url(#chartGradient)"></path>
-<!-- Main Stroke Line (Red downward slope) -->
-<path d="M 0,40 
-                         C 10,38 18,36 25,45 
-                         C 32,54 38,20 45,28 
-                         C 52,36 56,65 65,70 
-                         C 74,75 82,50 90,60 
-                         C 100,72 108,105 115,120 
-                         C 122,135 125,172 133,170 
-                         C 137,169 139,158 143,165 
-                         C 148,174 153,222 160,220 
-                         C 166,218 170,185 175,190 
-                         C 182,197 195,225 205,215 
-                         C 215,205 225,170 235,175 
-                         C 245,180 252,242 260,240 
-                         C 268,238 274,200 280,205 
-                         C 290,212 300,238 310,230 
-                         C 318,224 324,288 330,285 
-                         C 336,282 342,220 350,225 
-                         C 360,231 370,255 380,245 
-                         C 390,235 394,200 400,205 
-                         C 410,212 420,235 430,225 
-                         C 440,215 444,272 450,270 
-                         C 458,268 466,325 475,320 
-                         C 484,315 492,260 500,265 
-                         C 512,272 520,248 530,250 
-                         C 545,253 550,240 560,245 
-                         C 575,252 580,265 590,260 
-                         C 610,250 620,285 630,280 
-                         C 650,270 660,255 670,260 
-                         L 700,270" fill="none" stroke="#E54335" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
-</svg>
-</div>
-<!-- Chart Timestamps on X-Axis -->
-<div class="flex justify-between items-center text-xs text-gray-500 pt-4 px-2 font-normal">
-<span>6:35 PM</span>
-<span>11:55 PM</span>
-<span>5:15 AM</span>
-<span>10:35 AM</span>
-<span>3:55 PM</span>
-</div>
-</section>
-<!-- END: ChartContainer -->
-<!-- Asset Tabs (Balance / Insights) -->
-<div class="border-b border-gray-200 mt-6">
-<nav aria-label="Asset Information Tabs" class="flex gap-8">
-<button class="pb-3 px-1 text-sm font-semibold text-[#0052FF] border-b-2 border-[#0052FF]">
-                Balance
-              </button>
-<button class="pb-3 px-1 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
-                Insights
-              </button>
-</nav>
-</div>
-<!-- BEGIN: BalanceCard -->
-<div class="py-6 flex items-center justify-between">
-<div class="flex items-center gap-4">
-<!-- Bitcoin Orange Icon Badge -->
-<div class="w-12 h-12 rounded-full bg-[#F7931A] flex items-center justify-center text-white shrink-0 shadow-sm">
-<svg class="w-7 h-7 fill-current" viewbox="0 0 32 32">
-<path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783-1.728-.431-.709 2.839c-.376-.086-.745-.17-1.104-.258l.002-.007-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.314-1.256-.314l-.858 1.978 2.25.561c.418.105.828.214 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.705 2.828 1.728.432.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.535 2.146-4.148.986-5.318.695l.95-3.805c1.17.292 4.929.872 4.368 3.11zm.536-5.571c-.488 1.954-3.495.962-4.47.718l.86-3.45c.975.243 4.119.7 3.61 2.732z"></path>
-</svg>
-</div>
-<div>
-<p class="text-xl font-bold text-gray-900 leading-tight">$0.00</p>
-<p class="text-xs font-medium text-gray-500 mt-0.5">0 BTC</p>
-</div>
-</div>
-<!-- Balance Summary Action -->
-<button class="px-5 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs tracking-wide transition-colors">
-              See balance summary
-            </button>
-</div>
-<!-- END: BalanceCard -->
-<!-- BEGIN: MarketStatsSection -->
-<div class="mt-4 pt-6 border-t border-gray-100">
-  <h3 class="text-base font-bold text-gray-900 mb-4">Market Stats</h3>
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-    <div class="p-3 bg-gray-50/80 rounded-xl border border-gray-100/80">
-      <div class="text-[11px] text-gray-500 font-medium">Market cap</div>
-      <div class="text-sm font-bold text-gray-900 mt-0.5">$1.81T</div>
+
+<!-- Portfolio Header -->
+<div class="mb-8">
+  <div class="flex items-center justify-between">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider text-[#5B616E]">Total Allocated Portfolio Balance</span>
+      <h2 id="asset-allocated-balance" class="text-4xl font-extrabold tracking-tight text-[#0A0B0D] mt-1 portfolio-total">$1,500.00</h2>
+      <div class="flex items-center gap-2 mt-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#098551] text-xs font-bold border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-[#098551] animate-pulse"></span>
+          <span id="asset-tier-badge">Level 1 Package Active</span>
+        </span>
+        <span class="text-xs text-[#5B616E] font-medium">• 3× Capital Credit Ratio</span>
+      </div>
     </div>
-    <div class="p-3 bg-gray-50/80 rounded-xl border border-gray-100/80">
-      <div class="text-[11px] text-gray-500 font-medium">Volume (24h)</div>
-      <div class="text-sm font-bold text-gray-900 mt-0.5">$48.2B</div>
-    </div>
-    <div class="p-3 bg-gray-50/80 rounded-xl border border-gray-100/80">
-      <div class="text-[11px] text-gray-500 font-medium">Circulating supply</div>
-      <div class="text-sm font-bold text-gray-900 mt-0.5">19.78M BTC</div>
-    </div>
-    <div class="p-3 bg-gray-50/80 rounded-xl border border-gray-100/80">
-      <div class="text-[11px] text-gray-500 font-medium">All-time high</div>
-      <div class="text-sm font-bold text-gray-900 mt-0.5">$93,480.00</div>
+    <div class="hidden sm:flex gap-3">
+      <a href="levels.html" class="px-5 py-2.5 bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs rounded-full shadow-sm transition-all flex items-center gap-2">
+        <span>Upgrade Package</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
     </div>
   </div>
 </div>
-<!-- END: MarketStatsSection -->
-<!-- BEGIN: TransactionsSection -->
-<div class="mt-4 pt-6 border-t border-gray-100">
-<h3 class="text-lg font-bold text-gray-900 mb-6">Transactions</h3>
-<!-- Table Header -->
-<div class="flex items-center justify-between text-xs font-semibold text-gray-500 pb-3 border-b border-gray-100">
-<span class="w-1/3">Type</span>
-<span class="w-1/3 text-center">Amount</span>
-<span class="w-1/3 text-right">Date</span>
-</div>
-<!-- Empty / Clean State -->
-<div class="py-12 text-center">
-<p class="text-sm text-gray-400">No recent transactions for Bitcoin</p>
-</div>
-</div>
-<!-- END: TransactionsSection -->
 
-<!-- Quick Trade Button (In normal document flow, visible on mobile/tablet when right sidebar is hidden) -->
-<div class="xl:hidden mt-8 mb-6">
-  <button onclick="openOrderReviewModal()" class="w-full bg-[#0052FF] hover:bg-blue-700 active:scale-95 text-white font-bold text-base py-3.5 px-6 rounded-full flex items-center justify-center space-x-2 shadow-sm transition-all cursor-pointer">
-    <span>Trade Bitcoin</span>
-    <svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
+<!-- 4 Key Portfolio Stat Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] p-5 rounded-2xl border border-[#ECEFF1]">
+    <div class="text-[11px] font-bold text-[#5B616E] uppercase tracking-wide">Active Package Tier</div>
+    <div class="text-xl font-extrabold text-[#0A0B0D] mt-1" id="asset-card-level">Level 1</div>
+    <div class="text-xs text-[#0052FF] font-semibold mt-1">Tier 1 of 30</div>
+  </div>
+
+  <div class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] p-5 rounded-2xl border border-[#ECEFF1]">
+    <div class="text-[11px] font-bold text-[#5B616E] uppercase tracking-wide">Purchase Price</div>
+    <div class="text-xl font-extrabold text-[#0A0B0D] mt-1" id="asset-card-cost">$500.00</div>
+    <div class="text-xs text-[#5B616E] font-medium mt-1">Capital Investment</div>
+  </div>
+
+  <div class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] p-5 rounded-2xl border border-[#ECEFF1]">
+    <div class="text-[11px] font-bold text-[#5B616E] uppercase tracking-wide">Dashboard Credit (3×)</div>
+    <div class="text-xl font-extrabold text-[#0052FF] mt-1" id="asset-card-credit">$1,500.00</div>
+    <div class="text-xs text-blue-600 font-semibold mt-1">Triple Match Fund</div>
+  </div>
+
+  <div class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] p-5 rounded-2xl border border-[#ECEFF1]">
+    <div class="text-[11px] font-bold text-[#5B616E] uppercase tracking-wide">Monthly Limit</div>
+    <div class="text-xl font-extrabold text-[#098551] mt-1" id="asset-card-limit">$30.00 / mo</div>
+    <div class="text-xs text-emerald-700 font-semibold mt-1">Available for Payout</div>
+  </div>
 </div>
+
+<!-- Package Capital Allocation Breakdown -->
+<div class="bg-white border border-[#ECEFF1] rounded-3xl p-6 mb-8 shadow-xs">
+  <h3 class="text-lg font-bold text-[#0A0B0D] mb-4">Capital Allocation Breakdown</h3>
+  
+  <div class="space-y-4">
+    <div>
+      <div class="flex justify-between text-xs font-bold mb-1.5">
+        <span class="text-[#5B616E]">Purchased Capital Equity (33.3%)</span>
+        <span class="text-[#0A0B0D]" id="breakdown-equity">$500.00 USD</span>
+      </div>
+      <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-[#0052FF] rounded-full" style="width: 33.3%"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex justify-between text-xs font-bold mb-1.5">
+        <span class="text-[#5B616E]">Bond Capital Credit Multiplier (66.7%)</span>
+        <span class="text-[#0052FF]" id="breakdown-multiplier">$1,000.00 USD</span>
+      </div>
+      <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-emerald-500 rounded-full" style="width: 66.7%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 pt-5 border-t border-[#ECEFF1] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+    <div>
+      <span class="text-[#5B616E] block mb-0.5">Disbursement Frequency</span>
+      <b class="text-[#0A0B0D] font-bold">Every 30 Days</b>
+    </div>
+    <div>
+      <span class="text-[#5B616E] block mb-0.5">Payout Method</span>
+      <b class="text-[#0A0B0D] font-bold">FAST Bank / Direct Wire</b>
+    </div>
+    <div>
+      <span class="text-[#5B616E] block mb-0.5">Security Custody</span>
+      <b class="text-[#098551] font-bold">Encrypted Supabase Cloud</b>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Action Link for Mobile -->
+<div class="sm:hidden mb-8">
+  <a href="levels.html" class="w-full py-3.5 bg-[#0052FF] text-white font-bold text-sm rounded-full flex items-center justify-center gap-2 shadow-sm">
+    <span>Manage & Upgrade Packages</span>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
 </main>
-<!-- Right Side Trade & Quick Actions Panel -->
-<aside class="hidden xl:flex w-[420px] p-8 flex-col shrink-0">
-<!-- BEGIN: TradeCard -->
-<div class="bg-white" data-purpose="trade-card">
-<!-- Buy / Sell / Convert Toggle Pills -->
-<div class="flex items-center gap-1.5 mb-6" id="trade-action-tabs">
-<button onclick="setTradeTab(this, 'Buy')" class="trade-tab px-5 py-2 text-sm font-semibold rounded-full bg-black text-white shadow-sm cursor-pointer">
-  Buy
-</button>
-<button onclick="setTradeTab(this, 'Sell')" class="trade-tab px-5 py-2 text-sm font-semibold rounded-full text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-  Sell
-</button>
-<button onclick="setTradeTab(this, 'Convert')" class="trade-tab px-5 py-2 text-sm font-semibold rounded-full text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-  Convert
-</button>
-</div>
-<!-- Order Frequency Selector Dropdown -->
-<div class="mb-8">
-<button class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-xs font-semibold text-gray-800 transition-colors">
-<span>One-time order</span>
-<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
-<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-</div>
-<!-- Large Amount Display & Max Button -->
-<div class="flex items-center justify-between mb-4">
-<div class="flex items-baseline flex-1">
-  <input type="number" id="sgd-amount-input" value="100" min="0" step="10" class="text-6xl font-bold tracking-tight text-gray-900 leading-none w-48 border-b-2 border-transparent focus:border-blue-600 focus:outline-none p-0 bg-transparent" placeholder="0"/>
-  <span class="text-5xl font-light text-gray-400 ml-2 tracking-tight">USD</span>
-</div>
-<button id="max-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-xs font-semibold text-gray-800 rounded-full transition-colors cursor-pointer">
-  Max
-</button>
-</div>
-<!-- Crypto Conversion Equivalent -->
-<div class="flex items-center gap-1.5 text-xs font-bold text-[#0052FF] mb-8">
-<svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewbox="0 0 24 24">
-<path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span>0 BTC</span>
-</div>
-<!-- Payment and Target Asset Rows -->
-<div class="space-y-4 mb-8">
-<!-- Pay with Wallet Row -->
-<button class="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all text-left group">
-<div class="flex items-center gap-3.5">
-<div class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center font-bold text-xs tracking-tighter shrink-0">
-                    $
-                  </div>
-<div>
-<span class="text-sm font-bold text-gray-900 block leading-tight">Pay with</span>
-<span class="text-xs text-gray-500 block">USD Wallet</span>
-</div>
-</div>
-<div class="flex items-center gap-2">
-<div class="text-right">
-<span class="text-xs font-bold text-gray-900 block leading-tight">$1.15</span>
-<span class="text-[11px] text-gray-500 block">Available</span>
-</div>
-<svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
-<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-</button>
-<!-- Buy Bitcoin Row -->
-<button class="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all text-left group">
-<div class="flex items-center gap-3.5">
-<div class="w-8 h-8 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-xs shrink-0">
-<svg class="w-4 h-4 fill-current" viewbox="0 0 32 32">
-<path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783-1.728-.431-.709 2.839c-.376-.086-.745-.17-1.104-.258l.002-.007-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.314-1.256-.314l-.858 1.978 2.25.561c.418.105.828.214 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.705 2.828 1.728.432.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.535 2.146-4.148.986-5.318.695l.95-3.805c1.17.292 4.929.872 4.368 3.11zm.536-5.571c-.488 1.954-3.495.962-4.47.718l.86-3.45c.975.243 4.119.7 3.61 2.732z"></path>
-</svg>
-</div>
-<div>
-<span class="text-sm font-bold text-gray-900 block leading-tight">Buy</span>
-<span class="text-xs text-gray-500 block">Bitcoin</span>
-</div>
-</div>
-<svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
-<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-</div>
-<!-- Review Order Button (Light Blue standby style matching screenshot) -->
-<button onclick="showOrderModal()" id="review-order-btn" class="w-full py-4 rounded-full bg-[#0052FF] hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-3 transition-colors shadow-sm cursor-pointer">
-<span>Review order</span>
-<svg class="w-4 h-4 stroke-current stroke-2 fill-none" viewbox="0 0 24 24">
-<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-</div>
-<!-- END: TradeCard -->
-<!-- Divider between Trade Widget and Action List -->
-<div class="border-t border-gray-200 my-8"></div>
-<!-- BEGIN: QuickActionsList -->
-<div class="space-y-4" data-purpose="quick-actions">
-<!-- Send Crypto -->
-<button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center shrink-0">
-<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
-<path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-<span class="text-sm font-semibold text-gray-900">Send crypto</span>
-</button>
-<!-- Receive Crypto -->
-<button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center shrink-0">
-<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
-<path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-<span class="text-sm font-semibold text-gray-900">Receive crypto</span>
-</button>
-<!-- Deposit Cash -->
-<button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center shrink-0">
-<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
-<path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-<span class="text-sm font-semibold text-gray-900">Deposit cash</span>
-</button>
-<!-- Withdraw Cash -->
-<button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center shrink-0">
-<svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
-<rect height="12" rx="2" width="20" x="2" y="6"></rect>
-<circle cx="12" cy="12" r="3"></circle>
-<path d="M6 12h.01M18 12h.01"></path>
-</svg>
-</div>
-<span class="text-sm font-semibold text-gray-900">Withdraw cash</span>
-</button>
-</div>
-<!-- END: QuickActionsList -->
+
+<!-- Right Side Package Actions Panel -->
+<aside class="hidden xl:flex w-[380px] p-6 flex-col shrink-0 border-l border-gray-200">
+  <div class="bg-gradient-to-br from-[#F5F8FF] to-[#EEF3FF] p-6 rounded-3xl border border-[#ECEFF1] mb-6">
+    <div class="text-xs font-bold uppercase tracking-wider text-[#5B616E] mb-1">Active Account Status</div>
+    <div class="text-2xl font-extrabold text-[#0A0B0D] mb-4" id="side-asset-tier">Level 1 Package</div>
+    
+    <div class="space-y-3 text-xs mb-6">
+      <div class="flex justify-between py-2 border-b border-[#ECEFF1]">
+        <span class="text-[#5B616E]">Status:</span>
+        <span class="font-bold text-[#098551]">Verified Active</span>
+      </div>
+      <div class="flex justify-between py-2 border-b border-[#ECEFF1]">
+        <span class="text-[#5B616E]">Monthly Limit:</span>
+        <span class="font-bold text-[#0A0B0D]" id="side-asset-limit">$30.00 / mo</span>
+      </div>
+      <div class="flex justify-between py-2 border-b border-[#ECEFF1]">
+        <span class="text-[#5B616E]">Credit Multiplier:</span>
+        <span class="font-bold text-[#0052FF]">300% (3×)</span>
+      </div>
+    </div>
+
+    <a href="levels.html" class="w-full py-3 bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs rounded-full flex items-center justify-center gap-2 shadow-sm transition-all mb-3">
+      <span>Upgrade Package</span>
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </a>
+
+    <a href="transactions.html" class="w-full py-3 bg-white hover:bg-gray-50 text-[#0A0B0D] font-bold text-xs rounded-full border border-gray-200 flex items-center justify-center gap-2 transition-all">
+      <span>View Transactions</span>
+    </a>
+  </div>
+
+  <div class="p-5 bg-white border border-[#ECEFF1] rounded-2xl">
+    <h4 class="font-bold text-sm text-[#0A0B0D] mb-1">30-Level Platform Rules</h4>
+    <p class="text-xs text-[#5B616E] leading-relaxed">
+      Each package level unlocks a higher 3× credit match balance and increases your scheduled monthly cash withdrawal allowance.
+    </p>
+  </div>
 </aside>
 </div>
 <!-- END: ContentColumns -->
 </div>
 <!-- END: MainContentWrapper -->
 </div>
+
+<script>
+  // Dynamic sync with active package tier from localStorage / Supabase
+  function syncTierAssetPage() {
+    try {
+      const stored = localStorage.getItem('bond_tier_state');
+      if (stored) {
+        const tier = JSON.parse(stored);
+        const lvl = tier.level || 1;
+        const bal = tier.allocatedBalance || 1500;
+        const cost = tier.purchaseCost || 500;
+        const lim = tier.monthlyLimit || 30;
+        const mult = bal - cost;
+
+        const elBal = document.getElementById('asset-allocated-balance');
+        if (elBal) elBal.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+        const elBadge = document.getElementById('asset-tier-badge');
+        if (elBadge) elBadge.textContent = `Level ${lvl} Package Active`;
+
+        const elLvl = document.getElementById('asset-card-level');
+        if (elLvl) elLvl.textContent = `Level ${lvl}`;
+
+        const elCost = document.getElementById('asset-card-cost');
+        if (elCost) elCost.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+        const elCredit = document.getElementById('asset-card-credit');
+        if (elCredit) elCredit.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+        const elLimit = document.getElementById('asset-card-limit');
+        if (elLimit) elLimit.textContent = '$' + lim.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
+
+        const elEq = document.getElementById('breakdown-equity');
+        if (elEq) elEq.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+
+        const elMult = document.getElementById('breakdown-multiplier');
+        if (elMult) elMult.textContent = '$' + mult.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+
+        const elSideTier = document.getElementById('side-asset-tier');
+        if (elSideTier) elSideTier.textContent = `Level ${lvl} Package`;
+
+        const elSideLim = document.getElementById('side-asset-limit');
+        if (elSideLim) elSideLim.textContent = '$' + lim.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
+      }
+    } catch (e) {
+      console.error('Error syncing tier asset page:', e);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', syncTierAssetPage);
+  window.addEventListener('storage', syncTierAssetPage);
+</script>
 
 <!-- Mobile Fixed Bottom Navigation Bar -->
 <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEFF1] px-3 pt-2 pb-safe z-40 flex justify-around items-center text-[10px] font-semibold text-[#5B616E] shadow-lg">
