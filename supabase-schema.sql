@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS public.transactions CASCADE;
 DROP TABLE IF EXISTS public.balances CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
 
--- 2. Profiles Table (User details, settings, tier)
+-- 2. Profiles Table (User details, settings, tier, 30-level platform)
 CREATE TABLE public.profiles (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -17,6 +17,9 @@ CREATE TABLE public.profiles (
   tier TEXT DEFAULT 'Level 3 Verified',
   theme TEXT DEFAULT 'light',
   advanced_mode BOOLEAN DEFAULT FALSE,
+  current_level INT DEFAULT 1,
+  level_balance NUMERIC(18, 2) DEFAULT 1500.00,
+  monthly_limit NUMERIC(18, 2) DEFAULT 30.00,
   api_provider TEXT DEFAULT 'coinbase',
   api_key TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -68,8 +71,8 @@ DROP POLICY IF EXISTS "Allow all on transactions" ON public.transactions;
 CREATE POLICY "Allow all on transactions" ON public.transactions FOR ALL USING (true) WITH CHECK (true);
 
 -- 7. Insert Primary Default User Record
-INSERT INTO public.profiles (id, email, name, tier, theme, advanced_mode)
-VALUES ('usr_master_chris', 'chris.wong@example.com', 'Chris Wong', 'Level 3 Verified', 'light', false);
+INSERT INTO public.profiles (id, email, name, tier, theme, advanced_mode, current_level, level_balance, monthly_limit)
+VALUES ('usr_master_chris', 'chris.wong@example.com', 'Chris Wong', 'Level 3 Verified', 'light', false, 1, 1500.00, 30.00);
 
 INSERT INTO public.balances (user_id, usd, btc, eth, sol, doge)
 VALUES ('usr_master_chris', 10000.00, 0.15000000, 1.50000000, 12.00000000, 0.00000000);

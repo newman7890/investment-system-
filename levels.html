@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <title>Coinbase - 30-Level Digital Packages & Marketplace</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coinbase: {
+              blue: '#0052FF',
+              blueHover: '#0045D8',
+              lightBlue: '#EEF3FF',
+              dark: '#0A0B0D',
+              grayBg: '#F5F8FF',
+              subtext: '#5B616E',
+              border: '#ECEFF1'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="coinbase-app.css">
+  <style>
+    body {
+      background-color: #FFFFFF;
+      color: #0A0B0D;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans select-none antialiased">
+<div class="flex flex-1 min-h-screen">
+
+  <!-- BEGIN: LeftSidebar -->
+  <aside class="hidden lg:flex w-[232px] border-r border-[#ECEFF1] flex-col justify-between shrink-0 bg-white px-4 py-5 h-screen sticky top-0" data-purpose="desktop-sidebar">
+    <div>
+      <!-- Coinbase Logo Header -->
+      <div class="px-3 mb-6 flex items-center">
+        <svg class="w-9 h-9 text-coinbase-blue" fill="currentColor" viewBox="0 0 36 36">
+          <path clip-rule="evenodd" d="M18 36C27.9411 36 36 27.9411 36 18C36 8.05887 27.9411 0 18 0C8.05887 0 0 8.05887 0 18C0 27.9411 8.05887 36 18 36ZM13.8 11.2C12.3641 11.2 11.2 12.3641 11.2 13.8V22.2C11.2 23.6359 12.3641 24.8 13.8 24.8H22.2C23.6359 24.8 24.8 23.6359 24.8 22.2V13.8C24.8 12.3641 23.6359 11.2 22.2 11.2H13.8Z" fill-rule="evenodd"></path>
+        </svg>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1" data-purpose="sidebar-nav">
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="index.html">
+          <svg class="w-5 h-5 fill-current text-[#0A0B0D]" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+          <span>Home</span>
+        </a>
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="desktop-asset-bitcoin.html">
+          <svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 15"></polyline></svg>
+          <span>My assets</span>
+        </a>
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="transactions.html">
+          <svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="4"></rect><line x1="7" x2="17" y1="9" y2="9"></line><line x1="7" x2="13" y1="13" y2="13"></line></svg>
+          <span>Transactions</span>
+        </a>
+        <!-- Active 30-Level Marketplace Item -->
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full bg-[#EEF2F6]/75 font-semibold text-[#0052FF] text-[15px] transition-colors" href="levels.html">
+          <svg class="w-5 h-5 text-coinbase-blue stroke-[2] stroke-current fill-none" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+          <span>30-Level Platform</span>
+        </a>
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="perpetuals.html">
+          <svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path></svg>
+          <span>Perpetuals</span>
+        </a>
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="explore.html">
+          <svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          <span>Explore</span>
+        </a>
+        <a class="flex items-center gap-3.5 px-3.5 py-3 rounded-full text-[#0A0B0D] hover:bg-gray-100 font-semibold text-[15px] transition-colors" href="coinbase-one.html">
+          <svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M4.93 4.93l14.14 14.14"></path></svg>
+          <span>Coinbase One</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Advanced Mode & API Status -->
+    <div>
+      <div class="pt-4 border-t border-[#ECEFF1] flex items-center justify-between px-2 mb-2 cursor-pointer select-none" data-purpose="advanced-mode-switch" onclick="toggleAdvancedMode()">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-5 h-5 stroke-[2] stroke-current fill-none text-[#0A0B0D]" viewBox="0 0 24 24"><line x1="4" x2="4" y1="21" y2="14"></line><line x1="4" x2="4" y1="10" y2="3"></line><line x1="12" x2="12" y1="21" y2="12"></line><line x1="12" x2="12" y1="8" y2="3"></line><line x1="20" x2="20" y1="21" y2="16"></line><line x1="20" x2="20" y1="12" y2="3"></line><line x1="1" x2="7" y1="14" y2="14"></line><line x1="9" x2="15" y1="8" y2="8"></line><line x1="17" x2="23" y1="16" y2="16"></line></svg>
+          <span class="text-[15px] font-semibold text-[#0A0B0D]">Advanced</span>
+        </div>
+        <button class="advanced-toggle-track w-11 h-6 bg-[#DCDFE4] rounded-full p-0.5 transition-all relative flex items-center cursor-pointer" type="button">
+          <div class="advanced-toggle-knob w-5 h-5 bg-white rounded-full shadow-sm transform transition-all duration-200"></div>
+        </button>
+      </div>
+
+      <div class="pt-2 border-t border-[#ECEFF1] flex items-center px-2">
+        <button id="live-api-status-btn" class="flex items-center gap-2 py-1 px-2 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full" onclick="openApiSettingsModal()">
+          <span id="live-api-status-dot" class="inline-block w-2 h-2 bg-emerald-500 rounded-full"></span>
+          <span id="live-api-status-label" class="text-sm font-medium text-[#0A0B0D]">Live API</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+  <!-- END: LeftSidebar -->
+
+  <!-- Main Container -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- TopBar -->
+    <header class="hidden lg:flex h-20 px-8 items-center justify-between shrink-0 bg-white border-b border-[#ECEFF1]">
+      <div>
+        <h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D]">30-Level Digital Product Platform</h1>
+        <p class="text-xs text-[#5B616E]">Purchase product tier packages, manage allocated balance, and request monthly withdrawals</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openProfileModal()" class="w-10 h-10 rounded-full bg-[#2C6ECB] text-white flex items-center justify-center font-medium text-sm hover:opacity-90">
+          C
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 max-w-7xl">
+
+      <!-- Active Tier Status & Withdrawal Card -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        
+        <!-- Active User Tier -->
+        <div class="bg-gradient-to-br from-[#0052FF] to-[#0045D8] rounded-3xl p-6 text-white shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-200">Current Package</span>
+              <span id="active-tier-badge" class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold">Level 1 Package</span>
+            </div>
+            <div class="text-3xl font-extrabold tracking-tight mb-1" id="active-level-title">Level 1 Active</div>
+            <p class="text-blue-100 text-xs mb-4">Purchase Price: <b id="active-purchase-cost">$500.00 USD</b></p>
+          </div>
+          <div class="pt-4 border-t border-white/20 flex justify-between items-center text-xs">
+            <span class="text-blue-100">Package Status</span>
+            <span class="font-bold text-emerald-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active in Supabase
+            </span>
+          </div>
+        </div>
+
+        <!-- Dashboard Credit Balance (3x Purchase) -->
+        <div class="bg-white border border-[#ECEFF1] rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#5B616E]">Allocated Credit Balance</span>
+              <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">3× Ratio</span>
+            </div>
+            <div class="text-3xl font-extrabold text-[#0A0B0D] mb-1" id="allocated-credit-balance">$1,500.00</div>
+            <p class="text-xs text-[#5B616E]">Available balance eligible for scheduled monthly drawdown.</p>
+          </div>
+          <div class="pt-4 border-t border-[#ECEFF1] text-xs text-[#5B616E] flex justify-between">
+            <span>Deduction on Payout</span>
+            <span class="font-bold text-[#0A0B0D]">1:1 Real-time</span>
+          </div>
+        </div>
+
+        <!-- Monthly Withdrawal Limit & Action -->
+        <div class="bg-white border border-[#ECEFF1] rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#5B616E]">Monthly Withdrawal Limit</span>
+              <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">Capped</span>
+            </div>
+            <div class="text-3xl font-extrabold text-[#098551] mb-1" id="monthly-limit-display">$30.00 <span class="text-xs text-gray-500 font-normal">/ month</span></div>
+            <p class="text-xs text-[#5B616E]">Maximum withdrawable cash per 30-day payout window.</p>
+          </div>
+          <div class="pt-4 border-t border-[#ECEFF1]">
+            <button onclick="requestTierWithdrawal()" class="w-full py-2.5 bg-[#0052FF] hover:bg-[#0045D8] active:scale-[0.99] text-white font-bold text-xs rounded-full transition-all shadow-sm">
+              Request Monthly Withdrawal
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Section: 30-Level Master Schedule -->
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-[#0A0B0D]">30-Level Product Package Schedule</h2>
+          <p class="text-xs text-[#5B616E] mt-0.5">Select and unlock product tiers directly backed by Supabase cloud storage</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <input oninput="filterLevels(this.value)" type="text" placeholder="Search Level (e.g. Level 5, $5,000)..." class="px-4 py-2 text-xs bg-[#EEF0F3] border-none rounded-full focus:ring-2 focus:ring-[#0052FF] w-64" />
+        </div>
+      </div>
+
+      <!-- Schedule Table Card -->
+      <div class="bg-white border border-[#ECEFF1] rounded-3xl overflow-hidden shadow-xs mb-10">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-[#F8FAFC] border-b border-[#ECEFF1] text-[#5B616E] text-xs uppercase tracking-wider font-bold">
+              <tr>
+                <th class="py-4 px-6">Tier Level</th>
+                <th class="py-4 px-6">Purchase Price (USD)</th>
+                <th class="py-4 px-6">Dashboard Credit (3×)</th>
+                <th class="py-4 px-6">Monthly Withdrawal Limit</th>
+                <th class="py-4 px-6 text-center">Payout Period</th>
+                <th class="py-4 px-6 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="levels-table-body" class="divide-y divide-[#ECEFF1]">
+              <!-- Dynamic rows generated by script -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal Framework & SDKs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="coinbase-app.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="coinbase-app.js"></script>
+<script>
+  // Complete 30-Level Specification Matrix
+  const LEVEL_SCHEDULE = [
+    { level: 1, purchase: 500, balance: 1500, limit: 30 },
+    { level: 2, purchase: 1000, balance: 3000, limit: 60 },
+    { level: 3, purchase: 1500, balance: 4500, limit: 100 },
+    { level: 4, purchase: 2000, balance: 6000, limit: 130 },
+    { level: 5, purchase: 2500, balance: 7500, limit: 170 },
+    { level: 6, purchase: 3000, balance: 9000, limit: 220 },
+    { level: 7, purchase: 3500, balance: 10500, limit: 255 },
+    { level: 8, purchase: 4000, balance: 12000, limit: 300 },
+    { level: 9, purchase: 4500, balance: 13500, limit: 340 },
+    { level: 10, purchase: 5000, balance: 15000, limit: 385 },
+    { level: 11, purchase: 5500, balance: 16500, limit: 420 },
+    { level: 12, purchase: 6000, balance: 18000, limit: 470 },
+    { level: 13, purchase: 6500, balance: 19500, limit: 510 },
+    { level: 14, purchase: 7000, balance: 21000, limit: 550 },
+    { level: 15, purchase: 7500, balance: 22500, limit: 580 },
+    { level: 16, purchase: 8000, balance: 24000, limit: 630 },
+    { level: 17, purchase: 8500, balance: 25500, limit: 670 },
+    { level: 18, purchase: 9000, balance: 27000, limit: 730 },
+    { level: 19, purchase: 15000, balance: 45000, limit: 1200 },
+    { level: 20, purchase: 20000, balance: 60000, limit: 1300 },
+    { level: 21, purchase: 30000, balance: 90000, limit: 2000 },
+    { level: 22, purchase: 40000, balance: 120000, limit: 3000 },
+    { level: 23, purchase: 50000, balance: 150000, limit: 4000 },
+    { level: 24, purchase: 60000, balance: 180000, limit: 4500 },
+    { level: 25, purchase: 70000, balance: 210000, limit: 5200 },
+    { level: 26, purchase: 80000, balance: 240000, limit: 6000 },
+    { level: 27, purchase: 90000, balance: 270000, limit: 7000 },
+    { level: 28, purchase: 100000, balance: 300000, limit: 8000 },
+    { level: 29, purchase: 110000, balance: 330000, limit: 8800 },
+    { level: 30, purchase: 120000, balance: 360000, limit: 9000 }
+  ];
+
+  let currentTierState = {
+    level: 1,
+    allocatedBalance: 1500,
+    monthlyLimit: 30,
+    purchaseCost: 500
+  };
+
+  // Render Table
+  function renderLevelsTable(data) {
+    const tbody = document.getElementById('levels-table-body');
+    tbody.innerHTML = '';
+
+    data.forEach(item => {
+      const isSelected = item.level === currentTierState.level;
+      const months = Math.ceil(item.balance / item.limit);
+
+      const tr = document.createElement('tr');
+      tr.className = `hover:bg-[#F8FAFC] transition-colors ${isSelected ? 'bg-blue-50/50' : ''}`;
+      tr.innerHTML = `
+        <td class="py-4 px-6 font-bold text-[#0A0B0D] flex items-center gap-3">
+          <span class="w-8 h-8 rounded-full ${isSelected ? 'bg-[#0052FF] text-white' : 'bg-gray-100 text-gray-700'} flex items-center justify-center text-xs font-bold">${item.level}</span>
+          <span>Level ${item.level} Package</span>
+        </td>
+        <td class="py-4 px-6 font-semibold text-[#0A0B0D]">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        <td class="py-4 px-6 font-extrabold text-[#0052FF]">$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        <td class="py-4 px-6 font-bold text-[#098551]">$${item.limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / mo</td>
+        <td class="py-4 px-6 text-center text-xs font-semibold text-[#5B616E]">${months} Months</td>
+        <td class="py-4 px-6 text-right">
+          ${isSelected 
+            ? '<span class="px-3.5 py-1.5 rounded-full bg-blue-100 text-[#0052FF] font-bold text-xs inline-block">Active Tier</span>'
+            : `<button onclick="purchaseLevel(${item.level})" class="px-4 py-1.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs transition-all shadow-2xs">Upgrade</button>`
+          }
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function filterLevels(query) {
+    const q = query.toLowerCase().trim();
+    const filtered = LEVEL_SCHEDULE.filter(item => 
+      `level ${item.level}`.includes(q) || 
+      item.purchase.toString().includes(q) || 
+      item.balance.toString().includes(q)
+    );
+    renderLevelsTable(filtered);
+  }
+
+  async function purchaseLevel(lvl) {
+    const item = LEVEL_SCHEDULE.find(x => x.level === lvl);
+    if (!item) return;
+
+    if (confirm(`Confirm purchase of Level ${item.level} Package for $${item.purchase.toLocaleString()} USD?\\n\\nThis will allocate a $${item.balance.toLocaleString()} dashboard credit and set your monthly limit to $${item.limit.toLocaleString()}/mo.`)) {
+      currentTierState = {
+        level: item.level,
+        allocatedBalance: item.balance,
+        monthlyLimit: item.limit,
+        purchaseCost: item.purchase
+      };
+
+      updateActiveDisplay();
+      renderLevelsTable(LEVEL_SCHEDULE);
+
+      // Persist directly to Supabase cloud
+      if (window.__supabase) {
+        try {
+          const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+          await window.__supabase.from('profiles').upsert([{
+            id: user_id,
+            tier: `Level ${item.level} Verified`,
+            current_level: item.level,
+            level_balance: item.balance,
+            monthly_limit: item.limit,
+            updated_at: new Date().toISOString()
+          }]);
+          
+          await window.__supabase.from('transactions').insert([{
+            id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
+            user_id: user_id,
+            type: 'Package Purchase',
+            asset: 'USD',
+            usd_amount: item.purchase,
+            crypto_amount: 0,
+            price: 1.00,
+            status: 'Completed',
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+          }]);
+        } catch (e) {
+          console.warn('Supabase tier sync:', e);
+        }
+      }
+
+      showToast(`Level ${item.level} Unlocked!`, `$${item.balance.toLocaleString()} credit allocated.`, '🎉');
+    }
+  }
+
+  async function requestTierWithdrawal() {
+    if (currentTierState.allocatedBalance <= 0) {
+      showToast('Zero Balance', 'No allocated credit remaining.', '⚠️');
+      return;
+    }
+
+    const withdrawAmt = Math.min(currentTierState.monthlyLimit, currentTierState.allocatedBalance);
+    currentTierState.allocatedBalance -= withdrawAmt;
+    updateActiveDisplay();
+
+    // Persist withdrawal deduction to Supabase
+    if (window.__supabase) {
+      try {
+        const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+        await window.__supabase.from('profiles').upsert([{
+          id: user_id,
+          level_balance: currentTierState.allocatedBalance,
+          updated_at: new Date().toISOString()
+        }]);
+
+        await window.__supabase.from('transactions').insert([{
+          id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
+          user_id: user_id,
+          type: 'Monthly Tier Withdrawal',
+          asset: 'USD',
+          usd_amount: withdrawAmt,
+          crypto_amount: 0,
+          price: 1.00,
+          status: 'Completed',
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        }]);
+      } catch (e) {
+        console.warn('Withdrawal sync notice:', e);
+      }
+    }
+
+    showToast('Withdrawal Processed', `$${withdrawAmt.toLocaleString()} deducted from dashboard credit.`, '💰');
+  }
+
+  function updateActiveDisplay() {
+    document.getElementById('active-tier-badge').textContent = `Level ${currentTierState.level} Package`;
+    document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
+    document.getElementById('active-purchase-cost').textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+    document.getElementById('allocated-credit-balance').textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    document.getElementById('monthly-limit-display').innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
+  }
+
+  // Load from Supabase on start
+  async function hydrateTierFromCloud() {
+    if (window.__supabase) {
+      try {
+        const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+        const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
+        if (data && data.current_level) {
+          const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);
+          if (item) {
+            currentTierState = {
+              level: item.level,
+              allocatedBalance: data.level_balance !== undefined ? parseFloat(data.level_balance) : item.balance,
+              monthlyLimit: item.limit,
+              purchaseCost: item.purchase
+            };
+          }
+        }
+      } catch (e) {}
+    }
+    updateActiveDisplay();
+    renderLevelsTable(LEVEL_SCHEDULE);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    hydrateTierFromCloud();
+  });
+</script>
+</body>
+</html>

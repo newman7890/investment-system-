@@ -57,6 +57,9 @@
         if (profile.name) appState.user.name = profile.name;
         if (profile.email) appState.user.email = profile.email;
         if (profile.tier) appState.user.tier = profile.tier;
+        if (profile.current_level !== undefined && profile.current_level !== null) appState.user.current_level = profile.current_level;
+        if (profile.level_balance !== undefined && profile.level_balance !== null) appState.user.level_balance = parseFloat(profile.level_balance);
+        if (profile.monthly_limit !== undefined && profile.monthly_limit !== null) appState.user.monthly_limit = parseFloat(profile.monthly_limit);
         if (profile.theme && profile.theme !== appState.theme) {
           appState.theme = profile.theme;
           applyTheme();
@@ -217,7 +220,10 @@
     user: {
       name: 'Chris Wong',
       email: 'chris.wong@example.com',
-      tier: 'Level 3 Verified'
+      tier: 'Level 3 Verified',
+      current_level: 1,
+      level_balance: 1500.00,
+      monthly_limit: 30.00
     },
     balances: {
       USD: 10000.00,
@@ -1382,6 +1388,15 @@
         <!-- Products Grid -->
         <div style="padding: 20px 24px; display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-height: 480px; overflow-y: auto;">
           
+          <!-- 0. 30-Level Digital Packages Platform -->
+          <div onclick="closeActiveModal(); window.location.href='levels.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #EEF3FF; color: #0052FF; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">30-Level Platform</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Access 30 tiered packages with 3x provisioned balance credits & monthly payouts.</p>
+          </div>
+
           <!-- 1. Perpetuals Trading -->
           <div onclick="closeActiveModal(); window.location.href='perpetuals.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: #EEF3FF; color: #0052FF; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
@@ -1604,6 +1619,9 @@
         } else if (text.includes('coinbase one')) {
           e.preventDefault();
           window.location.href = 'coinbase-one.html';
+        } else if (text.includes('30-level') || text.includes('platform') || text.includes('packages')) {
+          e.preventDefault();
+          window.location.href = 'levels.html';
         } else if (text.includes('invite')) {
           e.preventDefault();
           openInviteFriendsModal();
