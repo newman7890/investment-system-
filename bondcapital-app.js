@@ -102,9 +102,18 @@
         if (profile.name) appState.user.name = profile.name;
         if (profile.email) appState.user.email = profile.email;
         if (profile.tier) appState.user.tier = profile.tier;
-        if (profile.current_level !== undefined && profile.current_level !== null) appState.user.current_level = profile.current_level;
-        if (profile.level_balance !== undefined && profile.level_balance !== null) appState.user.level_balance = parseFloat(profile.level_balance);
-        if (profile.monthly_limit !== undefined && profile.monthly_limit !== null) appState.user.monthly_limit = parseFloat(profile.monthly_limit);
+        if (profile.current_level !== undefined && profile.current_level !== null) {
+          appState.user.current_level = profile.current_level;
+          try { localStorage.setItem('bond_active_level', profile.current_level); } catch(e){}
+        }
+        if (profile.level_balance !== undefined && profile.level_balance !== null) {
+          appState.user.level_balance = parseFloat(profile.level_balance);
+          try { localStorage.setItem('bond_allocated_balance', profile.level_balance); } catch(e){}
+        }
+        if (profile.monthly_limit !== undefined && profile.monthly_limit !== null) {
+          appState.user.monthly_limit = parseFloat(profile.monthly_limit);
+          try { localStorage.setItem('bond_monthly_limit', profile.monthly_limit); } catch(e){}
+        }
         if (profile.theme && profile.theme !== appState.theme) {
           appState.theme = profile.theme;
           applyTheme();
@@ -314,7 +323,18 @@
   }
 
   function calculateTotalPortfolio() {
-    let total = appState.balances.USD;
+    // Synchronize package allocated credit from 30-level platform
+    let packageBal = 0;
+    try {
+      const storedBal = localStorage.getItem('bond_allocated_balance');
+      if (storedBal !== null && !isNaN(parseFloat(storedBal))) {
+        packageBal = parseFloat(storedBal);
+      } else if (appState.user && appState.user.level_balance !== undefined) {
+        packageBal = appState.user.level_balance;
+      }
+    } catch (e) {}
+
+    let total = packageBal > 0 ? packageBal : appState.balances.USD;
     for (const sym in appState.assets) {
       const bal = appState.balances[sym] || 0;
       total += bal * appState.assets[sym].priceUSD;
@@ -1504,6 +1524,94 @@
       </div>
     `);
   };
+
+
+  // Sync 30-Level Platform Active Package on Home Dashboard
+  function syncHomePackageCard() {
+    const LEVEL_MAP = {
+      1: { purchase: 500, balance: 1500, limit: 30 },
+      2: { purchase: 1000, balance: 3000, limit: 60 },
+      3: { purchase: 1500, balance: 4500, limit: 100 },
+      4: { purchase: 2000, balance: 6000, limit: 130 },
+      5: { purchase: 2500, balance: 7500, limit: 170 },
+      6: { purchase: 3000, balance: 9000, limit: 220 },
+      7: { purchase: 3500, balance: 10500, limit: 255 },
+      8: { purchase: 4000, balance: 12000, limit: 300 },
+      9: { purchase: 4500, balance: 13500, limit: 340 },
+      10: { purchase: 5000, balance: 15000, limit: 385 },
+      11: { purchase: 5500, balance: 16500, limit: 420 },
+      12: { purchase: 6000, balance: 18000, limit: 470 },
+      13: { purchase: 6500, balance: 19500, limit: 510 },
+      14: { purchase: 7000, balance: 21000, limit: 550 },
+      15: { purchase: 7500, balance: 22500, limit: 580 },
+      16: { purchase: 8000, balance: 24000, limit: 630 },
+      17: { purchase: 8500, balance: 25500, limit: 670 },
+      18: { purchase: 9000, balance: 27000, limit: 730 },
+      19: { purchase: 15000, balance: 45000, limit: 1200 },
+      20: { purchase: 20000, balance: 60000, limit: 1300 },
+      21: { purchase: 30000, balance: 90000, limit: 2000 },
+      22: { purchase: 40000, balance: 120000, limit: 3000 },
+      23: { purchase: 50000, balance: 150000, limit: 4000 },
+      24: { purchase: 60000, balance: 180000, limit: 4500 },
+      25: { purchase: 70000, balance: 210000, limit: 5200 },
+      26: { purchase: 80000, balance: 240000, limit: 6000 },
+      27: { purchase: 90000, balance: 270000, limit: 7000 },
+      28: { purchase: 100000, balance: 300000, limit: 8000 },
+      29: { purchase: 110000, balance: 330000, limit: 8800 },
+      30: { purchase: 120000, balance: 360000, limit: 9000 }
+    };
+
+    let lvl = 1;
+    let bal = 1500;
+    let limit = 30;
+    let cost = 500;
+
+    try {
+      const storedLvl = localStorage.getItem('bond_active_level');
+      if (storedLvl) lvl = parseInt(storedLvl, 10);
+      else if (appState.user && appState.user.current_level) lvl = appState.user.current_level;
+
+      const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
+      cost = info.purchase;
+      limit = info.limit;
+
+      const storedBal = localStorage.getItem('bond_allocated_balance');
+      if (storedBal !== null && !isNaN(parseFloat(storedBal))) bal = parseFloat(storedBal);
+      else if (appState.user && appState.user.level_balance !== undefined) bal = appState.user.level_balance;
+      else bal = info.balance;
+
+      if (appState.user) {
+        appState.user.current_level = lvl;
+        appState.user.level_balance = bal;
+        appState.user.monthly_limit = limit;
+        appState.user.tier = `Level ${lvl} Package`;
+      }
+    } catch (e) {}
+
+    const badge = document.getElementById('home-card-badge');
+    if (badge) badge.textContent = `Level ${lvl} Package`;
+
+    const title = document.getElementById('home-card-title');
+    if (title) title.textContent = `Level ${lvl} Active`;
+
+    const costEl = document.getElementById('home-card-cost');
+    if (costEl) costEl.textContent = `$${cost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+
+    const balEl = document.getElementById('home-card-allocated');
+    if (balEl) balEl.textContent = `$${bal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+    const limitEl = document.getElementById('home-card-limit');
+    if (limitEl) limitEl.textContent = `$${limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / month`;
+
+    const tierTag = document.getElementById('home-active-tier-tag');
+    if (tierTag) tierTag.textContent = `Level ${lvl} Package`;
+  }
+
+  // Cross-tab and local storage listener
+  window.addEventListener('storage', () => {
+    syncHomePackageCard();
+    updateAllUI();
+  });
 
   // --- Dynamic UI Sync ---
   function updateAllUI(tickSymbol, direction) {

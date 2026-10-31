@@ -323,6 +323,16 @@
       updateActiveDisplay();
       renderLevelsTable(LEVEL_SCHEDULE);
 
+      // Instant local sync across all pages
+      try {
+        localStorage.setItem('bond_active_level', item.level);
+        localStorage.setItem('bond_allocated_balance', item.balance);
+        localStorage.setItem('bond_monthly_limit', item.limit);
+        localStorage.setItem('bond_purchase_cost', item.purchase);
+        localStorage.setItem('bond_tier_name', `Level ${item.level} Package`);
+        window.dispatchEvent(new Event('storage'));
+      } catch (e) {}
+
       // Persist directly to Supabase cloud
       if (window.__supabase) {
         try {
@@ -366,6 +376,11 @@
     currentTierState.allocatedBalance -= withdrawAmt;
     updateActiveDisplay();
 
+    try {
+      localStorage.setItem('bond_allocated_balance', currentTierState.allocatedBalance);
+      window.dispatchEvent(new Event('storage'));
+    } catch (e) {}
+
     // Persist withdrawal deduction to Supabase
     if (window.__supabase) {
       try {
@@ -405,6 +420,26 @@
 
   // Load from Supabase on start
   async function hydrateTierFromCloud() {
+    // 1. Instant hydration from localStorage
+    try {
+      const savedLevel = localStorage.getItem('bond_active_level');
+      if (savedLevel) {
+        const item = LEVEL_SCHEDULE.find(x => x.level === parseInt(savedLevel, 10));
+        if (item) {
+          const savedBal = localStorage.getItem('bond_allocated_balance');
+          currentTierState = {
+            level: item.level,
+            allocatedBalance: savedBal !== null ? parseFloat(savedBal) : item.balance,
+            monthlyLimit: item.limit,
+            purchaseCost: item.purchase
+          };
+        }
+      }
+    } catch (e) {}
+    updateActiveDisplay();
+    renderLevelsTable(LEVEL_SCHEDULE);
+
+    // 2. Hydrate from Supabase cloud
     if (window.__supabase) {
       try {
         const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
