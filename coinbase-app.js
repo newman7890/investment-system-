@@ -24,14 +24,47 @@
   function getActiveUserId() {
     if (window.__currentUserId) return window.__currentUserId;
     try {
-      const storedId = sessionStorage.getItem('bond_user_id');
+      const storedId = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
       if (storedId) return storedId;
     } catch (e) {}
-    return '0435d519-54b7-416d-9e35-6063f72578de';
+    return null;
   }
+
+  // Route Protection & Authentication Guard
+  const isLoginPage = window.location.pathname.endsWith('login.html') || window.location.href.includes('login.html');
 
   // Load user data strictly from Supabase database
   async function syncFromSupabase() {
+    // 0. Check authentication state
+    let userId = getActiveUserId();
+    if (!userId && supabase && supabase.auth) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user) {
+          userId = session.user.id;
+          window.__currentUserId = userId;
+          try {
+            sessionStorage.setItem('bond_user_id', userId);
+            sessionStorage.setItem('bond_user_email', session.user.email || '');
+            localStorage.setItem('bond_user_id', userId);
+            localStorage.setItem('bond_user_email', session.user.email || '');
+          } catch (e) {}
+        }
+      } catch (e) {}
+    }
+
+    // Unauthenticated user attempting to access protected page
+    if (!isLoginPage && !userId) {
+      window.location.replace('login.html');
+      return;
+    }
+
+    // Authenticated user on login page
+    if (isLoginPage && userId) {
+      window.location.replace('index.html');
+      return;
+    }
+
     if (!supabase) return;
     try {
       // 0. Check authentic Supabase Auth session first
@@ -230,9 +263,9 @@
     chartType: 'line',
     timeframe: '1D',
     user: {
-      name: 'new man',
-      email: 'newm5811@gmail.com',
-      tier: 'Level 1 Verified',
+      name: '',
+      email: '',
+      tier: 'Verified Member',
       current_level: 1,
       level_balance: 1500.00,
       monthly_limit: 30.00

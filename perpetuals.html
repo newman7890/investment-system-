@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 
 <html lang="en"><head>
+  <!-- Authentication Route Guard -->
+  <script>
+    (function() {
+      try {
+        var uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
+        var hasSbToken = false;
+        for (var k in localStorage) {
+          if (k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1) { hasSbToken = true; break; }
+        }
+        if (!uid && !hasSbToken) {
+          window.location.replace('login.html');
+        }
+      } catch (e) {}
+    })();
+  </script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>Bond Capital | Perpetuals</title>
