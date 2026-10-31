@@ -20,7 +20,7 @@ CREATE TABLE public.profiles (
   current_level INT DEFAULT 1,
   level_balance NUMERIC(18, 2) DEFAULT 1500.00,
   monthly_limit NUMERIC(18, 2) DEFAULT 30.00,
-  api_provider TEXT DEFAULT 'nexuspro',
+  api_provider TEXT DEFAULT 'bondcapital',
   api_key TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

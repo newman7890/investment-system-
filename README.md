@@ -1,4 +1,4 @@
-# Investment System (NexusPro Platform)
+# Investment System (Bond Capital Platform)
 
 An investment and cryptocurrency trading interface built directly from high-fidelity designs generated via Google Stitch (Project `11711854523150939165`).
 

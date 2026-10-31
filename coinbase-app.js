@@ -1,4 +1,4 @@
-// NexusPro Investment System - Complete Master Application Engine
+// Bond Capital Investment System - Complete Master Application Engine
 
 (function () {
   'use strict';
@@ -502,13 +502,13 @@
   const API_STORAGE_KEY = 'coinbase_live_api_config';
 
   const defaultApiConfig = {
-    provider: 'coinbase', // 'nexuspro' | 'binance' | 'coingecko' | 'coincap' | 'custom'
+    provider: 'coinbase', // 'bondcapital' | 'binance' | 'coingecko' | 'coincap' | 'custom'
     apiKey: 'dbidtf9r01qie36n5cogdbidtf9r01qie36n5cp0',
     apiSecret: '',
     status: 'connecting', // 'connected' | 'connecting' | 'disconnected'
     lastTickTime: null,
     ticksReceived: 0,
-    activeProviderName: 'NexusPro WebSocket'
+    activeProviderName: 'Bond Capital WebSocket'
   };
 
   const apiConfig = Object.assign({}, defaultApiConfig);
@@ -582,19 +582,19 @@
     } else if (apiConfig.provider === 'coincap') {
       connectCoinCapWS();
     } else {
-      // Default: NexusPro Exchange WebSocket
+      // Default: Bond Capital Exchange WebSocket
       connectCoinbaseWS();
     }
   }
 
   function connectCoinbaseWS() {
-    apiConfig.activeProviderName = 'NexusPro Exchange WS';
+    apiConfig.activeProviderName = 'Bond Capital Exchange WS';
     try {
       const ws = new WebSocket('wss://ws-feed.exchange.coinbase.com');
       activeWebSocket = ws;
 
       ws.onopen = () => {
-        updateApiStatusUI('connected', 'Live: NexusPro');
+        updateApiStatusUI('connected', 'Live: Bond Capital');
         const subscribeMsg = {
           type: 'subscribe',
           product_ids: ['BTC-USD', 'ETH-USD', 'SOL-USD', 'DOGE-USD'],
@@ -627,12 +627,12 @@
             }
           }
         } catch (e) {
-          console.warn('NexusPro WS tick parse error:', e);
+          console.warn('Bond Capital WS tick parse error:', e);
         }
       };
 
       ws.onerror = (e) => {
-        console.warn('NexusPro WS failed, falling back to Binance feed...', e);
+        console.warn('Bond Capital WS failed, falling back to Binance feed...', e);
         connectBinanceWS();
       };
 
@@ -808,7 +808,7 @@
         <div style="margin-bottom:14px;">
           <label style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Data Feed Provider</label>
           <select id="api-provider-select" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:14px; font-weight:600; outline:none;">
-            <option value="coinbase" ${apiConfig.provider === 'coinbase' ? 'selected' : ''}>NexusPro Exchange WebSocket (Official Spot Feed)</option>
+            <option value="coinbase" ${apiConfig.provider === 'coinbase' ? 'selected' : ''}>Bond Capital Exchange WebSocket (Official Spot Feed)</option>
             <option value="binance" ${apiConfig.provider === 'binance' ? 'selected' : ''}>Binance Global Mini-Ticker Stream (Sub-second)</option>
             <option value="coingecko" ${apiConfig.provider === 'coingecko' ? 'selected' : ''}>CoinGecko API (Supports Pro & Free Keys)</option>
             <option value="coincap" ${apiConfig.provider === 'coincap' ? 'selected' : ''}>CoinCap Public Streaming Feed</option>
@@ -1257,7 +1257,7 @@
   };
 
   window.openProfileModal = function () {
-    const userInitial = (appState.user.name || 'U').charAt(0).toUpperCase();
+    const userInitial = (appState.user.name || 'User').charAt(0).toUpperCase();
     const totalPortfolio = calculateTotalPortfolio();
 
     openModal(`
@@ -1265,7 +1265,7 @@
         <!-- Header Banner & Close -->
         <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px 24px 16px; border-bottom: 1px solid var(--border-color, #ECEFF1);">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted, #5B616E);">NexusPro Account</span>
+            <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted, #5B616E);">Bond Capital Account</span>
             <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:9999px; background:#F0FDF4; border:1px solid #BBF7D0; font-size:10px; font-weight:700; color:#15803D;">
               <span style="width:5px; height:5px; border-radius:50%; background:#10B981;"></span> Verified
             </span>
@@ -1338,7 +1338,7 @@
               </div>
               <div>
                 <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Live Market Feed & API</div>
-                <div style="font-size:12px; color:var(--text-muted, #5B616E);">NexusPro WebSocket & REST integration</div>
+                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Bond Capital WebSocket & REST integration</div>
               </div>
             </div>
             <span style="font-size:11px; font-weight:700; color:#059669; background:#D1FAE5; padding:2px 8px; border-radius:9999px;">Active</span>
@@ -1377,7 +1377,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px 24px 16px; border-bottom: 1px solid var(--border-color, #ECEFF1);">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <h2 style="font-size:18px; font-weight:800; color:var(--text-primary, #0A0B0D); margin:0; letter-spacing:-0.01em;">NexusPro Ecosystem</h2>
+              <h2 style="font-size:18px; font-weight:800; color:var(--text-primary, #0A0B0D); margin:0; letter-spacing:-0.01em;">Bond Capital Suite</h2>
               <span style="font-size:10px; font-weight:700; background:#EEF3FF; color:#0052FF; padding:2px 8px; border-radius:9999px;">INSTITUTIONAL</span>
             </div>
             <p style="font-size:12px; color:var(--text-muted, #5B616E); margin:3px 0 0;">Advanced financial tools, Web3 gateways, and market intelligence</p>
@@ -1406,12 +1406,12 @@
             <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Trade crypto futures with up to 10x leverage and sub-second execution.</p>
           </div>
 
-          <!-- 2. NexusPro Elite -->
+          <!-- 2. Bond Capital Elite -->
           <div onclick="closeActiveModal(); window.location.href='coinbase-one.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: #F8FAFC; color: #0A0B0D; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
               <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
             </div>
-            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">NexusPro Elite</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Bond Capital Elite</div>
             <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Zero trading fees, $1M protection guarantee, and priority 24/7 support.</p>
           </div>
 
@@ -1466,7 +1466,7 @@
   };
 
   window.openInviteFriendsModal = function () {
-    const link = `https://nexuspro.app/join/${(appState.user.name || 'user').toLowerCase().replace(/\s+/g, '_')}`;
+    const link = `https://bondcapital.app/join/${(appState.user.name || 'user').toLowerCase().replace(/\s+/g, '_')}`;
     openModal(`
       <div style="padding: 24px; text-align:center;">
         <div style="font-size:40px; margin-bottom:8px;">🎁</div>
@@ -1616,7 +1616,7 @@
         } else if (text.includes('learning')) {
           e.preventDefault();
           window.location.href = 'learning-rewards.html';
-        } else if (text.includes('nexuspro elite')) {
+        } else if (text.includes('bondcapital elite')) {
           e.preventDefault();
           window.location.href = 'coinbase-one.html';
         } else if (text.includes('30-level') || text.includes('platform') || text.includes('packages')) {
@@ -1879,7 +1879,7 @@
         } else if (text.includes('trade')) {
           openAssetSelectorModal();
         } else if (text.includes('explore')) {
-          showToast('Explore Cryptos', 'Browsing top trending tokens on NexusPro', '🔍');
+          showToast('Explore Cryptos', 'Browsing top trending tokens on Bond Capital', '🔍');
         } else if (text.includes('more')) {
           openAppsModal();
         }
