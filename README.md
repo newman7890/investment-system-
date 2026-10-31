@@ -1,4 +1,4 @@
-# Investment System (Coinbase Design Edition)
+# Investment System (NexusPro Platform)
 
 An investment and cryptocurrency trading interface built directly from high-fidelity designs generated via Google Stitch (Project `11711854523150939165`).
 

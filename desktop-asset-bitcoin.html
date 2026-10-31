@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<title>Bitcoin Price &amp; Trade | Coinbase Clone</title>
+<title>Bitcoin Price &amp; Trade | NexusPro Platform</title>
 <!-- Tailwind CSS CDN with forms and container-queries -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
@@ -11,7 +11,7 @@
       theme: {
         extend: {
           colors: {
-            coinbase: {
+            nexuspro: {
               blue: '#0052FF',
               lightBlue: '#85a9ff',
               hoverBlue: '#0045d8',
@@ -68,7 +68,7 @@
       scrollbar-width: none;
     }
   </style>
-<link rel="stylesheet" href="coinbase-app.css">
+<link rel="stylesheet" href="nexuspro-app.css">
 </head>
 <body class="min-h-screen flex flex-col font-sans bg-white selection:bg-blue-100">
 <div class="flex-1 flex w-full">
@@ -76,7 +76,7 @@
 <aside class="hidden lg:flex w-64 border-r border-gray-200 flex-col justify-between shrink-0 h-screen sticky top-0 bg-white select-none">
 <div class="p-6">
 <!-- Logo -->
-<a aria-label="Coinbase Home" class="inline-flex items-center mb-8" href="index.html">
+<a aria-label="NexusPro Home" class="inline-flex items-center mb-8" href="index.html">
 <svg class="w-9 h-9" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
 <circle cx="24" cy="24" fill="#0052FF" r="24"></circle>
 <path clip-rule="evenodd" d="M24 14C18.4772 14 14 18.4772 14 24C14 29.5228 18.4772 34 24 34C29.5228 34 34 29.5228 34 24C34 18.4772 29.5228 14 24 14ZM21.5 20.5C21.5 19.1193 22.6193 18 24 18C25.3807 18 26.5 19.1193 26.5 20.5V27.5C26.5 28.8807 25.3807 30 24 30C22.6193 30 21.5 28.8807 21.5 27.5V20.5Z" fill="white" fill-rule="evenodd"></path>
@@ -133,7 +133,7 @@
 <circle cx="12" cy="12" r="9"></circle>
 <path d="M3.6 9h16.8M3.6 15h16.8" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
-<span class="text-sm">Coinbase One</span>
+<span class="text-sm">NexusPro Elite</span>
 </a>
 <a class="flex items-center gap-4 px-3 py-2.5 rounded-lg text-gray-900 font-medium hover:bg-gray-100 transition-colors" href="#">
 <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
@@ -179,7 +179,7 @@
     </button>
     <div class="flex items-center space-x-1.5">
       <h1 class="text-xl font-bold tracking-tight text-slate-900">Bitcoin</h1>
-      <button onclick="showToast('Added to Favorites', 'Bitcoin saved', '★')" aria-label="Favorite asset" class="text-coinbase-blue p-1 rounded-full" type="button">
+      <button onclick="showToast('Added to Favorites', 'Bitcoin saved', '★')" aria-label="Favorite asset" class="text-nexus-blue p-1 rounded-full" type="button">
         <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
       </button>
     </div>
@@ -197,7 +197,7 @@
 <!-- Asset Title & Favorite Star -->
 <div class="flex items-center gap-3">
 <h1 class="text-2xl font-bold tracking-tight text-gray-900">Bitcoin</h1>
-<button aria-label="Favorite asset" class="text-coinbase-blue hover:text-blue-700 p-1 rounded-full transition-colors">
+<button aria-label="Favorite asset" class="text-nexus-blue hover:text-blue-700 p-1 rounded-full transition-colors">
 <svg class="w-5 h-5 fill-current" viewbox="0 0 20 20">
 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
 </svg>
@@ -251,7 +251,7 @@
 <div class="flex items-start justify-between">
 <div>
 <h2 id="btc-hero-price" class="text-4xl font-bold tracking-tight text-gray-900">$91,864.73</h2>
-<div class="flex items-center gap-1.5 mt-2 text-coinbase-red font-medium text-base">
+<div class="flex items-center gap-1.5 mt-2 text-nexus-red font-medium text-base">
 <svg class="w-4 h-4 fill-current stroke-current" viewbox="0 0 24 24">
 <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
 </svg>
@@ -333,7 +333,7 @@
 <!-- Asset Tabs (Balance / Insights) -->
 <div class="border-b border-gray-200 mt-6">
 <nav aria-label="Asset Information Tabs" class="flex gap-8">
-<button class="pb-3 px-1 text-sm font-semibold text-coinbase-blue border-b-2 border-coinbase-blue">
+<button class="pb-3 px-1 text-sm font-semibold text-nexus-blue border-b-2 border-nexuspro-blue">
                 Balance
               </button>
 <button class="pb-3 px-1 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
@@ -444,7 +444,7 @@
 </button>
 </div>
 <!-- Crypto Conversion Equivalent -->
-<div class="flex items-center gap-1.5 text-xs font-bold text-coinbase-blue mb-8">
+<div class="flex items-center gap-1.5 text-xs font-bold text-nexus-blue mb-8">
 <svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewbox="0 0 24 24">
 <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
@@ -455,7 +455,7 @@
 <!-- Pay with Wallet Row -->
 <button class="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all text-left group">
 <div class="flex items-center gap-3.5">
-<div class="w-8 h-8 rounded-full bg-coinbase-blue text-white flex items-center justify-center font-bold text-xs tracking-tighter shrink-0">
+<div class="w-8 h-8 rounded-full bg-nexuspro-blue text-white flex items-center justify-center font-bold text-xs tracking-tighter shrink-0">
                     $
                   </div>
 <div>
@@ -492,7 +492,7 @@
 </button>
 </div>
 <!-- Review Order Button (Light Blue standby style matching screenshot) -->
-<button onclick="showOrderModal()" id="review-order-btn" class="w-full py-4 rounded-full bg-coinbase-blue hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-3 transition-colors shadow-sm cursor-pointer">
+<button onclick="showOrderModal()" id="review-order-btn" class="w-full py-4 rounded-full bg-nexuspro-blue hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-3 transition-colors shadow-sm cursor-pointer">
 <span>Review order</span>
 <svg class="w-4 h-4 stroke-current stroke-2 fill-none" viewbox="0 0 24 24">
 <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -506,7 +506,7 @@
 <div class="space-y-4" data-purpose="quick-actions">
 <!-- Send Crypto -->
 <button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-coinbase-blue text-white flex items-center justify-center shrink-0">
+<div class="w-8 h-8 rounded-full bg-nexuspro-blue text-white flex items-center justify-center shrink-0">
 <svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
 <path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
@@ -515,7 +515,7 @@
 </button>
 <!-- Receive Crypto -->
 <button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-coinbase-blue text-white flex items-center justify-center shrink-0">
+<div class="w-8 h-8 rounded-full bg-nexuspro-blue text-white flex items-center justify-center shrink-0">
 <svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
 <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
@@ -524,7 +524,7 @@
 </button>
 <!-- Deposit Cash -->
 <button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-coinbase-blue text-white flex items-center justify-center shrink-0">
+<div class="w-8 h-8 rounded-full bg-nexuspro-blue text-white flex items-center justify-center shrink-0">
 <svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
 <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
@@ -533,7 +533,7 @@
 </button>
 <!-- Withdraw Cash -->
 <button class="w-full flex items-center gap-3.5 p-2 rounded-lg hover:bg-gray-50 text-left transition-colors group">
-<div class="w-8 h-8 rounded-full bg-coinbase-blue text-white flex items-center justify-center shrink-0">
+<div class="w-8 h-8 rounded-full bg-nexuspro-blue text-white flex items-center justify-center shrink-0">
 <svg class="w-4 h-4 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
 <rect height="12" rx="2" width="20" x="2" y="6"></rect>
 <circle cx="12" cy="12" r="3"></circle>
@@ -579,7 +579,7 @@
 <!-- Interactive Modal for Orders -->
 <div id="order-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 text-center animate-in fade-in duration-200">
-    <div class="w-16 h-16 rounded-full bg-blue-50 text-coinbase-blue flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+    <div class="w-16 h-16 rounded-full bg-blue-50 text-nexus-blue flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
       ₿
     </div>
     <h3 class="text-xl font-bold text-gray-900 mb-1" id="modal-title">Confirm Order</h3>
@@ -596,10 +596,10 @@
       </div>
       <div class="flex justify-between">
         <span class="text-gray-500">Est. Receive</span>
-        <span class="font-bold text-coinbase-blue" id="modal-btc">0.001088 BTC</span>
+        <span class="font-bold text-nexus-blue" id="modal-btc">0.001088 BTC</span>
       </div>
       <div class="flex justify-between">
-        <span class="text-gray-500">Coinbase Fee</span>
+        <span class="text-gray-500">NexusPro Fee</span>
         <span class="font-bold text-green-600">$0.00 (Promo)</span>
       </div>
     </div>
@@ -608,7 +608,7 @@
       <button onclick="closeOrderModal()" class="flex-1 py-3 px-4 rounded-full border border-gray-200 hover:bg-gray-50 font-bold text-sm text-gray-700 transition-colors cursor-pointer">
         Cancel
       </button>
-      <button onclick="executeOrder()" class="flex-1 py-3 px-4 rounded-full bg-coinbase-blue hover:bg-blue-700 font-bold text-sm text-white transition-colors cursor-pointer shadow-sm">
+      <button onclick="executeOrder()" class="flex-1 py-3 px-4 rounded-full bg-nexuspro-blue hover:bg-blue-700 font-bold text-sm text-white transition-colors cursor-pointer shadow-sm">
         Confirm
       </button>
     </div>
@@ -661,7 +661,7 @@
     });
     btn.className = 'tf-btn px-3.5 py-1.5 text-xs font-bold rounded-full bg-gray-100 text-gray-900 cursor-pointer';
     
-    const changeBadge = document.querySelector('.text-coinbase-red span');
+    const changeBadge = document.querySelector('.text-nexus-red span');
     if (changeBadge) {
       changeBadge.textContent = `${valStr} (${changeStr})`;
     }
@@ -687,12 +687,12 @@
       <div class="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-4 text-3xl font-bold">✓</div>
       <h3 class="text-xl font-bold text-gray-900 mb-2">Order Submitted!</h3>
       <p class="text-sm text-gray-500 mb-6">Your ${action} order has been queued successfully on the investment ledger.</p>
-      <button onclick="window.location.reload()" class="w-full py-3 rounded-full bg-coinbase-blue text-white font-bold text-sm">Done</button>
+      <button onclick="window.location.reload()" class="w-full py-3 rounded-full bg-nexuspro-blue text-white font-bold text-sm">Done</button>
     `;
   }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="coinbase-app.js"></script>
+<script src="nexuspro-app.js"></script>
 
 </body></html>
