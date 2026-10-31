@@ -1251,30 +1251,115 @@
   };
 
   window.openProfileModal = function () {
+    const userInitial = (appState.user.name || 'U').charAt(0).toUpperCase();
+    const totalPortfolio = calculateTotalPortfolio();
+
     openModal(`
-      <div style="padding: 24px; text-align:center;">
-        <div style="width:60px; height:60px; border-radius:50%; background:#2C6ECB; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:24px; margin:0 auto 12px;">
-          C
-        </div>
-        <h2 style="font-size:18px; font-weight:700;">${appState.user.name}</h2>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">${appState.user.email} · ${appState.user.tier}</p>
-
-        <div style="display:flex; flex-direction:column; gap:8px; text-align:left; font-size:14px; margin-bottom:18px;">
-          <div onclick="closeActiveModal(); toggleTheme();" style="padding:12px; border-radius:12px; background:var(--bg-secondary); font-weight:600; cursor:pointer; display:flex; justify-content:space-between;">
-            <span>Toggle Dark/Light Mode</span>
-            <span>${appState.theme === 'dark' ? '🌙 Dark' : '☀️ Light'}</span>
+      <div style="padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <!-- Header Banner & Close -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px 24px 16px; border-bottom: 1px solid var(--border-color, #ECEFF1);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted, #5B616E);">Coinbase Account</span>
+            <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:9999px; background:#F0FDF4; border:1px solid #BBF7D0; font-size:10px; font-weight:700; color:#15803D;">
+              <span style="width:5px; height:5px; border-radius:50%; background:#10B981;"></span> Verified
+            </span>
           </div>
-          <div onclick="closeActiveModal(); openDepositCashModal();" style="padding:12px; border-radius:12px; background:var(--bg-secondary); font-weight:600; cursor:pointer;">
-            💰 Cash Balance: $${appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-          </div>
-          <div onclick="closeActiveModal(); openTransactionsModal();" style="padding:12px; border-radius:12px; background:var(--bg-secondary); font-weight:600; cursor:pointer;">
-            📋 Transaction Log (${appState.transactions.length} entries)
-          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">✕</button>
         </div>
 
-        <button onclick="closeActiveModal(); if (supabase && supabase.auth) supabase.auth.signOut(); showToast('Signed out', 'Redirecting to sign in...', '👋'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; background:#FFF0F0; color:#CF202F; border:none; border-radius:9999px; padding:12px; font-weight:700; cursor:pointer;">
-          Sign Out
-        </button>
+        <!-- User Identity Section -->
+        <div style="padding: 20px 24px; display:flex; align-items:center; gap:16px;">
+          <div style="width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg, #0052FF 0%, #0045D8 100%); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; flex-shrink:0; box-shadow:0 4px 12px rgba(0,82,255,0.25);">
+            ${userInitial}
+          </div>
+          <div style="min-width:0; flex:1;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h2 style="font-size:17px; font-weight:700; color:var(--text-primary, #0A0B0D); margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${appState.user.name}</h2>
+              <span style="font-size:11px; font-weight:700; background:#EEF2F6; color:#0052FF; padding:2px 8px; border-radius:6px;">PRO</span>
+            </div>
+            <p style="font-size:13px; color:var(--text-muted, #5B616E); margin:3px 0 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${appState.user.email}</p>
+          </div>
+        </div>
+
+        <!-- Quick Balance Summary Bar -->
+        <div style="margin: 0 24px 16px; padding: 14px 16px; background:#F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748B;">Total Portfolio</div>
+            <div style="font-size:18px; font-weight:800; color:#0F172A; margin-top:2px;">$${totalPortfolio.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748B;">Cash (USD)</div>
+            <div style="font-size:15px; font-weight:700; color:#098551; margin-top:2px;">$${appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+          </div>
+        </div>
+
+        <!-- Settings & Navigation List -->
+        <div style="padding: 0 24px 20px; display:flex; flex-direction:column; gap:6px;">
+          
+          <!-- Manage Balances -->
+          <div onclick="closeActiveModal(); openDepositCashModal();" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:34px; height:34px; border-radius:10px; background:#EFF6FF; color:#0052FF; display:flex; align-items:center; justify-content:center; font-size:16px;">
+                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Deposit / Top Up Cash</div>
+                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Add funds via wire, ACH, or instant transfer</div>
+              </div>
+            </div>
+            <svg style="width:16px; height:16px; color:#94A3B8;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Transaction Ledger -->
+          <div onclick="closeActiveModal(); window.location.href='transactions.html';" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:34px; height:34px; border-radius:10px; background:#F8FAFC; color:#0A0B0D; display:flex; align-items:center; justify-content:center; font-size:16px;">
+                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Transaction History</div>
+                <div style="font-size:12px; color:var(--text-muted, #5B616E);">${appState.transactions.length} recorded cloud trades & ledger entries</div>
+              </div>
+            </div>
+            <svg style="width:16px; height:16px; color:#94A3B8;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Live API Settings -->
+          <div onclick="closeActiveModal(); openApiSettingsModal();" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:34px; height:34px; border-radius:10px; background:#ECFDF5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:16px;">
+                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Live Market Feed & API</div>
+                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Coinbase WebSocket & REST integration</div>
+              </div>
+            </div>
+            <span style="font-size:11px; font-weight:700; color:#059669; background:#D1FAE5; padding:2px 8px; border-radius:9999px;">Active</span>
+          </div>
+
+          <!-- Theme Toggle -->
+          <div onclick="toggleTheme();" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:34px; height:34px; border-radius:10px; background:#FFFBEB; color:#D97706; display:flex; align-items:center; justify-content:center; font-size:16px;">
+                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Appearance</div>
+                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Currently in ${appState.theme === 'dark' ? 'Pro Dark' : 'Classic Light'} mode</div>
+              </div>
+            </div>
+            <span style="font-size:12px; font-weight:700; color:#0052FF;">Switch</span>
+          </div>
+
+          <div style="margin: 8px 0; height:1px; background:var(--border-color, #ECEFF1);"></div>
+
+          <!-- Sign Out -->
+          <button onclick="closeActiveModal(); if (supabase && supabase.auth) supabase.auth.signOut(); showToast('Signed out', 'Session finished', '👋'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; border:1px solid #FECDD3; background:#FFF1F2; color:#E11D48; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#FFE4E6'" onmouseout="this.style.background='#FFF1F2'">
+            <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Sign Out of Account
+          </button>
+        </div>
       </div>
     `);
   };
