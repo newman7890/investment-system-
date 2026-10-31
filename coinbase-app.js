@@ -1366,29 +1366,85 @@
 
   window.openAppsModal = function () {
     openModal(`
-      <div style="padding: 24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h2 style="font-size:18px; font-weight:700;">Products</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+      <div style="padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <!-- Modal Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px 24px 16px; border-bottom: 1px solid var(--border-color, #ECEFF1);">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h2 style="font-size:18px; font-weight:800; color:var(--text-primary, #0A0B0D); margin:0; letter-spacing:-0.01em;">Coinbase Ecosystem</h2>
+              <span style="font-size:10px; font-weight:700; background:#EEF3FF; color:#0052FF; padding:2px 8px; border-radius:9999px;">INSTITUTIONAL</span>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted, #5B616E); margin:3px 0 0;">Advanced financial tools, Web3 gateways, and market intelligence</p>
+          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">✕</button>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; text-align:center;">
-          <div onclick="closeActiveModal(); openDCACalculatorModal();" style="padding:16px; border:1px solid var(--border-color); border-radius:16px; cursor:pointer;">
-            <div style="font-size:24px; margin-bottom:6px;">📊</div>
-            <div style="font-weight:700; font-size:13px;">DCA Calculator</div>
+        <!-- Products Grid -->
+        <div style="padding: 20px 24px; display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-height: 480px; overflow-y: auto;">
+          
+          <!-- 1. Perpetuals Trading -->
+          <div onclick="closeActiveModal(); window.location.href='perpetuals.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #EEF3FF; color: #0052FF; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Perpetuals Trading</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Trade crypto futures with up to 10x leverage and sub-second execution.</p>
           </div>
-          <div onclick="closeActiveModal(); openFearAndGreedModal();" style="padding:16px; border:1px solid var(--border-color); border-radius:16px; cursor:pointer;">
-            <div style="font-size:24px; margin-bottom:6px;">🟢</div>
-            <div style="font-weight:700; font-size:13px;">Market Sentiment</div>
+
+          <!-- 2. Coinbase One -->
+          <div onclick="closeActiveModal(); window.location.href='coinbase-one.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #F8FAFC; color: #0A0B0D; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Coinbase One</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Zero trading fees, $1M protection guarantee, and priority 24/7 support.</p>
           </div>
-          <div onclick="closeActiveModal(); showToast('Web3 Wallet', '', '🌐');" style="padding:16px; border:1px solid var(--border-color); border-radius:16px; cursor:pointer;">
-            <div style="font-size:24px; margin-bottom:6px;">🌐</div>
-            <div style="font-weight:700; font-size:13px;">Web3 Wallet</div>
+
+          <!-- 3. DCA Investment Calculator -->
+          <div onclick="closeActiveModal(); openDCACalculatorModal();" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">DCA Calculator</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Model dollar-cost averaging recurring returns across BTC and ETH cycles.</p>
           </div>
-          <div onclick="closeActiveModal(); toggleTheme();" style="padding:16px; border:1px solid var(--border-color); border-radius:16px; cursor:pointer;">
-            <div style="font-size:24px; margin-bottom:6px;">🌙</div>
-            <div style="font-weight:700; font-size:13px;">Dark Theme</div>
+
+          <!-- 4. Fear & Greed Sentiment -->
+          <div onclick="closeActiveModal(); openFearAndGreedModal();" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Market Sentiment</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Real-time Fear & Greed index, volatility gauges, and social volume metrics.</p>
           </div>
+
+          <!-- 5. Learning Rewards -->
+          <div onclick="closeActiveModal(); window.location.href='learning-rewards.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #F3E8FF; color: #7C3AED; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Learning Rewards</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Complete interactive protocol modules and earn free crypto rewards.</p>
+          </div>
+
+          <!-- 6. Web3 Wallet Gateway -->
+          <div onclick="closeActiveModal(); showToast('Self-Custody Wallet', 'Web3 MPC wallet connected to Base Mainnet', '🌐');" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #F0FDF4; color: #16A34A; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Web3 Wallet Gateway</div>
+            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Self-custody dApp exploration, NFT collections, and DeFi liquidity pools.</p>
+          </div>
+
+        </div>
+
+        <!-- Footer Notice -->
+        <div style="padding: 14px 24px; background: #F8FAFC; border-top: 1px solid #E2E8F0; border-radius: 0 0 28px 28px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981;"></span>
+            <span style="font-size: 11px; font-weight: 600; color: #64748B;">All services operational on Base & Ethereum L1</span>
+          </div>
+          <a href="explore.html" onclick="closeActiveModal()" style="font-size: 12px; font-weight: 700; color: #0052FF; text-decoration: none;">View Explorer →</a>
         </div>
       </div>
     `);
