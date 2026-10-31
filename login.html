@@ -187,31 +187,38 @@
         const client = window.__supabase;
         
         if (authMode === 'signup') {
-          // Attempt Supabase sign up
           if (client) {
             const { data, error } = await client.auth.signUp({
               email,
               password,
               options: { data: { full_name: fullname || 'Crypto Trader' } }
             });
-            if (error) {
-              console.warn('Supabase auth notice:', error.message);
+            if (error) throw error;
+            
+            if (data && data.user) {
+              await client.from('profiles').upsert([{
+                id: data.user.id,
+                email: email,
+                name: fullname || email.split('@')[0],
+                tier: 'Level 1 Verified',
+                updated_at: new Date().toISOString()
+              }]);
+              await client.from('balances').upsert([{
+                user_id: data.user.id,
+                usd: 10000.00,
+                btc: 0.00,
+                eth: 0.00,
+                sol: 0.00,
+                doge: 0.00,
+                updated_at: new Date().toISOString()
+              }]);
             }
           }
 
-          // Update local session
-          localStorage.setItem('coinbase_auth_session', JSON.stringify({
-            email,
-            name: fullname || email.split('@')[0],
-            loggedIn: true,
-            signedInAt: new Date().toISOString()
-          }));
-
-          showAlert('Account created! Redirecting to dashboard...', false);
+          showAlert('Account created in Supabase! Loading portfolio...', false);
           setTimeout(() => { window.location.href = 'index.html'; }, 1000);
 
         } else {
-          // Attempt Supabase sign in
           if (client) {
             const { data, error } = await client.auth.signInWithPassword({ email, password });
             if (error) {
@@ -219,35 +226,32 @@
             }
           }
 
-          // Save active user
-          localStorage.setItem('coinbase_auth_session', JSON.stringify({
-            email,
-            name: email === 'chris.wong@example.com' ? 'Chris Wong' : email.split('@')[0],
-            loggedIn: true,
-            signedInAt: new Date().toISOString()
-          }));
-
-          showAlert('Signed in successfully! Loading portfolio...', false);
+          showAlert('Signed in successfully! Loading backend portfolio...', false);
           setTimeout(() => { window.location.href = 'index.html'; }, 800);
         }
 
       } catch (err) {
-        showAlert('Authentication error: ' + err.message, true);
+        showAlert('Authentication notice: ' + err.message, true);
         submitBtn.disabled = false;
         submitBtn.classList.remove('opacity-70');
       }
     }
 
-    function demoSignIn() {
-      localStorage.setItem('coinbase_auth_session', JSON.stringify({
-        email: 'chris.wong@example.com',
-        name: 'Chris Wong',
-        loggedIn: true,
-        signedInAt: new Date().toISOString()
-      }));
-      showAlert('Signed in as Chris Wong! Opening app...', false);
+    async function demoSignIn() {
+      showAlert('Connecting to Supabase backend as Chris Wong...', false);
+      if (window.__supabase) {
+        // Hydrate or ensure primary record in backend
+        await window.__supabase.from('profiles').upsert([{
+          id: 'usr_master_chris',
+          email: 'chris.wong@example.com',
+          name: 'Chris Wong',
+          tier: 'Level 3 Verified',
+          updated_at: new Date().toISOString()
+        }]);
+      }
       setTimeout(() => { window.location.href = 'index.html'; }, 500);
     }
   </script>
 </body>
 </html>
+

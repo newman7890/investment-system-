@@ -20,71 +20,157 @@
     }
   }
 
-  // Asynchronously sync state with Supabase cloud
+  // --- REAL BACKEND ENGINE (SUPABASE CLOUD PERSISTENCE) ---
+  function getActiveUserId() {
+    if (supabase && supabase.auth) {
+      const u = supabase.auth.getUser ? null : null; // async checked below
+    }
+    return window.__currentUserId || 'usr_master_chris';
+  }
+
+  // Load user data strictly from Supabase database
   async function syncFromSupabase() {
     if (!supabase) return;
     try {
-      // 1. Try to load user profile
+      // 0. Check authentic Supabase Auth session first
+      if (supabase.auth) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user) {
+          window.__currentUserId = session.user.id;
+          appState.user.email = session.user.email || appState.user.email;
+          if (session.user.user_metadata && session.user.user_metadata.full_name) {
+            appState.user.name = session.user.user_metadata.full_name;
+          }
+        }
+      }
+
+      const userId = getActiveUserId();
+
+      // 1. Fetch Profile & Settings from public.profiles
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
-        .limit(1)
+        .eq('id', userId)
         .maybeSingle();
 
       if (profile) {
         if (profile.name) appState.user.name = profile.name;
         if (profile.email) appState.user.email = profile.email;
         if (profile.tier) appState.user.tier = profile.tier;
+        if (profile.theme && profile.theme !== appState.theme) {
+          appState.theme = profile.theme;
+          applyTheme();
+        }
+        if (profile.advanced_mode !== undefined && profile.advanced_mode !== appState.advancedMode) {
+          appState.advancedMode = !!profile.advanced_mode;
+          applyAdvancedMode();
+        }
+        if (profile.api_provider) apiConfig.provider = profile.api_provider;
+        if (profile.api_key) apiConfig.apiKey = profile.api_key;
       }
 
-      // 2. Try to load balances
+      // 2. Fetch Real-Time Balances from public.balances
       const { data: balanceData } = await supabase
         .from('balances')
         .select('*')
-        .limit(1)
+        .eq('user_id', userId)
         .maybeSingle();
 
       if (balanceData) {
-        if (balanceData.usd !== undefined) appState.balances.USD = parseFloat(balanceData.usd);
-        if (balanceData.btc !== undefined) appState.balances.BTC = parseFloat(balanceData.btc);
-        if (balanceData.eth !== undefined) appState.balances.ETH = parseFloat(balanceData.eth);
-        if (balanceData.sol !== undefined) appState.balances.SOL = parseFloat(balanceData.sol);
-        if (balanceData.doge !== undefined) appState.balances.DOGE = parseFloat(balanceData.doge);
+        if (balanceData.usd !== undefined && balanceData.usd !== null) appState.balances.USD = parseFloat(balanceData.usd);
+        if (balanceData.btc !== undefined && balanceData.btc !== null) appState.balances.BTC = parseFloat(balanceData.btc);
+        if (balanceData.eth !== undefined && balanceData.eth !== null) appState.balances.ETH = parseFloat(balanceData.eth);
+        if (balanceData.sol !== undefined && balanceData.sol !== null) appState.balances.SOL = parseFloat(balanceData.sol);
+        if (balanceData.doge !== undefined && balanceData.doge !== null) appState.balances.DOGE = parseFloat(balanceData.doge);
+      } else {
+        // First-time user initialization in backend
+        await supabase.from('balances').insert([{
+          user_id: userId,
+          usd: appState.balances.USD,
+          btc: appState.balances.BTC,
+          eth: appState.balances.ETH,
+          sol: appState.balances.SOL,
+          doge: appState.balances.DOGE || 0,
+          updated_at: new Date().toISOString()
+        }]);
       }
 
-      // 3. Try to load transactions
+      // 3. Fetch Full Transaction History from public.transactions
       const { data: txList } = await supabase
         .from('transactions')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(25);
+        .limit(50);
 
       if (txList && txList.length > 0) {
         appState.transactions = txList.map(t => ({
           id: t.id || ('TX-' + Math.floor(1000 + Math.random() * 9000)),
           type: t.type,
           asset: t.asset,
-          cryptoAmount: parseFloat(t.crypto_amount || t.cryptoAmount || 0),
-          usdAmount: parseFloat(t.usd_amount || t.usdAmount || 0),
+          cryptoAmount: parseFloat(t.crypto_amount || 0),
+          usdAmount: parseFloat(t.usd_amount || 0),
           price: parseFloat(t.price || 0),
-          date: t.date || new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          date: t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'),
           status: t.status || 'Completed'
         }));
       }
 
-      saveState();
       updateAllUI();
+      setupRealtimeListeners(userId);
     } catch (err) {
-      console.log('Supabase read skipped or table pending setup:', err.message);
+      console.warn('Backend sync from Supabase notice:', err.message);
     }
   }
 
+  // Real-time backend subscriptions: reflect changes made in Supabase instantly across open tabs/windows
+  let realtimeChannel = null;
+  function setupRealtimeListeners(userId) {
+    if (!supabase || realtimeChannel) return;
+    try {
+      realtimeChannel = supabase
+        .channel('db-realtime-sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'balances', filter: `user_id=eq.${userId}` }, (payload) => {
+          if (payload.new) {
+            const b = payload.new;
+            if (b.usd !== undefined) appState.balances.USD = parseFloat(b.usd);
+            if (b.btc !== undefined) appState.balances.BTC = parseFloat(b.btc);
+            if (b.eth !== undefined) appState.balances.ETH = parseFloat(b.eth);
+            if (b.sol !== undefined) appState.balances.SOL = parseFloat(b.sol);
+            if (b.doge !== undefined) appState.balances.DOGE = parseFloat(b.doge);
+            updateAllUI();
+          }
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, (payload) => {
+          if (payload.new && !appState.transactions.some(tx => tx.id === payload.new.id)) {
+            const t = payload.new;
+            appState.transactions.unshift({
+              id: t.id,
+              type: t.type,
+              asset: t.asset,
+              cryptoAmount: parseFloat(t.crypto_amount || 0),
+              usdAmount: parseFloat(t.usd_amount || 0),
+              price: parseFloat(t.price || 0),
+              date: t.date || 'Just now',
+              status: t.status || 'Completed'
+            });
+            updateAllUI();
+          }
+        })
+        .subscribe();
+    } catch (e) {
+      console.warn('Realtime listener subscription note:', e);
+    }
+  }
+
+  // Pure cloud state writer: pushes transactions, balances, and preferences to Supabase
   async function syncToSupabase(changeType, payload) {
     if (!supabase) return;
+    const userId = getActiveUserId();
     try {
       if (changeType === 'transaction' && payload) {
         await supabase.from('transactions').insert([{
           id: payload.id,
+          user_id: userId,
           type: payload.type,
           asset: payload.asset,
           crypto_amount: payload.cryptoAmount,
@@ -97,7 +183,7 @@
 
       if (changeType === 'balances') {
         await supabase.from('balances').upsert([{
-          id: 'user_wallet',
+          user_id: userId,
           usd: appState.balances.USD,
           btc: appState.balances.BTC,
           eth: appState.balances.ETH,
@@ -106,11 +192,22 @@
           updated_at: new Date().toISOString()
         }]);
       }
+
+      if (changeType === 'settings') {
+        await supabase.from('profiles').upsert([{
+          id: userId,
+          email: appState.user.email,
+          name: appState.user.name,
+          tier: appState.user.tier,
+          theme: appState.theme,
+          advanced_mode: appState.advancedMode,
+          updated_at: new Date().toISOString()
+        }]);
+      }
     } catch (err) {
-      console.log('Supabase sync background notice:', err.message);
+      console.warn('Supabase backend sync notice:', err.message);
     }
   }
-
 
   // --- Master State ---
   const defaultState = {
@@ -156,36 +253,13 @@
     advancedMode: false
   };
 
-  function loadState() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return Object.assign({}, defaultState, JSON.parse(saved));
-    } catch (e) {
-      console.warn('Could not load state from localStorage:', e);
-    }
-    return defaultState;
-  }
-
-  const appState = loadState();
-
-  // Sync logged in session if present
-  try {
-    const sessionRaw = localStorage.getItem('coinbase_auth_session');
-    if (sessionRaw) {
-      const sess = JSON.parse(sessionRaw);
-      if (sess && sess.name) appState.user.name = sess.name;
-      if (sess && sess.email) appState.user.email = sess.email;
-    }
-  } catch (e) {}
+  // Pure Backend Architecture: State is held in-memory and synced live with Supabase cloud
+  const appState = JSON.parse(JSON.stringify(defaultState));
 
 
   function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      syncToSupabase('balances');
-    } catch (e) {
-      console.warn('Could not save state:', e);
-    }
+    // Pure cloud state - all information persisted strictly to Supabase backend
+    syncToSupabase('balances');
   }
 
   function calculateTotalPortfolio() {
@@ -201,7 +275,7 @@
   window.toggleTheme = function () {
     appState.theme = appState.theme === 'light' ? 'dark' : 'light';
     applyTheme();
-    saveState();
+    syncToSupabase('settings');
     showToast(
       appState.theme === 'dark' ? 'Pro Dark Mode' : 'Classic Light Mode',
       `Switched to ${appState.theme} theme`,
@@ -229,7 +303,7 @@
       appState.advancedMode = !appState.advancedMode;
     }
     applyAdvancedMode();
-    saveState();
+    syncToSupabase('settings');
     showToast(
       appState.advancedMode ? 'Advanced Trade Mode Active' : 'Standard View Active',
       appState.advancedMode ? 'Pro order book, candlestick indicators, and depth chart enabled.' : 'Standard portfolio mode active.',
@@ -364,7 +438,7 @@
       appState.balances.USD -= amountUSD;
       appState.balances[symbol] = (appState.balances[symbol] || 0) + cryptoQty;
 
-      appState.transactions.unshift({
+      const newTx = {
         id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
         type: 'Buy',
         asset: symbol,
@@ -373,8 +447,9 @@
         price: asset.priceUSD,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         status: 'Completed'
-      });
-
+      };
+      appState.transactions.unshift(newTx);
+      syncToSupabase('transaction', newTx);
       saveState();
       updateAllUI();
       closeActiveModal();
@@ -394,7 +469,7 @@
       appState.balances[symbol] -= cryptoQty;
       appState.balances.USD += amountUSD;
 
-      appState.transactions.unshift({
+      const newTx = {
         id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
         type: 'Sell',
         asset: symbol,
@@ -403,8 +478,9 @@
         price: asset.priceUSD,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         status: 'Completed'
-      });
-
+      };
+      appState.transactions.unshift(newTx);
+      syncToSupabase('transaction', newTx);
       saveState();
       updateAllUI();
       closeActiveModal();
@@ -429,24 +505,21 @@
     activeProviderName: 'Coinbase WebSocket'
   };
 
-  function loadApiConfig() {
-    try {
-      const saved = localStorage.getItem(API_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (!parsed.apiKey) parsed.apiKey = defaultApiConfig.apiKey;
-        return Object.assign({}, defaultApiConfig, parsed);
-      }
-    } catch (e) {}
-    return Object.assign({}, defaultApiConfig);
-  }
-
-  const apiConfig = loadApiConfig();
+  const apiConfig = Object.assign({}, defaultApiConfig);
 
   function saveApiConfig() {
-    try {
-      localStorage.setItem(API_STORAGE_KEY, JSON.stringify(apiConfig));
-    } catch (e) {}
+    // Persist API configuration settings directly to Supabase cloud
+    if (supabase) {
+      const activeUser = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+      supabase.from('profiles').upsert([{
+        id: activeUser,
+        api_provider: apiConfig.provider,
+        api_key: apiConfig.apiKey,
+        updated_at: new Date().toISOString()
+      }]).then(() => {
+        console.log('API config synced to Supabase backend');
+      }).catch(e => console.warn('Supabase api config notice:', e));
+    }
   }
 
   let activeWebSocket = null;
@@ -832,7 +905,7 @@
     }
 
     appState.balances[symbol] -= amt;
-    appState.transactions.unshift({
+    const newTx = {
       id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
       type: 'Send',
       asset: symbol,
@@ -841,8 +914,9 @@
       price: asset.priceUSD,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       status: 'Completed'
-    });
-
+    };
+    appState.transactions.unshift(newTx);
+    syncToSupabase('transaction', newTx);
     saveState();
     updateAllUI();
     closeActiveModal();
@@ -929,7 +1003,7 @@
   window.confirmDepositCash = function () {
     const amt = parseFloat(document.getElementById('deposit-amount-input')?.value || 5000);
     appState.balances.USD += amt;
-    appState.transactions.unshift({
+    const newTx = {
       id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
       type: 'Deposit',
       asset: 'USD',
@@ -938,8 +1012,9 @@
       price: 1.00,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       status: 'Completed'
-    });
-
+    };
+    appState.transactions.unshift(newTx);
+    syncToSupabase('transaction', newTx);
     saveState();
     updateAllUI();
     closeActiveModal();
@@ -980,7 +1055,7 @@
     }
 
     appState.balances.USD -= amt;
-    appState.transactions.unshift({
+    const newTx = {
       id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
       type: 'Withdraw',
       asset: 'USD',
@@ -989,8 +1064,9 @@
       price: 1.00,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       status: 'Completed'
-    });
-
+    };
+    appState.transactions.unshift(newTx);
+    syncToSupabase('transaction', newTx);
     saveState();
     updateAllUI();
     closeActiveModal();
@@ -1196,7 +1272,7 @@
           </div>
         </div>
 
-        <button onclick="closeActiveModal(); localStorage.removeItem('coinbase_auth_session'); showToast('Signed out', 'Redirecting to sign in...', '👋'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; background:#FFF0F0; color:#CF202F; border:none; border-radius:9999px; padding:12px; font-weight:700; cursor:pointer;">
+        <button onclick="closeActiveModal(); if (supabase && supabase.auth) supabase.auth.signOut(); showToast('Signed out', 'Redirecting to sign in...', '👋'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; background:#FFF0F0; color:#CF202F; border:none; border-radius:9999px; padding:12px; font-weight:700; cursor:pointer;">
           Sign Out
         </button>
       </div>
