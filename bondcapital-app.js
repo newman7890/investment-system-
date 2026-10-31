@@ -1442,24 +1442,6 @@
             <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Access 30 tiered packages with 3x provisioned balance credits & monthly payouts.</p>
           </div>
 
-          <!-- 1. Perpetuals Trading -->
-          <div onclick="closeActiveModal(); window.location.href='perpetuals.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
-            <div style="width: 38px; height: 38px; border-radius: 10px; background: #EEF3FF; color: #0052FF; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Perpetuals Trading</div>
-            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Trade crypto futures with up to 10x leverage and sub-second execution.</p>
-          </div>
-
-          <!-- 2. Bond Capital Elite -->
-          <div onclick="closeActiveModal(); window.location.href='coinbase-one.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
-            <div style="width: 38px; height: 38px; border-radius: 10px; background: #F8FAFC; color: #0A0B0D; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
-            </div>
-            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Bond Capital Elite</div>
-            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Zero trading fees, $1M protection guarantee, and priority 24/7 support.</p>
-          </div>
-
           <!-- 3. DCA Investment Calculator -->
           <div onclick="closeActiveModal(); openDCACalculatorModal();" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: #ECFDF5; color: #059669; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
@@ -1476,15 +1458,6 @@
             </div>
             <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Market Sentiment</div>
             <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Real-time Fear & Greed index, volatility gauges, and social volume metrics.</p>
-          </div>
-
-          <!-- 5. Learning Rewards -->
-          <div onclick="closeActiveModal(); window.location.href='learning-rewards.html';" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
-            <div style="width: 38px; height: 38px; border-radius: 10px; background: #F3E8FF; color: #7C3AED; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            </div>
-            <div style="font-size: 14px; font-weight: 700; color: #0A0B0D; margin-bottom: 3px;">Learning Rewards</div>
-            <p style="font-size: 11px; color: #5B616E; line-height: 1.4; margin: 0;">Complete interactive protocol modules and earn free crypto rewards.</p>
           </div>
 
           <!-- 6. Web3 Wallet Gateway -->
@@ -1665,15 +1638,6 @@
         } else if (text.includes('explore')) {
           e.preventDefault();
           window.location.href = 'explore.html';
-        } else if (text.includes('perpetuals')) {
-          e.preventDefault();
-          window.location.href = 'perpetuals.html';
-        } else if (text.includes('learning')) {
-          e.preventDefault();
-          window.location.href = 'learning-rewards.html';
-        } else if (text.includes('bond capital elite') || text.includes('elite') || text.includes('bondcapital')) {
-          e.preventDefault();
-          window.location.href = 'coinbase-one.html';
         } else if (text.includes('30-level') || text.includes('30 level') || text.includes('levels') || text.includes('packages')) {
           e.preventDefault();
           window.location.href = 'levels.html';
