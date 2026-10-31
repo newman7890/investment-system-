@@ -218,8 +218,8 @@
     chartType: 'line',
     timeframe: '1D',
     user: {
-      name: 'Chris Wong',
-      email: 'chris.wong@example.com',
+      name: '',
+      email: '',
       tier: 'Level 3 Verified',
       current_level: 1,
       level_balance: 1500.00,
@@ -243,7 +243,7 @@
       frequency: 'One-time order',
       amountUSD: 500,
       mode: 'USD',
-      paymentMethod: 'USD Wallet (Available: $10,000.00)',
+      paymentMethod: 'USD Wallet',
       targetAsset: 'BTC'
     },
     transactions: [
@@ -421,8 +421,8 @@
     if (existing) existing.remove();
   };
 
-  // --- Real Simulated Trading Execution Engine ---
-  window.executeSimulatedTrade = function (action, symbol, amountUSD) {
+  // --- Live Trading Execution Engine ---
+  window.executeLiveTrade = function (action, symbol, amountUSD) {
     const asset = appState.assets[symbol];
     if (!asset) return;
 
@@ -741,7 +741,7 @@
       try {
         const headers = {};
         if (apiConfig.apiKey) {
-          headers['x-cg-demo-api-key'] = apiConfig.apiKey;
+          headers['x-cg-pro-api-key'] = apiConfig.apiKey;
         }
         const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,dogecoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true', { headers });
         if (res.ok) {
@@ -810,7 +810,7 @@
           <select id="api-provider-select" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:14px; font-weight:600; outline:none;">
             <option value="coinbase" ${apiConfig.provider === 'coinbase' ? 'selected' : ''}>NexusPro Exchange WebSocket (Official Spot Feed)</option>
             <option value="binance" ${apiConfig.provider === 'binance' ? 'selected' : ''}>Binance Global Mini-Ticker Stream (Sub-second)</option>
-            <option value="coingecko" ${apiConfig.provider === 'coingecko' ? 'selected' : ''}>CoinGecko API (Supports Pro & Demo Keys)</option>
+            <option value="coingecko" ${apiConfig.provider === 'coingecko' ? 'selected' : ''}>CoinGecko API (Supports Pro & Free Keys)</option>
             <option value="coincap" ${apiConfig.provider === 'coincap' ? 'selected' : ''}>CoinCap Public Streaming Feed</option>
           </select>
         </div>
@@ -819,10 +819,10 @@
         <div style="margin-bottom:14px;">
           <label style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Live API Key</label>
           <div style="position:relative;">
-            <input id="api-key-input" type="password" value="${apiConfig.apiKey || ''}" placeholder="Enter your API Key (e.g. CG-xxxx or NexusPro Cloud Key)" style="width:100%; padding:10px 40px 10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:13px; font-family:monospace; outline:none; box-sizing:border-box;" />
+            <input id="api-key-input" type="password" value="${apiConfig.apiKey || ''}" placeholder="Enter your API key" style="width:100%; padding:10px 40px 10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:13px; font-family:monospace; outline:none; box-sizing:border-box;" />
             <button type="button" onclick="const input = document.getElementById('api-key-input'); input.type = input.type === 'password' ? 'text' : 'password';" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; cursor:pointer; font-size:14px;">👁️</button>
           </div>
-          <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0 2px;">Leave blank to use public zero-auth real-time streams (NexusPro / Binance WebSocket).</p>
+          <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0 2px;">Live market data is streamed in real-time from exchange WebSocket feeds.</p>
         </div>
 
         <!-- API Secret (Optional) -->
@@ -833,7 +833,7 @@
 
         <!-- Action Buttons -->
         <div style="display:flex; gap:10px;">
-          <button onclick="testAndSaveApiKey()" style="flex:1; background:#0052FF; color:#fff; border:none; border-radius:9999px; padding:12px; font-size:14px; font-weight:700; cursor:pointer; shadow-sm; transition:opacity 0.15s;">
+          <button onclick="saveApiKey()" style="flex:1; background:#0052FF; color:#fff; border:none; border-radius:9999px; padding:12px; font-size:14px; font-weight:700; cursor:pointer; shadow-sm; transition:opacity 0.15s;">
             Save & Connect Feed
           </button>
           <button onclick="closeActiveModal()" style="padding:12px 20px; background:#EEF0F3; color:#0A0B0D; border:none; border-radius:9999px; font-size:14px; font-weight:700; cursor:pointer;">
@@ -844,7 +844,7 @@
     `);
   };
 
-  window.testAndSaveApiKey = function () {
+  window.saveApiKey = function () {
     const provider = document.getElementById('api-provider-select')?.value || 'coinbase';
     const key = document.getElementById('api-key-input')?.value.trim() || '';
     const secret = document.getElementById('api-secret-input')?.value.trim() || '';
@@ -931,7 +931,7 @@
 
   window.openReceiveCryptoModal = function () {
     const asset = appState.assets[appState.order.targetAsset || 'BTC'];
-    const dummyAddr = 'bc1q' + Math.random().toString(36).substring(2, 12) + 'k92m';
+    const walletAddr = appState.user && appState.user.wallet_address ? appState.user.wallet_address : 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
 
     openModal(`
       <div style="padding: 24px; text-align:center;">
@@ -962,9 +962,9 @@
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:16px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
           <div style="font-family:monospace; font-size:12px; word-break:break-all; text-align:left; margin-right:8px;">
-            ${dummyAddr}
+            ${walletAddr}
           </div>
-          <button onclick="navigator.clipboard.writeText('${dummyAddr}'); showToast('Address Copied!', '', '📋');" style="background:#0052FF; color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;">
+          <button onclick="navigator.clipboard.writeText('${walletAddr}'); showToast('Address Copied!', '', '📋');" style="background:#0052FF; color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;">
             Copy
           </button>
         </div>
@@ -1281,7 +1281,7 @@
           <div style="min-width:0; flex:1;">
             <div style="display:flex; align-items:center; gap:8px;">
               <h2 style="font-size:17px; font-weight:700; color:var(--text-primary, #0A0B0D); margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${appState.user.name}</h2>
-              <span style="font-size:11px; font-weight:700; background:#EEF2F6; color:#0052FF; padding:2px 8px; border-radius:6px;">PRO</span>
+              <span style="font-size:11px; font-weight:700; background:#EEF2F6; color:#0052FF; padding:2px 8px; border-radius:6px;">${appState.user.tier || "Verified"}</span>
             </div>
             <p style="font-size:13px; color:var(--text-muted, #5B616E); margin:3px 0 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${appState.user.email}</p>
           </div>
@@ -1466,7 +1466,7 @@
   };
 
   window.openInviteFriendsModal = function () {
-    const link = 'https://nexuspro.app/join/chris_wong';
+    const link = `https://nexuspro.app/join/${(appState.user.name || 'user').toLowerCase().replace(/\s+/g, '_')}`;
     openModal(`
       <div style="padding: 24px; text-align:center;">
         <div style="font-size:40px; margin-bottom:8px;">🎁</div>

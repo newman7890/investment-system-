@@ -80,13 +80,13 @@
         <!-- Full Name (Only visible for Create Account) -->
         <div id="fullname-container" class="hidden">
           <label class="block text-xs font-bold text-[#5B616E] uppercase tracking-wider mb-1.5" for="auth-fullname">Full Name</label>
-          <input id="auth-fullname" type="text" placeholder="Chris Wong" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
+          <input id="auth-fullname" type="text" placeholder="Full name" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
         </div>
 
         <!-- Email -->
         <div>
           <label class="block text-xs font-bold text-[#5B616E] uppercase tracking-wider mb-1.5" for="auth-email">Email Address</label>
-          <input id="auth-email" type="email" required placeholder="name@example.com" value="chris.wong@example.com" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
+          <input id="auth-email" type="email" required placeholder="Email address" value="" class="w-full px-4 py-3 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
         </div>
 
         <!-- Password -->
@@ -96,7 +96,7 @@
             <a href="#" onclick="showToast('Password Reset', 'Check your email inbox for instructions', '📧')" class="text-xs text-coinbase-blue hover:underline font-semibold">Forgot password?</a>
           </div>
           <div class="relative">
-            <input id="auth-password" type="password" required placeholder="••••••••••••" value="NexusProDemo2026!" class="w-full px-4 py-3 pr-12 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
+            <input id="auth-password" type="password" required placeholder="••••••••••••" value="" class="w-full px-4 py-3 pr-12 rounded-2xl border border-[#ECEFF1] bg-[#F5F8FF]/50 focus:bg-white focus:border-coinbase-blue focus:ring-1 focus:ring-coinbase-blue text-sm font-medium text-[#0A0B0D] placeholder-gray-400 outline-none transition-all" />
             <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600">
               <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
             </button>
@@ -109,13 +109,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
         </button>
       </form>
-
-      <!-- Quick Demo Sign In -->
-      <div class="mt-6 pt-6 border-t border-[#ECEFF1] text-center">
-        <button onclick="demoSignIn()" class="w-full py-3 px-4 bg-[#EEF2F6] hover:bg-[#E2E5E9] text-[#0A0B0D] font-bold text-xs rounded-full transition-colors flex items-center justify-center gap-2">
-          <span>⚡ Instant Demo Access (Chris Wong)</span>
-        </button>
-      </div>
+</div>
 
       <!-- Legal / Terms -->
       <p class="text-[11px] text-[#5B616E] text-center mt-6 leading-relaxed">
@@ -236,19 +230,6 @@
         submitBtn.classList.remove('opacity-70');
       }
     }
-
-    async function demoSignIn() {
-      showAlert('Connecting to Supabase backend as Chris Wong...', false);
-      if (window.__supabase) {
-        // Hydrate or ensure primary record in backend
-        await window.__supabase.from('profiles').upsert([{
-          id: 'usr_master_chris',
-          email: 'chris.wong@example.com',
-          name: 'Chris Wong',
-          tier: 'Level 3 Verified',
-          updated_at: new Date().toISOString()
-        }]);
-      }
       setTimeout(() => { window.location.href = 'index.html'; }, 500);
     }
   </script>
