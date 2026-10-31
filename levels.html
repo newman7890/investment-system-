@@ -101,6 +101,39 @@
   <!-- Main Container -->
   <div class="flex-1 flex flex-col min-w-0">
     <!-- TopBar -->
+    <!-- Mobile Top App Bar (Visible on mobile/tablet < 1024px) -->
+<header class="lg:hidden sticky top-0 bg-white/95 backdrop-blur-md z-30 px-4 py-3 border-b border-[#ECEFF1] flex items-center justify-between shadow-xs">
+  <!-- Brand Logo & Name (Matches laptop desktop sidebar) -->
+  <a href="index.html" class="flex items-center gap-2.5 select-none" style="text-decoration:none;">
+    <div style="width:34px; height:34px; background:#0A0B0D; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <span style="color:#FFFFFF; font-size:12px; font-weight:900; letter-spacing:-0.5px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">BC</span>
+    </div>
+    <span style="font-size:16px; font-weight:800; color:#0A0B0D; letter-spacing:-0.03em; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">Bond Capital</span>
+  </a>
+
+  <!-- Header Actions -->
+  <div class="flex items-center space-x-1">
+    <!-- Notification Bell -->
+    <button onclick="openNotificationsModal()" aria-label="Notifications" class="p-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative cursor-pointer" type="button">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <span class="absolute top-2 right-2 w-2 h-2 bg-[#0052FF] rounded-full ring-2 ring-white"></span>
+    </button>
+    <!-- Help Icon -->
+    <button onclick="openHelpModal()" aria-label="Help" class="p-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" type="button">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+    <!-- User Avatar Circle -->
+    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-8 h-8 rounded-full bg-[#1652f0] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm hover:opacity-95 cursor-pointer" type="button">
+      C
+    </button>
+  </div>
+</header>
+
     <header class="hidden lg:flex h-20 px-8 items-center justify-between shrink-0 bg-white border-b border-[#ECEFF1]">
       <div>
         <h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D]">30-Level Digital Product Platform</h1>
