@@ -1372,19 +1372,7 @@
         <!-- Settings & Navigation List -->
         <div style="padding: 0 24px 20px; display:flex; flex-direction:column; gap:6px;">
           
-          <!-- Manage Balances -->
-          <div onclick="closeActiveModal(); openDepositCashModal();" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:34px; height:34px; border-radius:10px; background:#EFF6FF; color:#0052FF; display:flex; align-items:center; justify-content:center; font-size:16px;">
-                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <div>
-                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Deposit / Top Up Cash</div>
-                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Add funds via wire, ACH, or instant transfer</div>
-              </div>
-            </div>
-            <svg style="width:16px; height:16px; color:#94A3B8;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
+
 
           <!-- Transaction Ledger -->
           <div onclick="closeActiveModal(); window.location.href='transactions.html';" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
