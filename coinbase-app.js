@@ -1491,6 +1491,16 @@
   function updateAllUI(tickSymbol, direction) {
     const totalVal = calculateTotalPortfolio();
 
+    // 0. Update Profile Avatar Icon in Header
+    try {
+      const uInitial = ((appState.user && appState.user.name) || (appState.user && appState.user.email) || 'U').trim().charAt(0).toUpperCase();
+      document.querySelectorAll('button[aria-label="Profile Avatar"], button[aria-label="User Profile"], button[onclick*="openProfileModal"]').forEach(b => {
+        if (!b.querySelector('svg') && !b.querySelector('img')) {
+          b.textContent = uInitial || 'U';
+        }
+      });
+    } catch (e) {}
+
     // 1. Update Portfolio Header Display
     document.querySelectorAll('h2, h1, .portfolio-total').forEach(el => {
       if (el.textContent.includes('$1.90') || el.classList.contains('portfolio-total') || el.dataset.purpose === 'portfolio-header-val') {

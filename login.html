@@ -142,13 +142,13 @@
       alertBox.classList.add('hidden');
 
       if (mode === 'signup') {
-        tabSignUp.className = 'flex-1 py-2 text-xs font-bold rounded-full bg-[#0A0B0D] text-white shadow-sm text-center transition-all';
-        tabSignIn.className = 'flex-1 py-2 text-xs font-bold rounded-full text-[#5B616E] hover:text-[#0A0B0D] text-center transition-all';
+        tabSignUp.className = 'flex-1 py-2 text-xs font-bold rounded-full bg-[#0A0B0D] text-white shadow-sm text-center transition-all cursor-pointer';
+        tabSignIn.className = 'flex-1 py-2 text-xs font-bold rounded-full text-[#5B616E] hover:text-[#0A0B0D] text-center transition-all cursor-pointer';
         fullnameContainer.classList.remove('hidden');
         submitBtnSpan.textContent = 'Create Free Account';
       } else {
-        tabSignIn.className = 'flex-1 py-2 text-xs font-bold rounded-full bg-[#0A0B0D] text-white shadow-sm text-center transition-all';
-        tabSignUp.className = 'flex-1 py-2 text-xs font-bold rounded-full text-[#5B616E] hover:text-[#0A0B0D] text-center transition-all';
+        tabSignIn.className = 'flex-1 py-2 text-xs font-bold rounded-full bg-[#0A0B0D] text-white shadow-sm text-center transition-all cursor-pointer';
+        tabSignUp.className = 'flex-1 py-2 text-xs font-bold rounded-full text-[#5B616E] hover:text-[#0A0B0D] text-center transition-all cursor-pointer';
         fullnameContainer.classList.add('hidden');
         submitBtnSpan.textContent = 'Sign In';
       }
@@ -159,7 +159,7 @@
       pwd.type = pwd.type === 'password' ? 'text' : 'password';
     }
 
-    function showAlert(msg, isError = true) {
+    function showAlert(msg, isError) {
       const b = document.getElementById('auth-alert');
       b.classList.remove('hidden');
       b.className = isError
@@ -175,65 +175,72 @@
       const fullname = document.getElementById('auth-fullname')?.value.trim();
       const submitBtn = document.getElementById('auth-submit-btn');
 
+      if (!email || !password) {
+        showAlert('Please enter both your email and password.', true);
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.classList.add('opacity-70');
 
       try {
         const client = window.__supabase;
-        
+        if (!client) {
+          throw new Error('Database client not loaded. Please refresh the page.');
+        }
+
         if (authMode === 'signup') {
-          if (client) {
-            const { data, error } = await client.auth.signUp({
-              email,
-              password,
-              options: { data: { full_name: fullname || 'Crypto Trader' } }
-            });
-            if (error) throw error;
-            
-            if (data && data.user) {
-              await client.from('profiles').upsert([{
-                id: data.user.id,
-                email: email,
-                name: fullname || email.split('@')[0],
-                tier: 'Level 1 Verified',
-                updated_at: new Date().toISOString()
-              }]);
-              await client.from('balances').upsert([{
-                user_id: data.user.id,
-                usd: 10000.00,
-                btc: 0.00,
-                eth: 0.00,
-                sol: 0.00,
-                doge: 0.00,
-                updated_at: new Date().toISOString()
-              }]);
-            }
+          // 1. Sign Up new account
+          const { data, error } = await client.auth.signUp({
+            email,
+            password,
+            options: { data: { full_name: fullname || 'Investor' } }
+          });
+          if (error) throw error;
+
+          if (data && data.user) {
+            await client.from('profiles').upsert([{
+              id: data.user.id,
+              email: email,
+              name: fullname || email.split('@')[0],
+              tier: 'Level 1 Verified',
+              current_level: 1,
+              level_balance: 1500.00,
+              monthly_limit: 30.00,
+              updated_at: new Date().toISOString()
+            }]);
+
+            await client.from('balances').upsert([{
+              user_id: data.user.id,
+              usd: 10000.00,
+              btc: 0.00,
+              eth: 0.00,
+              sol: 0.00,
+              doge: 0.00,
+              updated_at: new Date().toISOString()
+            }]);
           }
 
-          showAlert('Account created in Supabase! Loading portfolio...', false);
+          showAlert('Account created! Loading your portfolio...', false);
           setTimeout(() => { window.location.href = 'index.html'; }, 1000);
 
         } else {
-          if (client) {
-            const { data, error } = await client.auth.signInWithPassword({ email, password });
-            if (error) {
-              console.warn('Supabase auth notice:', error.message);
-            }
+          // 2. Sign In existing account
+          const { data, error } = await client.auth.signInWithPassword({ email, password });
+          if (error) {
+            throw error;
           }
 
-          showAlert('Signed in successfully! Loading backend portfolio...', false);
+          showAlert('Signed in successfully! Loading your portfolio...', false);
           setTimeout(() => { window.location.href = 'index.html'; }, 800);
         }
 
       } catch (err) {
-        showAlert('Authentication notice: ' + err.message, true);
+        showAlert(err.message || 'Authentication error. Please check your credentials.', true);
         submitBtn.disabled = false;
         submitBtn.classList.remove('opacity-70');
       }
     }
-      setTimeout(() => { window.location.href = 'index.html'; }, 500);
-    }
   </script>
 </body>
 </html>
-
