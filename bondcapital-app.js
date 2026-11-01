@@ -1704,33 +1704,7 @@
             <svg style="width:16px; height:16px; color:#94A3B8;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
 
-          <!-- Live API Settings -->
-          <div onclick="closeActiveModal(); openApiSettingsModal();" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:34px; height:34px; border-radius:10px; background:#ECFDF5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:16px;">
-                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <div>
-                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Live Market Feed & API</div>
-                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Bond Capital WebSocket & REST integration</div>
-              </div>
-            </div>
-            <span style="font-size:11px; font-weight:700; color:#059669; background:#D1FAE5; padding:2px 8px; border-radius:9999px;">Active</span>
-          </div>
 
-          <!-- Theme Toggle -->
-          <div onclick="toggleTheme();" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:12px; cursor:pointer; background:transparent; transition:background 0.15s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='transparent'">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:34px; height:34px; border-radius:10px; background:#FFFBEB; color:#D97706; display:flex; align-items:center; justify-content:center; font-size:16px;">
-                <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <div>
-                <div style="font-size:14px; font-weight:600; color:var(--text-primary, #0A0B0D);">Appearance</div>
-                <div style="font-size:12px; color:var(--text-muted, #5B616E);">Currently in ${appState.theme === 'dark' ? 'Pro Dark' : 'Classic Light'} mode</div>
-              </div>
-            </div>
-            <span style="font-size:12px; font-weight:700; color:#0052FF;">Switch</span>
-          </div>
 
           <div style="margin: 8px 0; height:1px; background:var(--border-color, #ECEFF1);"></div>
 
