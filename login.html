@@ -128,18 +128,12 @@
   <script>
     let authMode = 'signin';
 
-    // Immediate check: if already logged in, go to dashboard or admin
+    // Immediate check: if already logged in, go to dashboard
     (function() {
       try {
         const uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
-        const email = (sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '').toLowerCase().trim();
-        const isAdmin = sessionStorage.getItem('bond_is_admin') === 'true' || localStorage.getItem('bond_is_admin') === 'true';
         if (uid) {
-          if (email === 'newm5811@gmail.com' || isAdmin) {
-            window.location.replace('admin.html');
-          } else {
-            window.location.replace('dashboard.html');
-          }
+          window.location.replace('dashboard.html');
         }
       } catch (e) {}
     })();
@@ -309,22 +303,12 @@
           localStorage.setItem('bond_user_email', email);
           localStorage.setItem('bond_user_name', displayName);
 
-          const isAdmin = email.trim().toLowerCase() === 'newm5811@gmail.com';
-          if (isAdmin) {
-            sessionStorage.setItem('bond_is_admin', 'true');
-            localStorage.setItem('bond_is_admin', 'true');
-            sessionStorage.setItem('bond_user_role', 'admin');
-            localStorage.setItem('bond_user_role', 'admin');
-            showAlert('Master Administrator Authenticated! Opening Admin Console...', false);
-            setTimeout(() => { window.location.replace('admin.html'); }, 600);
-          } else {
-            sessionStorage.removeItem('bond_is_admin');
-            localStorage.removeItem('bond_is_admin');
-            sessionStorage.removeItem('bond_user_role');
-            localStorage.removeItem('bond_user_role');
-            showAlert('Signed in successfully! Loading your portfolio...', false);
-            setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
-          }
+          sessionStorage.removeItem('bond_is_admin');
+          localStorage.removeItem('bond_is_admin');
+          sessionStorage.removeItem('bond_user_role');
+          localStorage.removeItem('bond_user_role');
+          showAlert('Signed in successfully! Loading your portfolio...', false);
+          setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
         }
 
       } catch (err) {
