@@ -464,31 +464,135 @@
     return c;
   }
 
-  window.showToast = function (title, message = '', icon = '✓') {
+  function dismissToast(toast) {
+    if (toast && toast.parentElement && !toast.classList.contains('cb-toast-dismissing')) {
+      toast.classList.add('cb-toast-dismissing');
+      toast.style.animation = 'cbFadeOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+      setTimeout(() => {
+        if (toast.parentElement) toast.remove();
+      }, 240);
+    }
+  }
+
+  window.showToast = function (title, message = '', typeOrIcon = 'success', duration = 4500) {
     const container = ensureToastContainer();
     const toast = document.createElement('div');
     toast.className = 'cb-toast';
+
+    // Auto-detect institutional type and vector SVG icon
+    let type = 'info';
+    let iconSvg = '';
+    let pillText = 'NOTICE';
+
+    const tLower = (String(title) + ' ' + String(message) + ' ' + String(typeOrIcon)).toLowerCase();
+
+    if (
+      tLower.includes('tier') ||
+      tLower.includes('package') ||
+      tLower.includes('unlocked') ||
+      tLower.includes('level') ||
+      tLower.includes('allocated') ||
+      tLower.includes('allocation') ||
+      typeOrIcon === 'tier'
+    ) {
+      type = 'tier';
+      pillText = 'PORTFOLIO ALLOCATION';
+      iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#0052FF" fill-opacity="0.16"/>
+      </svg>`;
+    } else if (
+      tLower.includes('success') ||
+      tLower.includes('confirm') ||
+      tLower.includes('deposit') ||
+      tLower.includes('withdraw') ||
+      tLower.includes('copi') ||
+      tLower.includes('sent') ||
+      tLower.includes('transferred') ||
+      tLower.includes('paid') ||
+      tLower.includes('verified') ||
+      typeOrIcon === 'success' ||
+      typeOrIcon === '✓'
+    ) {
+      type = 'success';
+      pillText = 'SETTLED & CONFIRMED';
+      iconSvg = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16.667 5L7.5 14.167 3.333 10"/>
+      </svg>`;
+    } else if (
+      tLower.includes('insufficient') ||
+      tLower.includes('invalid') ||
+      tLower.includes('error') ||
+      tLower.includes('failed') ||
+      tLower.includes('zero') ||
+      tLower.includes('depleted') ||
+      typeOrIcon === 'warning' ||
+      typeOrIcon === 'error'
+    ) {
+      type = 'warning';
+      pillText = 'ATTENTION REQUIRED';
+      iconSvg = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 6.667V10m0 3.333h.008M10 18.333a8.333 8.333 0 100-16.666 8.333 8.333 0 000 16.666z"/>
+      </svg>`;
+    } else {
+      type = 'info';
+      pillText = 'SYSTEM ADVISORY';
+      iconSvg = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 13.333V10m0-3.333h.008M10 18.333a8.333 8.333 0 100-16.666 8.333 8.333 0 000 16.666z"/>
+      </svg>`;
+    }
+
     toast.innerHTML = `
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:28px; height:28px; border-radius:50%; background:#0052FF; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; shrink:0;">
-          ${icon}
-        </div>
-        <div>
-          <div style="font-weight:600; font-size:13px; color:#fff;">${title}</div>
-          ${message ? `<div style="font-size:12px; color:#9BA2B0; margin-top:2px;">${message}</div>` : ''}
-        </div>
+      <div class="cb-toast-badge cb-toast-badge-${type}">
+        ${iconSvg}
       </div>
-      <button style="background:none; border:none; color:#9BA2B0; cursor:pointer; font-size:16px; padding:4px;" onclick="this.parentElement.remove()">✕</button>
+      <div class="cb-toast-body">
+        <div class="cb-toast-header">
+          <span class="cb-toast-pill cb-toast-pill-${type}">${pillText}</span>
+          <span class="cb-toast-time">Just now</span>
+        </div>
+        <div class="cb-toast-title">${title}</div>
+        ${message ? `<div class="cb-toast-msg">${message}</div>` : ''}
+      </div>
+      <button class="cb-toast-close" title="Dismiss" type="button" aria-label="Dismiss">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 1l12 12M13 1L1 13"/>
+        </svg>
+      </button>
+      <div class="cb-toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
     `;
+
+    // Close button event
+    const closeBtn = toast.querySelector('.cb-toast-close');
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        dismissToast(toast);
+      };
+    }
+
     container.appendChild(toast);
 
-    setTimeout(() => {
-      if (toast.parentElement) {
-        toast.style.animation = 'cbFadeOut 0.25s forwards';
-        setTimeout(() => toast.remove(), 250);
-      }
-    }, 3800);
+    // Auto dismiss with hover-pause
+    let dismissTimer = setTimeout(() => {
+      dismissToast(toast);
+    }, duration);
+
+    toast.addEventListener('mouseenter', () => {
+      clearTimeout(dismissTimer);
+      const bar = toast.querySelector('.cb-toast-progress-bar');
+      if (bar) bar.style.animationPlayState = 'paused';
+    });
+
+    toast.addEventListener('mouseleave', () => {
+      const bar = toast.querySelector('.cb-toast-progress-bar');
+      if (bar) bar.style.animationPlayState = 'running';
+      dismissTimer = setTimeout(() => {
+        dismissToast(toast);
+      }, 1400);
+    });
   };
+
+  
 
   // --- Modal Framework ---
   window.openModal = function (htmlContent) {
