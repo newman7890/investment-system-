@@ -76,15 +76,25 @@
     .marquee-container:hover .animate-ticker {
       animation-play-state: paused;
     }
-    .perspective-mockup {
-      perspective: 1200px;
+    @media (min-width: 1024px) {
+      .perspective-mockup {
+        perspective: 1200px;
+      }
+      .mockup-card {
+        transform: rotateX(7deg) rotateY(-3deg) rotateZ(1deg);
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .perspective-mockup:hover .mockup-card {
+        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+      }
     }
-    .mockup-card {
-      transform: rotateX(8deg) rotateY(-4deg) rotateZ(1deg);
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .perspective-mockup:hover .mockup-card {
-      transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    @media (max-width: 1023px) {
+      .perspective-mockup {
+        perspective: none;
+      }
+      .mockup-card {
+        transform: none !important;
+      }
     }
   </style>
 </head>
@@ -215,59 +225,60 @@
         </div>
       </div>
 
-      <!-- INTERACTIVE PLATFORM PERSPECTIVE PREVIEW -->
-      <div class="relative max-w-4xl mx-auto perspective-mockup">
-        <div class="mockup-card bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200/90 glow-card relative">
+            <!-- INTERACTIVE PLATFORM PREVIEW (Fully Responsive) -->
+      <div class="relative max-w-4xl mx-auto perspective-mockup w-full px-1 sm:px-0">
+        <div class="mockup-card bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 lg:p-8 shadow-xl sm:shadow-2xl border border-slate-200/90 glow-card relative overflow-hidden">
+          
           <!-- Top Mockup Bar -->
-          <div class="flex items-center justify-between pb-6 border-b border-slate-100">
-            <div class="flex items-center gap-3">
-              <img src="bond-capital-icon.png" alt="Bond Capital" class="w-10 h-10 rounded-xl shadow-xs">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-slate-900 text-sm">Bond Capital Private Wealth</span>
-                  <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[10px] tracking-wide uppercase">Verified Active</span>
+          <div class="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-100 gap-2">
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <img src="bond-capital-icon.png" alt="Bond Capital" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl shadow-xs shrink-0">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <span class="font-bold text-slate-900 text-xs sm:text-sm truncate">Bond Capital Private Wealth</span>
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[9px] sm:text-[10px] tracking-wide uppercase shrink-0">Verified Active</span>
                 </div>
-                <span class="text-xs text-slate-500 font-mono">Portfolio ID: #BC-84920 • Level 30 Tier Active</span>
+                <span class="text-[10px] sm:text-xs text-slate-500 font-mono block truncate">Portfolio ID: #BC-84920 &bull; Level 30 Tier Active</span>
               </div>
             </div>
-            <div class="hidden sm:flex items-center gap-2">
+            <div class="hidden sm:flex items-center gap-2 shrink-0">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span class="text-xs font-semibold text-slate-600">Encrypted Vault Connected</span>
+              <span class="text-xs font-semibold text-slate-600">Encrypted Vault</span>
             </div>
           </div>
 
           <!-- Mockup Main Metric -->
-          <div class="py-6 sm:py-8 grid sm:grid-cols-3 gap-6 items-center">
+          <div class="py-5 sm:py-7 grid sm:grid-cols-3 gap-4 sm:gap-6 items-center">
             <div class="sm:col-span-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Total Allocated Portfolio Balance</span>
-              <div class="flex items-baseline gap-3">
-                <span class="text-4xl sm:text-5xl font-extrabold font-display text-slate-900 tracking-tight">$360,000.00</span>
-                <span class="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">300% Multiplier</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Total Allocated Portfolio Balance</span>
+              <div class="flex items-baseline gap-2 sm:gap-3 flex-wrap">
+                <span class="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display text-slate-900 tracking-tight">$360,000.00</span>
+                <span class="text-xs sm:text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md shrink-0">300% Multiplier</span>
               </div>
-              <p class="text-xs text-slate-500 mt-2">Level 30 Package • Purchase Cost: $120,000.00 USD (3× match active)</p>
+              <p class="text-[11px] sm:text-xs text-slate-500 mt-1.5 sm:mt-2">Level 30 Package &bull; Purchase: $120,000.00 USD (3&times; match active)</p>
             </div>
-            <div class="bg-blue-50/80 rounded-2xl p-4 border border-blue-100 text-right">
-              <span class="text-[11px] font-bold text-[#0052FF] uppercase tracking-wider block">Monthly Liquidity Limit</span>
-              <span class="text-2xl font-extrabold text-slate-900">$9,000.00</span>
-              <span class="text-[11px] text-slate-500 block mt-0.5">Disbursed every 30 days</span>
+            <div class="bg-blue-50/80 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-blue-100 text-left sm:text-right">
+              <span class="text-[10px] sm:text-[11px] font-bold text-[#0052FF] uppercase tracking-wider block">Monthly Liquidity Limit</span>
+              <span class="text-xl sm:text-2xl font-extrabold text-slate-900 block">$9,000.00</span>
+              <span class="text-[10px] sm:text-[11px] text-slate-500 block mt-0.5">Disbursed every 30 days</span>
             </div>
           </div>
 
           <!-- Mockup Capital Allocation Breakdown Bar -->
-          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-2">
-            <div class="flex items-center justify-between text-xs font-semibold mb-2">
+          <div class="bg-slate-50 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-100 mb-1">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-[11px] sm:text-xs font-semibold mb-2 gap-1">
               <span class="text-slate-600">Capital Commitment (33.3%): <strong class="text-slate-900">$120,000.00</strong></span>
               <span class="text-emerald-600">Bond Capital Multiplier (66.7%): <strong class="text-emerald-700">+$240,000.00</strong></span>
             </div>
-            <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden flex">
+            <div class="w-full h-2.5 sm:h-3 bg-slate-200 rounded-full overflow-hidden flex">
               <div class="h-full bg-[#0052FF]" style="width: 33.33%;"></div>
               <div class="h-full bg-emerald-500" style="width: 66.67%;"></div>
             </div>
           </div>
         </div>
 
-        <!-- Floating Badge 1 (Monthly Settlement) -->
-        <div class="hidden md:flex absolute -left-10 bottom-12 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 items-center gap-3 animate-float-slow">
+        <!-- Floating Badges (Desktop Only) -->
+        <div class="hidden lg:flex absolute -left-8 bottom-10 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 items-center gap-3 animate-float-slow">
           <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
@@ -280,8 +291,7 @@
           </div>
         </div>
 
-        <!-- Floating Badge 2 (Vault Security) -->
-        <div class="hidden md:flex absolute -right-8 top-16 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 items-center gap-3 animate-float-slow" style="animation-delay: 2.5s;">
+        <div class="hidden lg:flex absolute -right-8 top-12 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 items-center gap-3 animate-float-slow" style="animation-delay: 2.5s;">
           <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0052FF] shrink-0">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
