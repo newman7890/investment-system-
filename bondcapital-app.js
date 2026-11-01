@@ -1,4 +1,4 @@
-// Bond Capital Investment System - Complete Master Application Engine
+﻿// Bond Capital Investment System - Complete Master Application Engine
 
 (function () {
   'use strict';
@@ -296,11 +296,11 @@
       SOL: 0.00
     },
     assets: {
-      BTC: { name: 'Bitcoin', symbol: 'BTC', priceUSD: 91864.73, change24h: -3.87, changeAmount: -3694.67, high24h: 93450.00, low24h: 90210.00, volume24h: '48.2B', marketCap: '1.81T', iconBg: '#F7931A', iconText: '₿' },
-      ETH: { name: 'Ethereum', symbol: 'ETH', priceUSD: 3314.62, change24h: -5.46, changeAmount: -191.20, high24h: 3480.00, low24h: 3260.00, volume24h: '24.1B', marketCap: '398B', iconBg: '#627EEA', iconText: 'Ξ' },
-      SOL: { name: 'Solana', symbol: 'SOL', priceUSD: 248.15, change24h: 3.12, changeAmount: 7.50, high24h: 254.00, low24h: 239.50, volume24h: '8.4B', marketCap: '116B', iconBg: '#14F195', iconText: '◎' },
+      BTC: { name: 'Bitcoin', symbol: 'BTC', priceUSD: 91864.73, change24h: -3.87, changeAmount: -3694.67, high24h: 93450.00, low24h: 90210.00, volume24h: '48.2B', marketCap: '1.81T', iconBg: '#F7931A', iconText: 'â‚¿' },
+      ETH: { name: 'Ethereum', symbol: 'ETH', priceUSD: 3314.62, change24h: -5.46, changeAmount: -191.20, high24h: 3480.00, low24h: 3260.00, volume24h: '24.1B', marketCap: '398B', iconBg: '#627EEA', iconText: 'Îž' },
+      SOL: { name: 'Solana', symbol: 'SOL', priceUSD: 248.15, change24h: 3.12, changeAmount: 7.50, high24h: 254.00, low24h: 239.50, volume24h: '8.4B', marketCap: '116B', iconBg: '#14F195', iconText: 'â—Ž' },
       USDC: { name: 'USD Coin', symbol: 'USDC', priceUSD: 1.00, change24h: 0.01, changeAmount: 0.00, high24h: 1.001, low24h: 0.999, volume24h: '5.2B', marketCap: '35B', iconBg: '#2775CA', iconText: '$' },
-      DOGE: { name: 'Dogecoin', symbol: 'DOGE', priceUSD: 0.22, change24h: 8.45, changeAmount: 0.02, high24h: 0.24, low24h: 0.19, volume24h: '3.1B', marketCap: '32B', iconBg: '#C2A633', iconText: 'Ð' }
+      DOGE: { name: 'Dogecoin', symbol: 'DOGE', priceUSD: 0.22, change24h: 8.45, changeAmount: 0.02, high24h: 0.24, low24h: 0.19, volume24h: '3.1B', marketCap: '32B', iconBg: '#C2A633', iconText: 'Ã' }
     },
     order: {
       type: 'Buy',
@@ -382,7 +382,7 @@
     showToast(
       appState.theme === 'dark' ? 'Pro Dark Mode' : 'Classic Light Mode',
       `Switched to ${appState.theme} theme`,
-      appState.theme === 'dark' ? '🌙' : '☀️'
+      appState.theme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸'
     );
   };
 
@@ -393,7 +393,7 @@
       document.body.classList.remove('dark-mode');
     }
     document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
-      btn.innerHTML = appState.theme === 'dark' ? '☀️' : '🌙';
+      btn.innerHTML = appState.theme === 'dark' ? 'â˜€ï¸' : 'ðŸŒ™';
       btn.title = `Switch to ${appState.theme === 'dark' ? 'Light' : 'Dark'} Mode`;
     });
   }
@@ -410,7 +410,7 @@
     showToast(
       appState.advancedMode ? 'Advanced Trade Mode Active' : 'Standard View Active',
       appState.advancedMode ? 'Pro order book, candlestick indicators, and depth chart enabled.' : 'Standard portfolio mode active.',
-      '⚙️'
+      'âš™ï¸'
     );
   };
 
@@ -521,7 +521,7 @@
       tLower.includes('paid') ||
       tLower.includes('verified') ||
       typeOrIcon === 'success' ||
-      typeOrIcon === '✓'
+      typeOrIcon === 'âœ“'
     ) {
       type = 'success';
       pillText = 'SETTLED & CONFIRMED';
@@ -629,7 +629,7 @@
 
     amountUSD = parseFloat(amountUSD) || 0;
     if (amountUSD <= 0) {
-      showToast('Invalid Amount', 'Please enter an amount greater than 0', '⚠️');
+      showToast('Invalid Amount', 'Please enter an amount greater than 0', 'âš ï¸');
       return;
     }
 
@@ -637,7 +637,7 @@
 
     if (action === 'Buy') {
       if (appState.balances.USD < amountUSD) {
-        showToast('Insufficient Cash Balance', `Available: $${appState.balances.USD.toFixed(2)}. Please top up cash.`, '⚠️');
+        showToast('Insufficient Cash Balance', `Available: $${appState.balances.USD.toFixed(2)}. Please top up cash.`, 'âš ï¸');
         openDepositCashModal();
         return;
       }
@@ -663,13 +663,13 @@
       showToast(
         `Bought ${cryptoQty.toFixed(6)} ${symbol}`,
         `Successfully executed at $${asset.priceUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-        '✓'
+        'âœ“'
       );
 
     } else if (action === 'Sell') {
       const currentCrypto = appState.balances[symbol] || 0;
       if (currentCrypto < cryptoQty) {
-        showToast('Insufficient Crypto', `You own ${currentCrypto.toFixed(6)} ${symbol}, but tried to sell ${cryptoQty.toFixed(6)} ${symbol}`, '⚠️');
+        showToast('Insufficient Crypto', `You own ${currentCrypto.toFixed(6)} ${symbol}, but tried to sell ${cryptoQty.toFixed(6)} ${symbol}`, 'âš ï¸');
         return;
       }
 
@@ -694,7 +694,7 @@
       showToast(
         `Sold ${cryptoQty.toFixed(6)} ${symbol}`,
         `Received $${amountUSD.toFixed(2)} USD in wallet`,
-        '✓'
+        'âœ“'
       );
     }
   };
@@ -979,14 +979,14 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <div style="width:36px; height:36px; border-radius:50%; background:#0052FF; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:16px;">
-              ⚡
+              âš¡
             </div>
             <div>
               <h2 style="font-size:18px; font-weight:700; margin:0;">Live API & Market Feed</h2>
               <p style="font-size:12px; color:var(--text-muted); margin:0;">Real-time WebSocket & REST Data Pipeline</p>
             </div>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <!-- Connection Status Banner -->
@@ -997,10 +997,10 @@
               <span style="font-weight:700; font-size:13px; color:${isConnected ? '#166534' : '#92400E'};">${isConnected ? 'Connected & Streaming Ticks' : 'Connecting to Stream...'}</span>
             </div>
             <div style="font-size:11px; color:${isConnected ? '#15803D' : '#B45309'}; margin-top:2px;">
-              Provider: <b>${apiConfig.activeProviderName}</b> · Ticks: <b>${apiConfig.ticksReceived}</b> · Last: <b>${apiConfig.lastTickTime || 'Just now'}</b>
+              Provider: <b>${apiConfig.activeProviderName}</b> Â· Ticks: <b>${apiConfig.ticksReceived}</b> Â· Last: <b>${apiConfig.lastTickTime || 'Just now'}</b>
             </div>
           </div>
-          <button onclick="connectLiveFeed(); showToast('Reconnecting...', 'Establishing real-time socket', '🔄');" style="padding:6px 12px; font-size:11px; font-weight:700; background:#fff; border:1px solid #D1D5DB; border-radius:9999px; cursor:pointer;">
+          <button onclick="connectLiveFeed(); showToast('Reconnecting...', 'Establishing real-time socket', 'ðŸ”„');" style="padding:6px 12px; font-size:11px; font-weight:700; background:#fff; border:1px solid #D1D5DB; border-radius:9999px; cursor:pointer;">
             Reconnect
           </button>
         </div>
@@ -1021,7 +1021,7 @@
           <label style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Live API Key</label>
           <div style="position:relative;">
             <input id="api-key-input" type="password" value="${apiConfig.apiKey || ''}" placeholder="Enter your API key" style="width:100%; padding:10px 40px 10px 14px; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-secondary); font-size:13px; font-family:monospace; outline:none; box-sizing:border-box;" />
-            <button type="button" onclick="const input = document.getElementById('api-key-input'); input.type = input.type === 'password' ? 'text' : 'password';" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; cursor:pointer; font-size:14px;">👁️</button>
+            <button type="button" onclick="const input = document.getElementById('api-key-input'); input.type = input.type === 'password' ? 'text' : 'password';" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; cursor:pointer; font-size:14px;">ðŸ‘ï¸</button>
           </div>
           <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0 2px;">Live market data is streamed in real-time from exchange WebSocket feeds.</p>
         </div>
@@ -1061,7 +1061,7 @@
     showToast(
       'Live API Configured',
       `Connected to ${provider.toUpperCase()} streaming service.`,
-      '⚡'
+      'âš¡'
     );
   };
 
@@ -1075,7 +1075,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <h2 style="font-size:18px; font-weight:700;">Send ${asset.name}</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:16px;">
@@ -1107,7 +1107,7 @@
     const asset = appState.assets[symbol];
 
     if (amt <= 0 || (appState.balances[symbol] || 0) < amt) {
-      showToast('Insufficient Balance', `You do not have ${amt} ${symbol} to send.`, '⚠️');
+      showToast('Insufficient Balance', `You do not have ${amt} ${symbol} to send.`, 'âš ï¸');
       return;
     }
 
@@ -1127,7 +1127,7 @@
     saveState();
     updateAllUI();
     closeActiveModal();
-    showToast('Sent Successfully', `Transferred ${amt} ${symbol} to ${recipient.slice(0, 14)}...`, '✓');
+    showToast('Sent Successfully', `Transferred ${amt} ${symbol} to ${recipient.slice(0, 14)}...`, 'âœ“');
   };
 
   window.openReceiveCryptoModal = function () {
@@ -1138,7 +1138,7 @@
       <div style="padding: 24px; text-align:center;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <h2 style="font-size:18px; font-weight:700;">Receive ${asset.name}</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Only send <strong style="color:var(--text-primary);">${asset.name} (${asset.symbol})</strong> to this address.</p>
@@ -1165,7 +1165,7 @@
           <div style="font-family:monospace; font-size:12px; word-break:break-all; text-align:left; margin-right:8px;">
             ${walletAddr}
           </div>
-          <button onclick="navigator.clipboard.writeText('${walletAddr}'); showToast('Address Copied!', '', '📋');" style="background:#0052FF; color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;">
+          <button onclick="navigator.clipboard.writeText('${walletAddr}'); showToast('Address Copied!', '', 'ðŸ“‹');" style="background:#0052FF; color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;">
             Copy
           </button>
         </div>
@@ -1182,7 +1182,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <h2 style="font-size:18px; font-weight:700;">Deposit USD Cash</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:18px;">
@@ -1225,7 +1225,7 @@
     saveState();
     updateAllUI();
     closeActiveModal();
-    showToast('Funds Deposited!', `Added $${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD to wallet.`, '💰');
+    showToast('Funds Deposited!', `Added $${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD to wallet.`, 'ðŸ’°');
   };
 
   window.openWithdrawCashModal = function () {
@@ -1233,7 +1233,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <h2 style="font-size:18px; font-weight:700;">Withdraw USD</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:18px;">
@@ -1257,7 +1257,7 @@
   window.confirmWithdrawCash = function () {
     const amt = parseFloat(document.getElementById('withdraw-amount-input')?.value || 0);
     if (amt <= 0 || appState.balances.USD < amt) {
-      showToast('Invalid Amount', 'Withdrawal exceeds available USD balance.', '⚠️');
+      showToast('Invalid Amount', 'Withdrawal exceeds available USD balance.', 'âš ï¸');
       return;
     }
 
@@ -1277,7 +1277,7 @@
     saveState();
     updateAllUI();
     closeActiveModal();
-    showToast('Withdrawal Processed', `$${amt.toFixed(2)} USD transferred.`, '✓');
+    showToast('Withdrawal Processed', `$${amt.toFixed(2)} USD transferred.`, 'âœ“');
   };
 
   window.openAssetSelectorModal = function () {
@@ -1311,7 +1311,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Select Asset</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
         <div style="display:flex; flex-direction:column; gap:4px; max-height:320px; overflow-y:auto;">
           ${itemsHtml}
@@ -1324,7 +1324,7 @@
       saveState();
       closeActiveModal();
       updateAllUI();
-      showToast(`Selected ${appState.assets[sym].name}`, `Ready to trade ${sym}`, '✓');
+      showToast(`Selected ${appState.assets[sym].name}`, `Ready to trade ${sym}`, 'âœ“');
     };
   };
 
@@ -1333,7 +1333,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Payment Method</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:8px;">
@@ -1345,15 +1345,15 @@
                 <div style="font-size:12px; color:var(--text-muted);">Available: $${appState.balances.USD.toFixed(2)}</div>
               </div>
             </div>
-            <span style="color:#0052FF; font-weight:bold;">✓</span>
+            <span style="color:#0052FF; font-weight:bold;">âœ“</span>
           </div>
 
-          <div onclick="selectPaymentMethod('Chase Bank (•••• 4291)')" style="display:flex; align-items:center; justify-content:space-between; padding:14px; border:1px solid var(--border-color); border-radius:18px; cursor:pointer;">
+          <div onclick="selectPaymentMethod('Chase Bank (â€¢â€¢â€¢â€¢ 4291)')" style="display:flex; align-items:center; justify-content:space-between; padding:14px; border:1px solid var(--border-color); border-radius:18px; cursor:pointer;">
             <div style="display:flex; align-items:center; gap:12px;">
               <div style="width:36px; height:36px; border-radius:50%; background:#117ACA; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:11px;">CHASE</div>
               <div>
                 <div style="font-weight:700; font-size:14px;">JPMorgan Chase Bank</div>
-                <div style="font-size:12px; color:var(--text-muted);">Account •••• 4291</div>
+                <div style="font-size:12px; color:var(--text-muted);">Account â€¢â€¢â€¢â€¢ 4291</div>
               </div>
             </div>
           </div>
@@ -1368,7 +1368,7 @@
     window.selectPaymentMethod = function (name) {
       appState.order.paymentMethod = name;
       closeActiveModal();
-      showToast('Payment Method Selected', name, '✓');
+      showToast('Payment Method Selected', name, 'âœ“');
     };
   };
 
@@ -1380,7 +1380,7 @@
       html += `
         <div onclick="selectOrderFreq('${f}')" style="display:flex; align-items:center; justify-content:space-between; padding:14px; border-radius:16px; cursor:pointer; background:${active ? 'rgba(0,82,255,0.08)' : 'transparent'}; font-weight:600; font-size:14px;">
           <span>${f}</span>
-          ${active ? '<span style="color:#0052FF; font-weight:bold;">✓</span>' : ''}
+          ${active ? '<span style="color:#0052FF; font-weight:bold;">âœ“</span>' : ''}
         </div>
       `;
     });
@@ -1389,7 +1389,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Repeat Order</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
         <div style="display:flex; flex-direction:column; gap:4px;">${html}</div>
       </div>
@@ -1404,7 +1404,7 @@
           if (s) s.textContent = f;
         }
       });
-      showToast('Order Frequency Set', f, '🔄');
+      showToast('Order Frequency Set', f, 'ðŸ”„');
     };
   };
 
@@ -1413,7 +1413,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Notifications</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -1428,7 +1428,7 @@
           </div>
         </div>
 
-        <button onclick="closeActiveModal(); showToast('Notifications marked as read', '', '✓');" style="margin-top:16px; width:100%; background:#EEF0F3; border:none; border-radius:9999px; padding:10px; font-size:13px; font-weight:700; cursor:pointer;">
+        <button onclick="closeActiveModal(); showToast('Notifications marked as read', '', 'âœ“');" style="margin-top:16px; width:100%; background:#EEF0F3; border:none; border-radius:9999px; padding:10px; font-size:13px; font-weight:700; cursor:pointer;">
           Mark all as read
         </button>
       </div>
@@ -1451,11 +1451,11 @@
               <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0; line-height:1.2;">Help & Support Desk</h2>
               <div style="display:flex; align-items:center; gap:6px; margin-top:3px;">
                 <span style="width:6px; height:6px; border-radius:50%; background:#098551; display:inline-block;"></span>
-                <span style="font-size:11px; font-weight:600; color:#098551;">Agents Online • 24/7 Priority Support</span>
+                <span style="font-size:11px; font-weight:600; color:#098551;">Agents Online â€¢ 24/7 Priority Support</span>
               </div>
             </div>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; color:#5B616E; display:flex; align-items:center; justify-content:center; transition:background 0.15s;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; color:#5B616E; display:flex; align-items:center; justify-content:center; transition:background 0.15s;">âœ•</button>
         </div>
 
         <div id="help-modal-main-view">
@@ -1481,13 +1481,13 @@
             <div onclick="toggleHelpAnswer('faq-ans-1')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">📊</span>
+                  <span style="font-size:16px;">ðŸ“Š</span>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">How the 30-Level Platform Works</span>
                 </div>
-                <span id="faq-arrow-1" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+                <span id="faq-arrow-1" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
               </div>
               <div id="faq-ans-1" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
-                Customers select from 30 structured investment tiers. Each tier unlocks a 300% (3×) allocated dashboard balance and a guaranteed monthly withdrawal limit starting from $30/month up to $9,000/month.
+                Customers select from 30 structured investment tiers. Each tier unlocks a 300% (3Ã—) allocated dashboard balance and a guaranteed monthly withdrawal limit starting from $30/month up to $9,000/month.
               </div>
             </div>
 
@@ -1495,10 +1495,10 @@
             <div onclick="toggleHelpAnswer('faq-ans-2')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">💸</span>
+                  <span style="font-size:16px;">ðŸ’¸</span>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Withdrawals & Settlement Frequency</span>
                 </div>
-                <span id="faq-arrow-2" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+                <span id="faq-arrow-2" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
               </div>
               <div id="faq-ans-2" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
                 Every withdrawal directly deducts from your allocated dashboard balance. Withdrawals can be requested up to your monthly tier limit every 30 days via FAST Bank Transfer or Wire.
@@ -1509,10 +1509,10 @@
             <div onclick="toggleHelpAnswer('faq-ans-3')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">📦</span>
+                  <span style="font-size:16px;">ðŸ“¦</span>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Accessing Your Digital Products</span>
                 </div>
-                <span id="faq-arrow-3" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+                <span id="faq-arrow-3" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
               </div>
               <div id="faq-ans-3" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
                 Your package tier automatically unlocks access to our digital research reports, algorithmic drawdown calculators, and weekly market intelligence briefs directly on your Home dashboard.
@@ -1523,10 +1523,10 @@
             <div onclick="toggleHelpAnswer('faq-ans-4')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">🛡️</span>
+                  <span style="font-size:16px;">ðŸ›¡ï¸</span>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Security & Account Verification</span>
                 </div>
-                <span id="faq-arrow-4" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+                <span id="faq-arrow-4" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
               </div>
               <div id="faq-ans-4" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
                 All customer accounts and funds are protected by institutional-grade encrypted vaults, multi-factor authentication, and separate operating fund reserves.
@@ -1545,7 +1545,7 @@
         <div id="help-modal-chat-view" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; margin-bottom:14px; border-bottom:1px solid #ECEFF1;">
             <button onclick="switchHelpToFAQ()" style="border:none; background:#EEF0F3; border-radius:9999px; padding:6px 12px; font-size:11px; font-weight:700; color:#0A0B0D; cursor:pointer; display:flex; align-items:center; gap:4px;">
-              ← Back to Guides
+              â† Back to Guides
             </button>
             <div style="font-size:11px; font-weight:700; color:#098551; display:flex; align-items:center; gap:5px;">
               <span style="width:6px; height:6px; border-radius:50%; background:#098551; display:inline-block;"></span>
@@ -1556,7 +1556,7 @@
           <!-- Chat messages box -->
           <div id="help-chat-messages" style="height:200px; overflow-y:auto; background:#F8FAFC; border:1px solid #ECEFF1; border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
             <div style="background:#EEF3FF; border:1px solid #D9E4FF; border-radius:14px 14px 14px 4px; padding:10px 12px; font-size:12px; color:#0A0B0D; max-width:85%; line-height:1.4;">
-              Hello! 👋 Welcome to <b>Bond Capital Support Desk</b>. How can I assist you with your investment package or withdrawal requests today?
+              Hello! ðŸ‘‹ Welcome to <b>Bond Capital Support Desk</b>. How can I assist you with your investment package or withdrawal requests today?
             </div>
           </div>
 
@@ -1659,7 +1659,7 @@
               <span style="width:5px; height:5px; border-radius:50%; background:#10B981;"></span> Verified
             </span>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">âœ•</button>
         </div>
 
         <!-- User Identity Section -->
@@ -1735,7 +1735,7 @@
           <div style="margin: 8px 0; height:1px; background:var(--border-color, #ECEFF1);"></div>
 
           <!-- Sign Out -->
-          <button onclick="closeActiveModal(); if (supabase && supabase.auth) supabase.auth.signOut(); showToast('Signed out', 'Session finished', '👋'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; border:1px solid #FECDD3; background:#FFF1F2; color:#E11D48; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#FFE4E6'" onmouseout="this.style.background='#FFF1F2'">
+          <button onclick="closeActiveModal(); if (supabase && supabase.auth) supabase.auth.signOut(); showToast('Signed out', 'Session finished', 'ðŸ‘‹'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; border:1px solid #FECDD3; background:#FFF1F2; color:#E11D48; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#FFE4E6'" onmouseout="this.style.background='#FFF1F2'">
             <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Sign Out of Account
           </button>
@@ -1756,7 +1756,7 @@
             </div>
             <p style="font-size:12px; color:var(--text-muted, #5B616E); margin:3px 0 0;">Advanced financial tools, Web3 gateways, and market intelligence</p>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">✕</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">âœ•</button>
         </div>
 
         <!-- Products Grid -->
@@ -1790,7 +1790,7 @@
           </div>
 
           <!-- 6. Web3 Wallet Gateway -->
-          <div onclick="closeActiveModal(); showToast('Self-Custody Wallet', 'Web3 MPC wallet connected to Base Mainnet', '🌐');" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
+          <div onclick="closeActiveModal(); showToast('Self-Custody Wallet', 'Web3 MPC wallet connected to Base Mainnet', 'ðŸŒ');" style="padding: 16px; border: 1px solid #E2E8F0; border-radius: 16px; background: #FFFFFF; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 4px 14px rgba(0,82,255,0.08)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none';">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: #F0FDF4; color: #16A34A; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
               <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
             </div>
@@ -1806,7 +1806,7 @@
             <span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981;"></span>
             <span style="font-size: 11px; font-weight: 600; color: #64748B;">All services operational on Base & Ethereum L1</span>
           </div>
-          <a href="explore.html" onclick="closeActiveModal()" style="font-size: 12px; font-weight: 700; color: #0052FF; text-decoration: none;">View Explorer →</a>
+          <a href="explore.html" onclick="closeActiveModal()" style="font-size: 12px; font-weight: 700; color: #0052FF; text-decoration: none;">View Explorer â†’</a>
         </div>
       </div>
     `);
@@ -1816,13 +1816,13 @@
     const link = `https://bondcapital.app/join/${(appState.user.name || 'user').toLowerCase().replace(/\s+/g, '_')}`;
     openModal(`
       <div style="padding: 24px; text-align:center;">
-        <div style="font-size:40px; margin-bottom:8px;">🎁</div>
+        <div style="font-size:40px; margin-bottom:8px;">ðŸŽ</div>
         <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Invite Friends & Earn</h2>
         <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">Get <strong style="color:var(--text-primary);">$10 in free Bitcoin</strong> when your friend buys or sells $100 or more in crypto.</p>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:16px; padding:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <span style="font-family:monospace; font-size:13px; color:#0052FF; font-weight:600;">${link}</span>
-          <button onclick="navigator.clipboard.writeText('${link}'); showToast('Referral Link Copied!', '', '📋');" style="background:#0052FF; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-weight:700; font-size:12px; cursor:pointer;">
+          <button onclick="navigator.clipboard.writeText('${link}'); showToast('Referral Link Copied!', '', 'ðŸ“‹');" style="background:#0052FF; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-weight:700; font-size:12px; cursor:pointer;">
             Copy
           </button>
         </div>
@@ -1963,7 +1963,7 @@
 
       const a = appState.assets[pageSym];
       const priceStr = '$' + a.priceUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const arrow = a.change24h >= 0 ? '↑' : '↓';
+      const arrow = a.change24h >= 0 ? 'â†‘' : 'â†“';
       const changeColor = a.change24h >= 0 ? '#098551' : '#CF202F';
       const changeStr = arrow + ' $' + Math.abs(a.changeAmount).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' (' + (a.change24h >= 0 ? '+' : '') + a.change24h.toFixed(2) + '%)';
 
@@ -2006,7 +2006,7 @@
       const cryptoEquivEl = document.getElementById('trade-crypto-equiv');
       if (cryptoEquivEl) {
         const amtUSD = parseFloat(document.getElementById('trade-amount-input')?.value || appState.order.amountUSD || 100);
-        cryptoEquivEl.textContent = '≈ ' + (amtUSD / a.priceUSD).toFixed(6) + ' ' + pageSym;
+        cryptoEquivEl.textContent = 'â‰ˆ ' + (amtUSD / a.priceUSD).toFixed(6) + ' ' + pageSym;
       }
     })();
 
@@ -2051,7 +2051,7 @@
       a.onclick = (e) => {
         if (text.includes('home')) {
           e.preventDefault();
-          window.location.href = 'index.html';
+          window.location.href = 'dashboard.html';
         } else if (text.includes('my assets')) {
           e.preventDefault();
           window.location.href = 'desktop-asset-bitcoin.html';
@@ -2156,7 +2156,7 @@
             b.className = 'flex-1 py-1.5 px-4 bg-[#0A0B0D] text-white text-sm font-semibold rounded-full shadow-sm text-center';
             appState.order.type = b.textContent.trim();
             updateAllUI();
-            showToast(`${appState.order.type} Mode Selected`, '', '✓');
+            showToast(`${appState.order.type} Mode Selected`, '', 'âœ“');
           };
         });
       }
@@ -2183,7 +2183,7 @@
             else display.textContent = appState.balances.USD.toFixed(0);
           }
           updateAllUI();
-          showToast('Max balance selected', `$${appState.balances.USD.toFixed(2)} USD`, '💰');
+          showToast('Max balance selected', `$${appState.balances.USD.toFixed(2)} USD`, 'ðŸ’°');
         };
       }
     });
@@ -2204,13 +2204,13 @@
       }
     });
 
-    // 9. Currency Switch Button ("⇅ 0 BTC")
+    // 9. Currency Switch Button ("â‡… 0 BTC")
     document.querySelectorAll('button:has(span)').forEach(btn => {
-      if (btn.textContent.includes('BTC') && (btn.textContent.includes('⇅') || btn.querySelector('svg'))) {
+      if (btn.textContent.includes('BTC') && (btn.textContent.includes('â‡…') || btn.querySelector('svg'))) {
         btn.classList.add('cb-clickable');
         btn.onclick = () => {
           appState.order.mode = appState.order.mode === 'USD' ? 'CRYPTO' : 'USD';
-          showToast('Currency unit switched', `Inputting in ${appState.order.mode}`, '⇅');
+          showToast('Currency unit switched', `Inputting in ${appState.order.mode}`, 'â‡…');
         };
       }
     });
@@ -2266,12 +2266,12 @@
           if (polygon) polygon.setAttribute('stroke', '#BAC0CD');
           btn.classList.remove('text-[#0052FF]');
           btn.classList.add('text-gray-300');
-          showToast('Removed from Watchlist', '', '☆');
+          showToast('Removed from Watchlist', '', 'â˜†');
         } else {
           if (polygon) polygon.setAttribute('fill', '#0052FF');
           btn.classList.add('text-[#0052FF]');
           btn.classList.remove('text-gray-300');
-          showToast('Added to Watchlist', '', '★');
+          showToast('Added to Watchlist', '', 'â˜…');
         }
       };
     });
@@ -2285,10 +2285,10 @@
             <div style="padding:20px;">
               <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Watchlist Filter</h3>
               <div style="display:flex; flex-direction:column; gap:8px; font-size:14px; font-weight:600;">
-                <div onclick="closeActiveModal(); showToast('Viewing Watchlist', '', '★');" style="padding:10px 14px; border-radius:12px; background:#EEF2F6; cursor:pointer;">★ Starred Assets</div>
-                <div onclick="closeActiveModal(); showToast('Viewing All Assets', '', '📋');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">🌐 All Assets</div>
-                <div onclick="closeActiveModal(); showToast('Viewing Top Gainers', '', '📈');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">📈 Top Gainers</div>
-                <div onclick="closeActiveModal(); showToast('Viewing Top Losers', '', '📉');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">📉 Top Losers</div>
+                <div onclick="closeActiveModal(); showToast('Viewing Watchlist', '', 'â˜…');" style="padding:10px 14px; border-radius:12px; background:#EEF2F6; cursor:pointer;">â˜… Starred Assets</div>
+                <div onclick="closeActiveModal(); showToast('Viewing All Assets', '', 'ðŸ“‹');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸŒ All Assets</div>
+                <div onclick="closeActiveModal(); showToast('Viewing Top Gainers', '', 'ðŸ“ˆ');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸ“ˆ Top Gainers</div>
+                <div onclick="closeActiveModal(); showToast('Viewing Top Losers', '', 'ðŸ“‰');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸ“‰ Top Losers</div>
               </div>
             </div>
           `);
@@ -2307,7 +2307,7 @@
             b.className = 'px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer';
           });
           btn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-full bg-gray-100 text-gray-900 cursor-pointer';
-          showToast(`Timeframe: ${text}`, 'Updated chart period and return stats', '📈');
+          showToast(`Timeframe: ${text}`, 'Updated chart period and return stats', 'ðŸ“ˆ');
         };
       }
     });
@@ -2337,7 +2337,7 @@
       el.onclick = (e) => {
         e.preventDefault();
         if (text.includes('home')) {
-          window.location.href = 'index.html';
+          window.location.href = 'dashboard.html';
         } else if (text.includes('level') || text.includes('30-level') || text.includes('packages')) {
           window.location.href = 'levels.html';
         } else if (text.includes('asset')) {
@@ -2362,7 +2362,7 @@
         if (c) {
           const isNext = btn.querySelector('polyline[points*="9 18 15 12"]');
           c.scrollBy({ left: isNext ? 240 : -240, behavior: 'smooth' });
-          showToast('Browsing cards', '', '↔');
+          showToast('Browsing cards', '', 'â†”');
         }
       };
     });
@@ -2377,7 +2377,7 @@
           card.style.opacity = '0';
           card.style.transform = 'scale(0.9)';
           setTimeout(() => card.remove(), 300);
-          showToast('Card dismissed', '', '✕');
+          showToast('Card dismissed', '', 'âœ•');
         }
       };
     });
@@ -2404,3 +2404,4 @@
   }
 
 })();
+
