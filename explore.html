@@ -18,7 +18,7 @@
   </script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<title>Bond Capital | Explore Packages</title>
+<title>Bond Capital | Live Stock Markets & Readings</title>
 <!-- Tailwind CSS CDN with Forms & Container Queries -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <!-- Tailwind Configuration -->
@@ -199,7 +199,7 @@
 <!-- Desktop TopBar -->
 <header class="hidden lg:flex h-20 px-8 items-center justify-between shrink-0 bg-white" data-purpose="top-navigation-bar">
 <!-- Page Title -->
-<h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D]">Explore</h1>
+<h1 class="text-[26px] font-bold tracking-tight text-[#0A0B0D] flex items-center gap-3"><span>Explore Markets</span><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-[#098551] border border-emerald-200"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>Live Stocks Feed</span></h1>
 <!-- Header Actions -->
 <div class="flex items-center gap-3">
 <!-- Search input box -->
@@ -210,7 +210,7 @@
 <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
 </svg>
 </div>
-<input id="explore-search-input" oninput="filterExplore(this.value)" class="w-full pl-10 pr-4 py-2.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-[#0052FF] focus:ring-1 focus:ring-[#0052FF] transition-all" placeholder="Search 30-Level investment packages..." type="text"/>
+<input id="explore-search-input" oninput="filterStocks(this.value); document.getElementById('stock-search-input') && (document.getElementById('stock-search-input').value = this.value);" class="w-full pl-10 pr-4 py-2.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-[#0052FF] focus:ring-1 focus:ring-[#0052FF] transition-all" placeholder="Search live stocks (e.g. NVDA, Apple, Tesla)..." type="text"/>
 </div>
 <!-- Notification Bell -->
 <button onclick="openNotificationsModal()" aria-label="Notifications" class="w-10 h-10 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] flex items-center justify-center text-[#0A0B0D] transition-colors cursor-pointer">
@@ -239,178 +239,677 @@
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-16 pt-6 min-w-0" data-purpose="explore-main-content">
 
-  <!-- Header Banner -->
-  <div class="mb-8 p-6 sm:p-8 bg-gradient-to-r from-[#0052FF] via-[#0045D8] to-[#0A0B0D] rounded-3xl text-white shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+  <!-- Live Market Status Banner -->
+  <div class="mb-8 p-6 sm:p-7 bg-gradient-to-r from-[#0A0B0D] via-[#111827] to-[#1E3A8A] rounded-3xl text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 border border-gray-800">
     <div class="relative z-10 max-w-xl">
-      <span class="px-3 py-1 rounded-full bg-white/20 text-xs font-bold tracking-wide uppercase">30-Level Marketplace</span>
-      <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 tracking-tight">Explore High-Yield Investment Packages</h2>
-      <p class="text-xs sm:text-sm text-blue-100 mt-2 leading-relaxed">
-        Choose from 30 structured investment tiers. Every tier provides a 300% (3×) allocated credit balance with guaranteed monthly drawdown limits.
+      <div class="flex items-center gap-2 mb-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold tracking-wide">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> NYSE / NASDAQ LIVE
+        </span>
+        <span class="text-xs text-gray-400" id="live-stream-clock">Market Open • Real-time Stream</span>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Live Stocks & Market Readings</h2>
+      <p class="text-xs sm:text-sm text-gray-300 mt-2 leading-relaxed">
+        Streaming real-time pricing, tick readings, technical metrics, and multi-sector equity performance. Explore is the exclusive live stocks hub on Bond Capital.
       </p>
     </div>
-    <div class="relative z-10 shrink-0">
-      <a href="levels.html" class="px-6 py-3 bg-white text-[#0052FF] hover:bg-blue-50 font-bold text-xs rounded-full shadow-md transition-all flex items-center gap-2">
-        <span>Go to 30-Level Schedule</span>
-        <svg class="w-4 h-4 text-[#0052FF]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-      </a>
+    <div class="relative z-10 shrink-0 flex items-center gap-3">
+      <div class="text-right hidden sm:block">
+        <div class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Feed Latency</div>
+        <div class="text-emerald-400 font-mono text-sm font-bold flex items-center justify-end gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 24 ms (Optimal)
+        </div>
+      </div>
+      <button onclick="refreshStockQuotes()" class="px-5 py-2.5 bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs rounded-full shadow-md transition-all flex items-center gap-2 cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Instant Refresh</span>
+      </button>
     </div>
   </div>
 
-  <!-- Search Bar -->
-  <div class="relative max-w-xl mb-8">
-    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-      <svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
-      </svg>
+  <!-- Key Indices Reading Cards (4 Top Benchmarks) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="market-indices-grid">
+    <!-- S&P 500 -->
+    <div class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm transition-all relative overflow-hidden group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-[#5B616E] tracking-wider uppercase">S&amp;P 500</span>
+        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-[#098551] flex items-center gap-1">
+          ▲ +0.48%
+        </span>
+      </div>
+      <div class="text-2xl font-black text-[#0A0B0D] tracking-tight font-mono" id="idx-sp500">5,864.67</div>
+      <div class="flex items-center justify-between mt-3 text-xs text-[#5B616E]">
+        <span>Day Range: 5,831 – 5,872</span>
+        <span class="text-[#098551] font-bold">+28.14 pts</span>
+      </div>
+      <div class="mt-2.5 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-[#098551] rounded-full" style="width: 82%;"></div>
+      </div>
     </div>
-    <input id="explore-search-input" oninput="filterExplorePackages(this.value)" class="w-full pl-11 pr-4 py-3 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-[#0052FF] focus:ring-1 focus:ring-[#0052FF] transition-all" placeholder="Search packages (e.g. Level 5, $5,000, $15,000)..." type="text"/>
+
+    <!-- NASDAQ 100 -->
+    <div class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm transition-all relative overflow-hidden group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-[#5B616E] tracking-wider uppercase">NASDAQ 100</span>
+        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-[#098551] flex items-center gap-1">
+          ▲ +0.76%
+        </span>
+      </div>
+      <div class="text-2xl font-black text-[#0A0B0D] tracking-tight font-mono" id="idx-nasdaq">20,388.42</div>
+      <div class="flex items-center justify-between mt-3 text-xs text-[#5B616E]">
+        <span>Day Range: 20,195 – 20,410</span>
+        <span class="text-[#098551] font-bold">+154.20 pts</span>
+      </div>
+      <div class="mt-2.5 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-[#0052FF] rounded-full" style="width: 88%;"></div>
+      </div>
+    </div>
+
+    <!-- Dow Jones -->
+    <div class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm transition-all relative overflow-hidden group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-[#5B616E] tracking-wider uppercase">Dow Jones</span>
+        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-[#098551] flex items-center gap-1">
+          ▲ +0.22%
+        </span>
+      </div>
+      <div class="text-2xl font-black text-[#0A0B0D] tracking-tight font-mono" id="idx-dow">42,114.40</div>
+      <div class="flex items-center justify-between mt-3 text-xs text-[#5B616E]">
+        <span>Day Range: 41,980 – 42,160</span>
+        <span class="text-[#098551] font-bold">+92.35 pts</span>
+      </div>
+      <div class="mt-2.5 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-[#098551] rounded-full" style="width: 74%;"></div>
+      </div>
+    </div>
+
+    <!-- Russell 2000 -->
+    <div class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm transition-all relative overflow-hidden group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-[#5B616E] tracking-wider uppercase">Russell 2000</span>
+        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-[#098551] flex items-center gap-1">
+          ▲ +0.65%
+        </span>
+      </div>
+      <div class="text-2xl font-black text-[#0A0B0D] tracking-tight font-mono" id="idx-russell">2,234.18</div>
+      <div class="flex items-center justify-between mt-3 text-xs text-[#5B616E]">
+        <span>Day Range: 2,205 – 2,240</span>
+        <span class="text-[#098551] font-bold">+14.45 pts</span>
+      </div>
+      <div class="mt-2.5 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-[#0052FF] rounded-full" style="width: 80%;"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- 4 Tier Category Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold text-[#0052FF] bg-blue-50 px-2.5 py-0.5 rounded-full">Levels 1–5</span>
-        <span class="text-xs font-bold text-[#5B616E]">3× Match</span>
+  <!-- Search & Sector Filter Pills -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <!-- Search Box -->
+    <div class="relative flex-1 max-w-md">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <svg class="h-4 w-4 text-[#5B616E]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+        </svg>
       </div>
-      <h3 class="font-extrabold text-[#0A0B0D] text-base">Starter Tier</h3>
-      <p class="text-xs text-[#5B616E] mt-1">$500 – $2,500 Entry</p>
-      <div class="mt-3 text-xs font-bold text-[#098551]">Up to $170 / mo payout</div>
+      <input id="stock-search-input" oninput="filterStocks(this.value)" class="w-full pl-11 pr-4 py-2.5 bg-[#EEF0F3] hover:bg-[#E2E5E9] focus:bg-white text-sm font-medium text-[#0A0B0D] placeholder-[#5B616E] rounded-full border border-transparent focus:border-[#0052FF] focus:ring-1 focus:ring-[#0052FF] transition-all" placeholder="Search stocks by ticker or name (e.g. NVDA, Apple, Tesla)..." type="text"/>
     </div>
 
-    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full">Levels 6–15</span>
-        <span class="text-xs font-bold text-[#5B616E]">3× Match</span>
-      </div>
-      <h3 class="font-extrabold text-[#0A0B0D] text-base">Growth Tier</h3>
-      <p class="text-xs text-[#5B616E] mt-1">$3,000 – $7,500 Entry</p>
-      <div class="mt-3 text-xs font-bold text-[#098551]">Up to $580 / mo payout</div>
-    </div>
-
-    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full">Levels 16–25</span>
-        <span class="text-xs font-bold text-[#5B616E]">3× Match</span>
-      </div>
-      <h3 class="font-extrabold text-[#0A0B0D] text-base">Executive Tier</h3>
-      <p class="text-xs text-[#5B616E] mt-1">$8,000 – $70,000 Entry</p>
-      <div class="mt-3 text-xs font-bold text-[#098551]">Up to $5,200 / mo payout</div>
-    </div>
-
-    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full">Levels 26–30</span>
-        <span class="text-xs font-bold text-[#5B616E]">VIP Tier</span>
-      </div>
-      <h3 class="font-extrabold text-[#0A0B0D] text-base">Institutional VIP</h3>
-      <p class="text-xs text-[#5B616E] mt-1">$80,000 – $120,000 Entry</p>
-      <div class="mt-3 text-xs font-bold text-[#098551]">Up to $9,000 / mo payout</div>
+    <!-- Category Pills -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none" id="stock-sector-pills">
+      <button onclick="setStockSector('all')" class="sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#0052FF] text-white shadow-xs cursor-pointer whitespace-nowrap" data-sector="all">All Stocks</button>
+      <button onclick="setStockSector('tech')" class="sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#EEF0F3] text-[#5B616E] hover:bg-gray-200 cursor-pointer whitespace-nowrap" data-sector="tech">Technology &amp; AI</button>
+      <button onclick="setStockSector('growth')" class="sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#EEF0F3] text-[#5B616E] hover:bg-gray-200 cursor-pointer whitespace-nowrap" data-sector="growth">Top Gainers</button>
+      <button onclick="setStockSector('bluechip')" class="sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#EEF0F3] text-[#5B616E] hover:bg-gray-200 cursor-pointer whitespace-nowrap" data-sector="bluechip">Blue Chip</button>
+      <button onclick="setStockSector('finance')" class="sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#EEF0F3] text-[#5B616E] hover:bg-gray-200 cursor-pointer whitespace-nowrap" data-sector="finance">Financials &amp; Energy</button>
     </div>
   </div>
+
+  <!-- Live Stock Quotes & Readings Table -->
+  <section class="mb-10">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <div>
+        <h3 class="text-lg font-bold text-[#0A0B0D] flex items-center gap-2">
+          <span>Real-Time Market Quotes</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </h3>
+        <p class="text-xs text-[#5B616E]">Click any stock row to view technical readings, volume metrics, and chart overview</p>
+      </div>
+      <div class="text-xs text-[#5B616E] font-medium hidden sm:flex items-center gap-2">
+        <span>Updates every 2.5s</span>
+        <span class="text-gray-300">•</span>
+        <span id="reading-status-tag" class="text-[#0052FF] font-semibold">Streaming Live</span>
+      </div>
+    </div>
+
+    <div class="bg-white border border-[#ECEFF1] rounded-3xl overflow-hidden shadow-xs">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm" id="stocks-table">
+          <thead class="bg-[#F8FAFC] border-b border-[#ECEFF1] text-[#5B616E] text-xs uppercase tracking-wider font-bold">
+            <tr>
+              <th class="py-4 px-6">Symbol &amp; Company</th>
+              <th class="py-4 px-6 text-right">Live Price Reading</th>
+              <th class="py-4 px-6 text-right">24h Change</th>
+              <th class="py-4 px-6 text-center">Day Range Reading</th>
+              <th class="py-4 px-6 text-right">Market Cap</th>
+              <th class="py-4 px-6 text-center">Trend (1D)</th>
+              <th class="py-4 px-6 text-right">Reading Details</th>
+            </tr>
+          </thead>
+          <tbody id="stocks-tbody" class="divide-y divide-[#ECEFF1]">
+            <!-- Rendered dynamically via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
 </main>
 
+<!-- Interactive Stock Reading Modal -->
+<div id="stock-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl relative border border-[#ECEFF1] max-h-[90vh] overflow-y-auto">
+    <button onclick="closeStockModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition-colors cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+
+    <div class="flex items-center gap-3.5 mb-4">
+      <div id="modal-stock-badge" class="w-12 h-12 rounded-2xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-black text-base">
+        NVDA
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 id="modal-stock-symbol" class="text-2xl font-black text-[#0A0B0D]">NVDA</h3>
+          <span id="modal-stock-sector" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-[#0052FF]">Technology</span>
+        </div>
+        <p id="modal-stock-name" class="text-xs text-[#5B616E] font-medium">NVIDIA Corporation • NASDAQ</p>
+      </div>
+    </div>
+
+    <!-- Live Price & Change in Modal -->
+    <div class="p-4 rounded-2xl bg-[#F8FAFC] border border-[#ECEFF1] mb-5 flex items-center justify-between">
+      <div>
+        <div class="text-xs text-[#5B616E] font-medium">Current Live Quote</div>
+        <div id="modal-stock-price" class="text-3xl font-black text-[#0A0B0D] font-mono tracking-tight">$138.25</div>
+      </div>
+      <div class="text-right">
+        <span id="modal-stock-change" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-[#098551]">
+          ▲ +3.14% (+$4.20)
+        </span>
+        <div class="text-[11px] text-[#5B616E] mt-1">Real-time Tick Feed</div>
+      </div>
+    </div>
+
+    <!-- Technical Readings Matrix -->
+    <div class="mb-5">
+      <h4 class="text-xs font-bold uppercase tracking-wider text-[#5B616E] mb-3">Key Technical Readings</h4>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="text-gray-500 text-[11px]">Day High / Low</div>
+          <div id="modal-stat-dayrange" class="font-bold text-[#0A0B0D] mt-0.5 font-mono">$134.10 - $139.00</div>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="text-gray-500 text-[11px]">52-Week Range</div>
+          <div id="modal-stat-52wk" class="font-bold text-[#0A0B0D] mt-0.5 font-mono">$45.10 - $140.76</div>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="text-gray-500 text-[11px]">Volume (Today)</div>
+          <div id="modal-stat-volume" class="font-bold text-[#0A0B0D] mt-0.5 font-mono">48.2M Shares</div>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="text-gray-500 text-[11px]">Market Cap</div>
+          <div id="modal-stat-mcap" class="font-bold text-[#0052FF] mt-0.5 font-mono">$3.41 Trillion</div>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="text-gray-500 text-[11px]">P/E Ratio</div>
+          <div id="modal-stat-pe" class="font-bold text-[#0A0B0D] mt-0.5 font-mono">58.4x</div>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="text-gray-500 text-[11px]">Analyst Consensus</div>
+          <div id="modal-stat-rating" class="font-bold text-emerald-600 mt-0.5">Strong Buy (94%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market Sentiment Bar -->
+    <div class="mb-6 p-4 rounded-2xl bg-blue-50/50 border border-blue-100">
+      <div class="flex items-center justify-between text-xs mb-1.5">
+        <span class="font-bold text-[#0052FF]">Live Bullish / Bearish Sentiment</span>
+        <span class="font-bold text-[#098551]" id="modal-sentiment-pct">82% Bullish</span>
+      </div>
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden flex">
+        <div class="bg-[#098551] h-full" style="width: 82%;"></div>
+        <div class="bg-[#CF202F] h-full" style="width: 18%;"></div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-2">
+      <button onclick="closeStockModal()" class="px-5 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 font-bold text-xs text-[#0A0B0D] transition-colors cursor-pointer">
+        Close
+      </button>
+      <a href="levels.html" class="px-6 py-2.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] font-bold text-xs text-white transition-all shadow-sm">
+        Connect to Investment Tier
+      </a>
+    </div>
+  </div>
+</div>
+
 <script>
-  const EXPLORE_LEVELS = [
-    { level: 1, purchase: 500, balance: 1500, limit: 30, cat: 'starter' },
-    { level: 2, purchase: 1000, balance: 3000, limit: 60, cat: 'starter' },
-    { level: 3, purchase: 1500, balance: 4500, limit: 100, cat: 'starter' },
-    { level: 4, purchase: 2000, balance: 6000, limit: 130, cat: 'starter' },
-    { level: 5, purchase: 2500, balance: 7500, limit: 170, cat: 'starter' },
-    { level: 6, purchase: 3000, balance: 9000, limit: 220, cat: 'growth' },
-    { level: 7, purchase: 3500, balance: 10500, limit: 255, cat: 'growth' },
-    { level: 8, purchase: 4000, balance: 12000, limit: 300, cat: 'growth' },
-    { level: 9, purchase: 4500, balance: 13500, limit: 340, cat: 'growth' },
-    { level: 10, purchase: 5000, balance: 15000, limit: 385, cat: 'growth' },
-    { level: 11, purchase: 5500, balance: 16500, limit: 420, cat: 'growth' },
-    { level: 12, purchase: 6000, balance: 18000, limit: 470, cat: 'growth' },
-    { level: 13, purchase: 6500, balance: 19500, limit: 510, cat: 'growth' },
-    { level: 14, purchase: 7000, balance: 21000, limit: 550, cat: 'growth' },
-    { level: 15, purchase: 7500, balance: 22500, limit: 580, cat: 'growth' },
-    { level: 16, purchase: 8000, balance: 24000, limit: 630, cat: 'executive' },
-    { level: 17, purchase: 8500, balance: 25500, limit: 670, cat: 'executive' },
-    { level: 18, purchase: 9000, balance: 27000, limit: 730, cat: 'executive' },
-    { level: 19, purchase: 15000, balance: 45000, limit: 1200, cat: 'executive' },
-    { level: 20, purchase: 20000, balance: 60000, limit: 1300, cat: 'executive' },
-    { level: 21, purchase: 30000, balance: 90000, limit: 2000, cat: 'executive' },
-    { level: 22, purchase: 40000, balance: 120000, limit: 3000, cat: 'executive' },
-    { level: 23, purchase: 50000, balance: 150000, limit: 4000, cat: 'executive' },
-    { level: 24, purchase: 60000, balance: 180000, limit: 4500, cat: 'executive' },
-    { level: 25, purchase: 70000, balance: 210000, limit: 5200, cat: 'executive' },
-    { level: 26, purchase: 80000, balance: 240000, limit: 6000, cat: 'institutional' },
-    { level: 27, purchase: 90000, balance: 270000, limit: 7000, cat: 'institutional' },
-    { level: 28, purchase: 100000, balance: 300000, limit: 8000, cat: 'institutional' },
-    { level: 29, purchase: 110000, balance: 330000, limit: 8800, cat: 'institutional' },
-    { level: 30, purchase: 120000, balance: 360000, limit: 9000, cat: 'institutional' }
+  // Complete Live Stocks Data Matrix
+  const STOCKS_DATABASE = [
+    {
+      symbol: 'NVDA',
+      name: 'NVIDIA Corporation',
+      sector: 'tech',
+      sectorLabel: 'Technology / AI',
+      price: 138.25,
+      change: 3.14,
+      changeAmt: 4.20,
+      low: 134.10,
+      high: 139.40,
+      mcap: '$3.41T',
+      vol: '48.2M',
+      wk52: '$45.10 - $140.76',
+      pe: '58.4x',
+      rating: 'Strong Buy (95%)',
+      sentiment: '86% Bullish',
+      sparkline: 'M0,25 Q15,18 30,22 T60,10 T90,6 T120,2'
+    },
+    {
+      symbol: 'AAPL',
+      name: 'Apple Inc.',
+      sector: 'bluechip',
+      sectorLabel: 'Consumer Tech',
+      price: 231.40,
+      change: 0.82,
+      changeAmt: 1.88,
+      low: 229.50,
+      high: 232.80,
+      mcap: '$3.52T',
+      vol: '39.6M',
+      wk52: '$164.08 - $237.23',
+      pe: '34.2x',
+      rating: 'Buy (88%)',
+      sentiment: '79% Bullish',
+      sparkline: 'M0,20 Q20,22 40,16 T80,12 T100,10 T120,6'
+    },
+    {
+      symbol: 'MSFT',
+      name: 'Microsoft Corporation',
+      sector: 'tech',
+      sectorLabel: 'Cloud & AI',
+      price: 428.15,
+      change: 1.20,
+      changeAmt: 5.08,
+      low: 423.80,
+      high: 429.90,
+      mcap: '$3.18T',
+      vol: '21.4M',
+      wk52: '$366.50 - $468.35',
+      pe: '36.1x',
+      rating: 'Strong Buy (92%)',
+      sentiment: '82% Bullish',
+      sparkline: 'M0,22 Q25,24 50,15 T85,11 T120,5'
+    },
+    {
+      symbol: 'TSLA',
+      name: 'Tesla, Inc.',
+      sector: 'growth',
+      sectorLabel: 'EV & Robotics',
+      price: 269.19,
+      change: 4.85,
+      changeAmt: 12.45,
+      low: 256.30,
+      high: 271.80,
+      mcap: '$858.4B',
+      vol: '74.1M',
+      wk52: '$138.80 - $271.80',
+      pe: '72.5x',
+      rating: 'Moderate Buy (72%)',
+      sentiment: '74% Bullish',
+      sparkline: 'M0,28 Q20,25 40,18 T70,8 T100,12 T120,2'
+    },
+    {
+      symbol: 'AMZN',
+      name: 'Amazon.com, Inc.',
+      sector: 'tech',
+      sectorLabel: 'E-Commerce / Cloud',
+      price: 187.83,
+      change: 1.56,
+      changeAmt: 2.88,
+      low: 184.20,
+      high: 188.50,
+      mcap: '$1.96T',
+      vol: '34.2M',
+      wk52: '$118.35 - $201.20',
+      pe: '43.8x',
+      rating: 'Strong Buy (96%)',
+      sentiment: '85% Bullish',
+      sparkline: 'M0,24 Q30,19 60,14 T90,9 T120,4'
+    },
+    {
+      symbol: 'GOOGL',
+      name: 'Alphabet Inc.',
+      sector: 'tech',
+      sectorLabel: 'AI & Search',
+      price: 168.65,
+      change: 0.95,
+      changeAmt: 1.58,
+      low: 166.70,
+      high: 169.40,
+      mcap: '$2.10T',
+      vol: '26.8M',
+      wk52: '$120.21 - $191.75',
+      pe: '24.2x',
+      rating: 'Buy (90%)',
+      sentiment: '80% Bullish',
+      sparkline: 'M0,18 Q30,22 60,15 T90,10 T120,7'
+    },
+    {
+      symbol: 'META',
+      name: 'Meta Platforms, Inc.',
+      sector: 'growth',
+      sectorLabel: 'Social & AI',
+      price: 591.80,
+      change: 2.38,
+      changeAmt: 13.75,
+      low: 580.40,
+      high: 594.10,
+      mcap: '$1.49T',
+      vol: '16.5M',
+      wk52: '$279.40 - $602.95',
+      pe: '28.6x',
+      rating: 'Strong Buy (91%)',
+      sentiment: '84% Bullish',
+      sparkline: 'M0,26 Q25,20 50,14 T80,8 T120,3'
+    },
+    {
+      symbol: 'AMD',
+      name: 'Advanced Micro Devices',
+      sector: 'growth',
+      sectorLabel: 'Semiconductors',
+      price: 156.40,
+      change: 2.11,
+      changeAmt: 3.23,
+      low: 152.80,
+      high: 157.60,
+      mcap: '$253.2B',
+      vol: '38.9M',
+      wk52: '$94.04 - $227.30',
+      pe: '46.7x',
+      rating: 'Buy (86%)',
+      sentiment: '77% Bullish',
+      sparkline: 'M0,23 Q30,26 60,16 T90,11 T120,4'
+    },
+    {
+      symbol: 'BRK.B',
+      name: 'Berkshire Hathaway Inc.',
+      sector: 'bluechip',
+      sectorLabel: 'Conglomerate',
+      price: 452.10,
+      change: 0.35,
+      changeAmt: 1.57,
+      low: 450.20,
+      high: 453.40,
+      mcap: '$980.5B',
+      vol: '3.2M',
+      wk52: '$342.10 - $484.20',
+      pe: '21.4x',
+      rating: 'Moderate Buy (75%)',
+      sentiment: '70% Bullish',
+      sparkline: 'M0,16 Q40,18 70,14 T120,9'
+    },
+    {
+      symbol: 'JPM',
+      name: 'JPMorgan Chase & Co.',
+      sector: 'finance',
+      sectorLabel: 'Banking / Financials',
+      price: 222.80,
+      change: 0.78,
+      changeAmt: 1.72,
+      low: 220.50,
+      high: 223.90,
+      mcap: '$638.1B',
+      vol: '9.4M',
+      wk52: '$139.10 - $225.80',
+      pe: '12.4x',
+      rating: 'Buy (84%)',
+      sentiment: '73% Bullish',
+      sparkline: 'M0,18 Q30,20 60,15 T100,10 T120,6'
+    },
+    {
+      symbol: 'LLY',
+      name: 'Eli Lilly and Company',
+      sector: 'bluechip',
+      sectorLabel: 'Healthcare / Pharma',
+      price: 815.30,
+      change: 1.15,
+      changeAmt: 9.28,
+      low: 808.20,
+      high: 819.50,
+      mcap: '$774.2B',
+      vol: '4.8M',
+      wk52: '$540.20 - $960.00',
+      pe: '64.2x',
+      rating: 'Strong Buy (90%)',
+      sentiment: '81% Bullish',
+      sparkline: 'M0,21 Q35,24 70,16 T120,7'
+    },
+    {
+      symbol: 'XOM',
+      name: 'Exxon Mobil Corporation',
+      sector: 'finance',
+      sectorLabel: 'Energy / Petroleum',
+      price: 118.90,
+      change: -0.42,
+      changeAmt: -0.50,
+      low: 118.20,
+      high: 119.80,
+      mcap: '$471.6B',
+      vol: '14.1M',
+      wk52: '$95.77 - $126.34',
+      pe: '14.2x',
+      rating: 'Hold (68%)',
+      sentiment: '58% Neutral',
+      sparkline: 'M0,8 Q30,12 60,18 T90,22 T120,26'
+    }
   ];
 
-  let currentCategory = 'all';
-  let currentSearch = '';
+  let currentSector = 'all';
+  let currentSearchQuery = '';
 
-  function renderExploreTable() {
-    const tbody = document.getElementById('explore-packages-tbody');
+  // Render Table
+  function renderStocksTable() {
+    const tbody = document.getElementById('stocks-tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    const filtered = EXPLORE_LEVELS.filter(item => {
-      const catMatch = currentCategory === 'all' || item.cat === currentCategory;
-      const searchMatch = !currentSearch || 
-        ('level ' + item.level).includes(currentSearch) ||
-        ('$' + item.purchase).includes(currentSearch) ||
-        ('$' + item.balance).includes(currentSearch) ||
-        (item.purchase.toString()).includes(currentSearch) ||
-        (item.balance.toString()).includes(currentSearch);
-      return catMatch && searchMatch;
+    const filtered = STOCKS_DATABASE.filter(item => {
+      const matchSector = currentSector === 'all' || item.sector === currentSector;
+      const q = currentSearchQuery.toLowerCase();
+      const matchSearch = !q || 
+        item.symbol.toLowerCase().includes(q) ||
+        item.name.toLowerCase().includes(q) ||
+        item.sectorLabel.toLowerCase().includes(q);
+      return matchSector && matchSearch;
     });
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gray-500 font-medium">No packages found matching "${currentSearch}"</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-gray-500 font-medium">No stocks found matching "${currentSearchQuery}"</td></tr>`;
       return;
     }
 
-    filtered.forEach(item => {
-      const months = Math.ceil(item.balance / item.limit);
+    filtered.forEach(stock => {
+      const isPositive = stock.change >= 0;
+      const changeColor = isPositive ? 'text-[#098551]' : 'text-[#CF202F]';
+      const changeBg = isPositive ? 'bg-emerald-50 text-[#098551] border-emerald-200' : 'bg-red-50 text-[#CF202F] border-red-200';
+      const arrow = isPositive ? '▲ +' : '▼ ';
+      const strokeColor = isPositive ? '#098551' : '#CF202F';
+
+      // calculate day range percentage
+      const rangeSpan = stock.high - stock.low;
+      const rangePct = rangeSpan > 0 ? Math.min(100, Math.max(0, ((stock.price - stock.low) / rangeSpan) * 100)) : 50;
+
       const tr = document.createElement('tr');
-      tr.className = 'hover:bg-[#F8FAFC] transition-colors cursor-pointer';
-      tr.onclick = () => window.location.href = 'levels.html';
+      tr.className = 'hover:bg-[#F8FAFC] transition-colors cursor-pointer group';
+      tr.id = `stock-row-${stock.symbol}`;
+      tr.onclick = () => openStockModal(stock.symbol);
       tr.innerHTML = `
-        <td class="py-4 px-6 font-bold text-[#0A0B0D] flex items-center gap-3">
-          <span class="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center text-xs font-bold">${item.level}</span>
-          <span>Level ${item.level} Package</span>
+        <td class="py-4 px-6 font-bold text-[#0A0B0D]">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#0052FF] font-black text-xs flex items-center justify-center shrink-0 group-hover:bg-[#0052FF] group-hover:text-white transition-colors">
+              ${stock.symbol}
+            </div>
+            <div>
+              <div class="font-extrabold text-[15px] text-[#0A0B0D] flex items-center gap-1.5">
+                <span>${stock.symbol}</span>
+                <span class="text-[10px] font-semibold text-gray-400 font-normal">NASDAQ</span>
+              </div>
+              <div class="text-xs text-[#5B616E]">${stock.name}</div>
+            </div>
+          </div>
         </td>
-        <td class="py-4 px-6 font-semibold text-[#0A0B0D]">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-        <td class="py-4 px-6 font-extrabold text-[#0052FF]">$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-        <td class="py-4 px-6 font-bold text-[#098551]">$${item.limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / mo</td>
-        <td class="py-4 px-6 text-center text-xs font-semibold text-[#5B616E]">${months} Months</td>
+        <td class="py-4 px-6 text-right font-black text-base text-[#0A0B0D] font-mono transition-colors duration-500" id="price-cell-${stock.symbol}">
+          $${stock.price.toFixed(2)}
+        </td>
         <td class="py-4 px-6 text-right">
-          <a href="levels.html" class="px-4 py-1.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs transition-all shadow-xs inline-block">Select</a>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold border ${changeBg}" id="change-cell-${stock.symbol}">
+            ${arrow}${stock.change.toFixed(2)}%
+          </span>
+        </td>
+        <td class="py-4 px-6 text-center">
+          <div class="w-32 mx-auto">
+            <div class="flex justify-between text-[10px] font-mono text-gray-400 mb-1">
+              <span>$${stock.low.toFixed(0)}</span>
+              <span>$${stock.high.toFixed(0)}</span>
+            </div>
+            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full ${isPositive ? 'bg-emerald-500' : 'bg-red-500'} rounded-full transition-all duration-500" style="width: ${rangePct}%;"></div>
+            </div>
+          </div>
+        </td>
+        <td class="py-4 px-6 text-right font-mono font-semibold text-xs text-[#0A0B0D]">
+          ${stock.mcap}
+        </td>
+        <td class="py-4 px-6 text-center">
+          <div class="w-20 h-6 mx-auto">
+            <svg class="w-full h-full" viewBox="0 0 120 30" fill="none">
+              <path d="${stock.sparkline}" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </td>
+        <td class="py-4 px-6 text-right">
+          <button onclick="event.stopPropagation(); openStockModal('${stock.symbol}')" class="px-3.5 py-1.5 rounded-full bg-[#EEF0F3] group-hover:bg-[#0052FF] group-hover:text-white text-[#0A0B0D] font-bold text-xs transition-colors cursor-pointer">
+            Readings
+          </button>
         </td>
       `;
       tbody.appendChild(tr);
     });
   }
 
-  function filterByTier(cat) {
-    currentCategory = cat;
-    renderExploreTable();
+  // Filter Functions
+  function setStockSector(sector) {
+    currentSector = sector;
+    document.querySelectorAll('.sector-pill').forEach(btn => {
+      if (btn.getAttribute('data-sector') === sector) {
+        btn.className = 'sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#0052FF] text-white shadow-xs cursor-pointer whitespace-nowrap';
+      } else {
+        btn.className = 'sector-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-[#EEF0F3] text-[#5B616E] hover:bg-gray-200 cursor-pointer whitespace-nowrap';
+      }
+    });
+    renderStocksTable();
   }
 
-  function resetExploreFilter() {
-    currentCategory = 'all';
-    currentSearch = '';
-    const input = document.getElementById('explore-search-input');
-    if (input) input.value = '';
-    renderExploreTable();
+  function filterStocks(query) {
+    currentSearchQuery = query;
+    renderStocksTable();
   }
 
-  function filterExplorePackages(query) {
-    currentSearch = query.toLowerCase().trim();
-    renderExploreTable();
+  // Modal Functions
+  function openStockModal(symbol) {
+    const stock = STOCKS_DATABASE.find(s => s.symbol === symbol);
+    if (!stock) return;
+
+    document.getElementById('modal-stock-badge').innerText = stock.symbol;
+    document.getElementById('modal-stock-symbol').innerText = stock.symbol;
+    document.getElementById('modal-stock-name').innerText = stock.name + ' • NASDAQ';
+    document.getElementById('modal-stock-sector').innerText = stock.sectorLabel;
+    document.getElementById('modal-stock-price').innerText = '$' + stock.price.toFixed(2);
+
+    const isPos = stock.change >= 0;
+    const arrow = isPos ? '▲ +' : '▼ ';
+    const changeBadge = document.getElementById('modal-stock-change');
+    changeBadge.innerText = `${arrow}${stock.change.toFixed(2)}% ($${Math.abs(stock.changeAmt).toFixed(2)})`;
+    changeBadge.className = `inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${isPos ? 'bg-emerald-100 text-[#098551]' : 'bg-red-100 text-[#CF202F]'}`;
+
+    document.getElementById('modal-stat-dayrange').innerText = `$${stock.low.toFixed(2)} - $${stock.high.toFixed(2)}`;
+    document.getElementById('modal-stat-52wk').innerText = stock.wk52;
+    document.getElementById('modal-stat-volume').innerText = stock.vol + ' Shares';
+    document.getElementById('modal-stat-mcap').innerText = stock.mcap;
+    document.getElementById('modal-stat-pe').innerText = stock.pe;
+    document.getElementById('modal-stat-rating').innerText = stock.rating;
+    document.getElementById('modal-sentiment-pct').innerText = stock.sentiment;
+
+    document.getElementById('stock-detail-modal').classList.remove('hidden');
   }
 
-  window.addEventListener('DOMContentLoaded', renderExploreTable);
+  function closeStockModal() {
+    document.getElementById('stock-detail-modal').classList.add('hidden');
+  }
+
+  // Live Real-Time Ticker Simulator (updates micro prices every 2.5s)
+  function simulateLiveTick() {
+    // pick 2 to 3 random stocks to tick
+    const count = Math.floor(Math.random() * 2) + 2;
+    for (let i = 0; i < count; i++) {
+      const idx = Math.floor(Math.random() * STOCKS_DATABASE.length);
+      const stock = STOCKS_DATABASE[idx];
+      const delta = (Math.random() - 0.48) * 0.45; // slight upward drift
+      stock.price = Math.max(10, +(stock.price + delta).toFixed(2));
+      stock.change = +(stock.change + delta * 0.1).toFixed(2);
+      stock.changeAmt = +(stock.changeAmt + delta).toFixed(2);
+
+      // flash cell if in DOM
+      const cell = document.getElementById(`price-cell-${stock.symbol}`);
+      const chgCell = document.getElementById(`change-cell-${stock.symbol}`);
+      if (cell) {
+        cell.innerText = `$${stock.price.toFixed(2)}`;
+        const isUp = delta >= 0;
+        cell.style.color = isUp ? '#098551' : '#CF202F';
+        setTimeout(() => { if (cell) cell.style.color = '#0A0B0D'; }, 700);
+      }
+      if (chgCell) {
+        const isPos = stock.change >= 0;
+        chgCell.innerText = `${isPos ? '▲ +' : '▼ '}${stock.change.toFixed(2)}%`;
+        chgCell.className = `inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold border ${isPos ? 'bg-emerald-50 text-[#098551] border-emerald-200' : 'bg-red-50 text-[#CF202F] border-red-200'}`;
+      }
+    }
+
+    // Micro tick on indices
+    const sp = document.getElementById('idx-sp500');
+    if (sp) {
+      const cur = parseFloat(sp.innerText.replace(',', ''));
+      sp.innerText = (cur + (Math.random() - 0.47) * 0.5).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  }
+
+  function refreshStockQuotes() {
+    simulateLiveTick();
+    simulateLiveTick();
+    const tag = document.getElementById('reading-status-tag');
+    if (tag) {
+      tag.innerText = 'Refreshed Just Now';
+      setTimeout(() => { tag.innerText = 'Streaming Live'; }, 1500);
+    }
+  }
+
+  // Interval for live stream
+  setInterval(simulateLiveTick, 2500);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    renderStocksTable();
+  });
 </script>
 
 <!-- Mobile Fixed Bottom Navigation Bar -->
