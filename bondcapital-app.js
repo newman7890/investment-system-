@@ -31,7 +31,16 @@
   }
 
   // Route Protection & Authentication Guard
-  const isLoginPage = window.location.pathname.endsWith('login.html') || window.location.href.includes('login.html');
+  // Public pages that do NOT require authentication
+  const isPublicPage = window.location.pathname.endsWith('login.html')
+    || window.location.href.includes('login.html')
+    || window.location.pathname.endsWith('index.html')
+    || window.location.pathname === '/'
+    || window.location.pathname === ''
+    || window.location.pathname.endsWith('investment-system-/')
+    || window.location.pathname.endsWith('investment-system-');
+  const isLoginPage = window.location.pathname.endsWith('login.html')
+    || window.location.href.includes('login.html');
 
   // Load user data strictly from Supabase database
   async function syncFromSupabase() {
@@ -54,14 +63,14 @@
     }
 
     // Unauthenticated user attempting to access protected page
-    if (!isLoginPage && !userId) {
+    if (!isPublicPage && !userId) {
       window.location.replace('login.html');
       return;
     }
 
     // Authenticated user on login page
     if (isLoginPage && userId) {
-      window.location.replace('index.html');
+      window.location.replace('dashboard.html');
       return;
     }
 
