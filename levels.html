@@ -464,13 +464,16 @@
       localStorage.setItem('bond_monthly_limit', item.limit);
       localStorage.setItem('bond_purchase_cost', item.purchase);
       localStorage.setItem('bond_tier_name', `Level ${item.level} Package`);
+      localStorage.setItem('bond_tier_state', JSON.stringify(currentTierState));
+      sessionStorage.setItem('bond_active_level', item.level);
+      sessionStorage.setItem('bond_allocated_balance', item.balance);
       window.dispatchEvent(new Event('storage'));
     } catch (e) {}
 
     // Persist directly to Supabase cloud
     if (window.__supabase) {
       try {
-        const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
         await window.__supabase.from('profiles').upsert([{
           id: user_id,
           tier: `Level ${item.level} Verified`,
@@ -523,7 +526,7 @@
     // Persist withdrawal deduction to Supabase
     if (window.__supabase) {
       try {
-        const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
         await window.__supabase.from('profiles').upsert([{
           id: user_id,
           level_balance: currentTierState.allocatedBalance,
@@ -581,7 +584,7 @@
     // 2. Hydrate from Supabase cloud
     if (window.__supabase) {
       try {
-        const user_id = (typeof getActiveUserId === 'function') ? getActiveUserId() : 'usr_master_chris';
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
         const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
         if (data && data.current_level) {
           const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);

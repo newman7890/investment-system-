@@ -22,6 +22,7 @@
 
   // --- REAL BACKEND ENGINE (SUPABASE CLOUD PERSISTENCE) ---
   function getActiveUserId() {
+
     if (window.__currentUserId) return window.__currentUserId;
     try {
       const storedId = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
@@ -29,6 +30,7 @@
     } catch (e) {}
     return null;
   }
+  window.getActiveUserId = getActiveUserId;
 
   // Full sign-out: clears all session keys then redirects to login
   window.signOut = async function () {
@@ -205,7 +207,6 @@
       }
 
       updateAllUI();
-    ensureAdminSidebarLink();
       setupRealtimeListeners(userId);
     } catch (err) {
       console.warn('Backend sync from Supabase notice:', err.message);
@@ -355,46 +356,77 @@
     syncToSupabase('balances');
   }
 
-  function calculateTotalPortfolio() {
-    // Synchronize package allocated credit from 30-level platform
-    let packageBal = 0;
-    try {
-      const LEVEL_MAX = {
-        1: 1500, 2: 3000, 3: 4500, 4: 6000, 5: 7500, 6: 9000, 7: 10500, 8: 12000, 9: 13500, 10: 15000,
-        11: 16500, 12: 18000, 13: 19500, 14: 21000, 15: 22500, 16: 24000, 17: 25500, 18: 27000, 19: 45000, 20: 60000,
-        21: 90000, 22: 120000, 23: 150000, 24: 180000, 25: 210000, 26: 240000, 27: 270000, 28: 300000, 29: 330000, 30: 360000
-      };
-      let curLvl = 1;
-      const storedLvl = localStorage.getItem('bond_active_level');
-      if (storedLvl) curLvl = parseInt(storedLvl, 10);
-      const maxForLvl = LEVEL_MAX[curLvl] || 1500;
+  // Canonical 30-Level Platform Schedule
+  const LEVEL_MAP = {
+    1: { purchase: 500, balance: 1500, limit: 30 },
+    2: { purchase: 1000, balance: 3000, limit: 60 },
+    3: { purchase: 1500, balance: 4500, limit: 100 },
+    4: { purchase: 2000, balance: 6000, limit: 130 },
+    5: { purchase: 2500, balance: 7500, limit: 170 },
+    6: { purchase: 3000, balance: 9000, limit: 220 },
+    7: { purchase: 3500, balance: 10500, limit: 255 },
+    8: { purchase: 4000, balance: 12000, limit: 300 },
+    9: { purchase: 4500, balance: 13500, limit: 340 },
+    10: { purchase: 5000, balance: 15000, limit: 385 },
+    11: { purchase: 5500, balance: 16500, limit: 420 },
+    12: { purchase: 6000, balance: 18000, limit: 470 },
+    13: { purchase: 6500, balance: 19500, limit: 510 },
+    14: { purchase: 7000, balance: 21000, limit: 550 },
+    15: { purchase: 7500, balance: 22500, limit: 580 },
+    16: { purchase: 8000, balance: 24000, limit: 630 },
+    17: { purchase: 8500, balance: 25500, limit: 670 },
+    18: { purchase: 9000, balance: 27000, limit: 730 },
+    19: { purchase: 15000, balance: 45000, limit: 1200 },
+    20: { purchase: 20000, balance: 60000, limit: 1300 },
+    21: { purchase: 30000, balance: 90000, limit: 2000 },
+    22: { purchase: 40000, balance: 120000, limit: 3000 },
+    23: { purchase: 50000, balance: 150000, limit: 4000 },
+    24: { purchase: 60000, balance: 180000, limit: 4500 },
+    25: { purchase: 70000, balance: 210000, limit: 5200 },
+    26: { purchase: 80000, balance: 240000, limit: 6000 },
+    27: { purchase: 90000, balance: 270000, limit: 7000 },
+    28: { purchase: 100000, balance: 300000, limit: 8000 },
+    29: { purchase: 110000, balance: 330000, limit: 8800 },
+    30: { purchase: 120000, balance: 360000, limit: 9000 }
+  };
+  window.BOND_LEVEL_MAP = LEVEL_MAP;
 
+  function getActiveTierInfo() {
+    let lvl = 1;
+    try {
+      const storedLvl = localStorage.getItem('bond_active_level');
+      if (storedLvl) lvl = parseInt(storedLvl, 10);
+      else if (appState.user && appState.user.current_level) lvl = parseInt(appState.user.current_level, 10);
+    } catch (e) {}
+
+    if (isNaN(lvl) || lvl < 1) lvl = 1;
+    if (lvl > 30) lvl = 30;
+
+    const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
+    let bal = info.balance;
+
+    try {
       const storedBal = localStorage.getItem('bond_allocated_balance');
       if (storedBal !== null && !isNaN(parseFloat(storedBal))) {
-        packageBal = parseFloat(storedBal);
+        const parsed = parseFloat(storedBal);
+        bal = Math.min(parsed, info.balance);
       } else if (appState.user && appState.user.level_balance !== undefined) {
-        packageBal = appState.user.level_balance;
-      } else {
-        packageBal = maxForLvl;
-      }
-
-      if (packageBal > maxForLvl) {
-        packageBal = maxForLvl;
-        try { localStorage.setItem('bond_allocated_balance', maxForLvl); } catch(e){}
+        bal = Math.min(parseFloat(appState.user.level_balance), info.balance);
       }
     } catch (e) {}
 
-    // When an allocated package is active, display its balance directly without adding demo crypto
-    if (packageBal > 0) {
-      return packageBal;
-    }
+    return {
+      level: lvl,
+      purchase: info.purchase,
+      balance: bal,
+      limit: info.limit
+    };
+  }
+  window.getActiveTierInfo = getActiveTierInfo;
 
-    let total = appState.balances.USD || 0;
-    for (const sym in appState.assets) {
-      const bal = appState.balances[sym] || 0;
-      total += bal * (appState.assets[sym].priceUSD || 0);
-    }
-    return total;
+  function calculateTotalPortfolio() {
+    const tier = getActiveTierInfo();
+    return tier.balance;
   }
 
   // --- Theme Management ---
@@ -1828,74 +1860,22 @@
   };
 
 
-  // Sync 30-Level Platform Active Package on Home Dashboard
+  // Sync 30-Level Platform Active Package across ALL pages & components
   function syncHomePackageCard() {
-    const LEVEL_MAP = {
-      1: { purchase: 500, balance: 1500, limit: 30 },
-      2: { purchase: 1000, balance: 3000, limit: 60 },
-      3: { purchase: 1500, balance: 4500, limit: 100 },
-      4: { purchase: 2000, balance: 6000, limit: 130 },
-      5: { purchase: 2500, balance: 7500, limit: 170 },
-      6: { purchase: 3000, balance: 9000, limit: 220 },
-      7: { purchase: 3500, balance: 10500, limit: 255 },
-      8: { purchase: 4000, balance: 12000, limit: 300 },
-      9: { purchase: 4500, balance: 13500, limit: 340 },
-      10: { purchase: 5000, balance: 15000, limit: 385 },
-      11: { purchase: 5500, balance: 16500, limit: 420 },
-      12: { purchase: 6000, balance: 18000, limit: 470 },
-      13: { purchase: 6500, balance: 19500, limit: 510 },
-      14: { purchase: 7000, balance: 21000, limit: 550 },
-      15: { purchase: 7500, balance: 22500, limit: 580 },
-      16: { purchase: 8000, balance: 24000, limit: 630 },
-      17: { purchase: 8500, balance: 25500, limit: 670 },
-      18: { purchase: 9000, balance: 27000, limit: 730 },
-      19: { purchase: 15000, balance: 45000, limit: 1200 },
-      20: { purchase: 20000, balance: 60000, limit: 1300 },
-      21: { purchase: 30000, balance: 90000, limit: 2000 },
-      22: { purchase: 40000, balance: 120000, limit: 3000 },
-      23: { purchase: 50000, balance: 150000, limit: 4000 },
-      24: { purchase: 60000, balance: 180000, limit: 4500 },
-      25: { purchase: 70000, balance: 210000, limit: 5200 },
-      26: { purchase: 80000, balance: 240000, limit: 6000 },
-      27: { purchase: 90000, balance: 270000, limit: 7000 },
-      28: { purchase: 100000, balance: 300000, limit: 8000 },
-      29: { purchase: 110000, balance: 330000, limit: 8800 },
-      30: { purchase: 120000, balance: 360000, limit: 9000 }
-    };
+    const tier = getActiveTierInfo();
+    const lvl = tier.level;
+    const cost = tier.purchase;
+    const bal = tier.balance;
+    const limit = tier.limit;
 
-    let lvl = 1;
-    let bal = 1500;
-    let limit = 30;
-    let cost = 500;
+    if (appState.user) {
+      appState.user.current_level = lvl;
+      appState.user.level_balance = bal;
+      appState.user.monthly_limit = limit;
+      appState.user.tier = `Level ${lvl} Package`;
+    }
 
-    try {
-      const storedLvl = localStorage.getItem('bond_active_level');
-      if (storedLvl) lvl = parseInt(storedLvl, 10);
-      else if (appState.user && appState.user.current_level) lvl = appState.user.current_level;
-
-      const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
-      cost = info.purchase;
-      limit = info.limit;
-
-      const storedBal = localStorage.getItem('bond_allocated_balance');
-      if (storedBal !== null && !isNaN(parseFloat(storedBal))) bal = parseFloat(storedBal);
-      else if (appState.user && appState.user.level_balance !== undefined) bal = appState.user.level_balance;
-      else bal = info.balance;
-
-      // Ensure balance never exceeds active tier maximum (fixes stale local storage test values)
-      if (bal > info.balance) {
-        bal = info.balance;
-        try { localStorage.setItem('bond_allocated_balance', bal); } catch(e){}
-      }
-
-      if (appState.user) {
-        appState.user.current_level = lvl;
-        appState.user.level_balance = bal;
-        appState.user.monthly_limit = limit;
-        appState.user.tier = `Level ${lvl} Package`;
-      }
-    } catch (e) {}
-
+    // 1. Home Dashboard Elements
     const badge = document.getElementById('home-card-badge');
     if (badge) badge.textContent = `Level ${lvl} Package`;
 
@@ -1913,7 +1893,60 @@
 
     const tierTag = document.getElementById('home-active-tier-tag');
     if (tierTag) tierTag.textContent = `Level ${lvl} Package`;
+
+    // 2. Asset Page Elements (desktop-asset-bitcoin.html)
+    const elBal = document.getElementById('asset-allocated-balance');
+    if (elBal) elBal.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    const elBadge = document.getElementById('asset-tier-badge');
+    if (elBadge) elBadge.textContent = `Level ${lvl} Package Active`;
+
+    const elLvl = document.getElementById('asset-card-level');
+    if (elLvl) elLvl.textContent = `Level ${lvl}`;
+
+    const elCost = document.getElementById('asset-card-cost');
+    if (elCost) elCost.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    const elCredit = document.getElementById('asset-card-credit');
+    if (elCredit) elCredit.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    const elLimit = document.getElementById('asset-card-limit');
+    if (elLimit) elLimit.textContent = '$' + limit.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
+
+    const elEq = document.getElementById('breakdown-equity');
+    if (elEq) elEq.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+
+    const elMult = document.getElementById('breakdown-multiplier');
+    if (elMult) elMult.textContent = '$' + (bal - cost).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+
+    const elSideTier = document.getElementById('side-asset-tier');
+    if (elSideTier) elSideTier.textContent = `Level ${lvl} Package`;
+
+    const elSideLim = document.getElementById('side-asset-limit');
+    if (elSideLim) elSideLim.textContent = '$' + limit.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
+
+    // 3. Transactions Page Elements (transactions.html)
+    const totalEl = document.getElementById('tx-portfolio-total');
+    if (totalEl) totalEl.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    const tagEl = document.getElementById('tx-active-tag');
+    if (tagEl) {
+      tagEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></span> Level ${lvl} Package Active`;
+    }
+
+    const r1Title = document.getElementById('tx-row1-title');
+    if (r1Title) r1Title.textContent = `Level ${lvl} Package Activated`;
+
+    const r1Amt = document.getElementById('tx-row1-amount');
+    if (r1Amt) r1Amt.textContent = '+$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    const r4Title = document.getElementById('tx-row4-title');
+    if (r4Title) r4Title.textContent = `Level ${lvl} Package Funding Deposit`;
+
+    const r4Amt = document.getElementById('tx-row4-amount');
+    if (r4Amt) r4Amt.textContent = '-$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
   }
+  window.syncHomePackageCard = syncHomePackageCard;
 
   // Cross-tab and local storage listener
   window.addEventListener('storage', () => {
@@ -1923,6 +1956,7 @@
 
   // --- Dynamic UI Sync ---
   function updateAllUI(tickSymbol, direction) {
+    syncHomePackageCard();
     const totalVal = calculateTotalPortfolio();
 
     // 0. Update Profile Avatar Icon in Header
@@ -2384,6 +2418,7 @@
     });
 
     // Start live market fluctuations and initial sync
+    syncHomePackageCard();
     startLiveMarketFeed();
     updateAllUI();
     syncFromSupabase();

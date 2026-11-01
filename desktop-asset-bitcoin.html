@@ -324,10 +324,14 @@
 </div>
 
 <script>
-  // Dynamic sync with active package tier from localStorage / Supabase
+  // Dynamic sync with active package tier from localStorage / bondcapital-app.js
   function syncTierAssetPage() {
+    if (typeof window.syncHomePackageCard === 'function') {
+      window.syncHomePackageCard();
+      return;
+    }
     try {
-      const LEVEL_MAP = {
+      const LEVEL_MAP = window.BOND_LEVEL_MAP || {
         1: { purchase: 500, balance: 1500, limit: 30 },
         2: { purchase: 1000, balance: 3000, limit: 60 },
         3: { purchase: 1500, balance: 4500, limit: 100 },
@@ -363,65 +367,44 @@
       let lvl = 1;
       const storedLvl = localStorage.getItem('bond_active_level');
       if (storedLvl) lvl = parseInt(storedLvl, 10);
+      if (isNaN(lvl) || lvl < 1) lvl = 1;
+      if (lvl > 30) lvl = 30;
 
       const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
-      let bal = info.balance;
-      let cost = info.purchase;
-      let lim = info.limit;
-
-      const stored = localStorage.getItem('bond_tier_state');
-      if (stored) {
-        try {
-          const tier = JSON.parse(stored);
-          if (tier.level) lvl = tier.level;
-          if (tier.purchaseCost) cost = tier.purchaseCost;
-          if (tier.monthlyLimit) lim = tier.monthlyLimit;
-          if (tier.allocatedBalance !== undefined) bal = tier.allocatedBalance;
-        } catch(e){}
-      }
-
-      const storedBal = localStorage.getItem('bond_allocated_balance');
-      if (storedBal !== null && !isNaN(parseFloat(storedBal))) {
-        bal = parseFloat(storedBal);
-      }
-
-      // Clamp to tier balance limit
-      if (bal > info.balance) {
-        bal = info.balance;
-        try { localStorage.setItem('bond_allocated_balance', bal); } catch(e){}
-      }
+      const bal = info.balance;
+      const cost = info.purchase;
+      const lim = info.limit;
       const mult = bal - cost;
 
-        const elBal = document.getElementById('asset-allocated-balance');
-        if (elBal) elBal.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const elBal = document.getElementById('asset-allocated-balance');
+      if (elBal) elBal.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-        const elBadge = document.getElementById('asset-tier-badge');
-        if (elBadge) elBadge.textContent = `Level ${lvl} Package Active`;
+      const elBadge = document.getElementById('asset-tier-badge');
+      if (elBadge) elBadge.textContent = `Level ${lvl} Package Active`;
 
-        const elLvl = document.getElementById('asset-card-level');
-        if (elLvl) elLvl.textContent = `Level ${lvl}`;
+      const elLvl = document.getElementById('asset-card-level');
+      if (elLvl) elLvl.textContent = `Level ${lvl}`;
 
-        const elCost = document.getElementById('asset-card-cost');
-        if (elCost) elCost.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const elCost = document.getElementById('asset-card-cost');
+      if (elCost) elCost.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-        const elCredit = document.getElementById('asset-card-credit');
-        if (elCredit) elCredit.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const elCredit = document.getElementById('asset-card-credit');
+      if (elCredit) elCredit.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-        const elLimit = document.getElementById('asset-card-limit');
-        if (elLimit) elLimit.textContent = '$' + lim.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
+      const elLimit = document.getElementById('asset-card-limit');
+      if (elLimit) elLimit.textContent = '$' + lim.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
 
-        const elEq = document.getElementById('breakdown-equity');
-        if (elEq) elEq.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+      const elEq = document.getElementById('breakdown-equity');
+      if (elEq) elEq.textContent = '$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
 
-        const elMult = document.getElementById('breakdown-multiplier');
-        if (elMult) elMult.textContent = '$' + mult.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+      const elMult = document.getElementById('breakdown-multiplier');
+      if (elMult) elMult.textContent = '$' + mult.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
 
-        const elSideTier = document.getElementById('side-asset-tier');
-        if (elSideTier) elSideTier.textContent = `Level ${lvl} Package`;
+      const elSideTier = document.getElementById('side-asset-tier');
+      if (elSideTier) elSideTier.textContent = `Level ${lvl} Package`;
 
-        const elSideLim = document.getElementById('side-asset-limit');
-        if (elSideLim) elSideLim.textContent = '$' + lim.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
-      }
+      const elSideLim = document.getElementById('side-asset-limit');
+      if (elSideLim) elSideLim.textContent = '$' + lim.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' / mo';
     } catch (e) {
       console.error('Error syncing tier asset page:', e);
     }
