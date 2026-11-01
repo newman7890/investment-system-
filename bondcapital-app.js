@@ -1321,27 +1321,215 @@
     `);
   };
 
-  window.openHelpModal = function () {
+    window.openHelpModal = function () {
     openModal(`
-      <div style="padding: 24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h2 style="font-size:18px; font-weight:700;">Help & Support</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">✕</button>
+      <div style="padding: 24px 22px;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:42px; height:42px; border-radius:14px; background:#EEF3FF; color:#0052FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0; line-height:1.2;">Help & Support Desk</h2>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:3px;">
+                <span style="width:6px; height:6px; border-radius:50%; background:#098551; display:inline-block;"></span>
+                <span style="font-size:11px; font-weight:600; color:#098551;">Agents Online • 24/7 Priority Support</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; color:#5B616E; display:flex; align-items:center; justify-content:center; transition:background 0.15s;">✕</button>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:10px; font-size:13px;">
-          <div onclick="closeActiveModal(); showToast('Trading guide opened', '', 'ℹ');" style="padding:14px; border:1px solid var(--border-color); border-radius:14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
-            <span style="font-weight:600;">How to buy and sell crypto</span>
-            <span>→</span>
+        <div id="help-modal-main-view">
+          <!-- Live Chat Feature Card -->
+          <div onclick="switchHelpToChat()" style="background:linear-gradient(135deg, #0052FF 0%, #003ECC 100%); border-radius:18px; padding:16px 18px; color:#ffffff; cursor:pointer; margin-bottom:18px; box-shadow:0 4px 14px rgba(0, 82, 255, 0.25); display:flex; align-items:center; justify-content:space-between; transition:transform 0.15s;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+              </div>
+              <div>
+                <div style="font-size:14px; font-weight:800;">Start 24/7 Live Agent Chat</div>
+                <div style="font-size:11px; opacity:0.85; margin-top:2px;">Instant assistance for withdrawals & packages</div>
+              </div>
+            </div>
+            <span style="background:#ffffff; color:#0052FF; font-size:11px; font-weight:800; padding:6px 12px; border-radius:9999px;">Chat Now</span>
           </div>
-          <div onclick="closeActiveModal(); showToast('Connecting to 24/7 Agent', '', '💬');" style="padding:14px; border:1px solid var(--border-color); border-radius:14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
-            <span style="font-weight:600;">Chat with 24/7 Live Support</span>
-            <span>💬</span>
+
+          <!-- Knowledge Base Topics -->
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#5B616E; margin-bottom:8px;">Knowledge Base & FAQs</div>
+          
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <!-- Topic 1 -->
+            <div onclick="toggleHelpAnswer('faq-ans-1')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:16px;">📊</span>
+                  <span style="font-size:13px; font-weight:700; color:#0A0B0D;">How the 30-Level Platform Works</span>
+                </div>
+                <span id="faq-arrow-1" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+              </div>
+              <div id="faq-ans-1" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
+                Customers select from 30 structured investment tiers. Each tier unlocks a 300% (3×) allocated dashboard balance and a guaranteed monthly withdrawal limit starting from $30/month up to $9,000/month.
+              </div>
+            </div>
+
+            <!-- Topic 2 -->
+            <div onclick="toggleHelpAnswer('faq-ans-2')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:16px;">💸</span>
+                  <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Withdrawals & Settlement Frequency</span>
+                </div>
+                <span id="faq-arrow-2" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+              </div>
+              <div id="faq-ans-2" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
+                Every withdrawal directly deducts from your allocated dashboard balance. Withdrawals can be requested up to your monthly tier limit every 30 days via FAST Bank Transfer or Wire.
+              </div>
+            </div>
+
+            <!-- Topic 3 -->
+            <div onclick="toggleHelpAnswer('faq-ans-3')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:16px;">📦</span>
+                  <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Accessing Your Digital Products</span>
+                </div>
+                <span id="faq-arrow-3" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+              </div>
+              <div id="faq-ans-3" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
+                Your package tier automatically unlocks access to our digital research reports, algorithmic drawdown calculators, and weekly market intelligence briefs directly on your Home dashboard.
+              </div>
+            </div>
+
+            <!-- Topic 4 -->
+            <div onclick="toggleHelpAnswer('faq-ans-4')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:16px;">🛡️</span>
+                  <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Security & Account Verification</span>
+                </div>
+                <span id="faq-arrow-4" style="font-size:12px; color:#5B616E; font-weight:bold;">▼</span>
+              </div>
+              <div id="faq-ans-4" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
+                All customer accounts and funds are protected by institutional-grade encrypted vaults, multi-factor authentication, and separate operating fund reserves.
+              </div>
+            </div>
+          </div>
+
+          <!-- Direct Contact Footer -->
+          <div style="margin-top:18px; padding-top:14px; border-top:1px solid #ECEFF1; display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#5B616E;">
+            <div>Email: <b style="color:#0052FF;">support@bondcapital.com</b></div>
+            <div>Response time: <b>&lt; 5 mins</b></div>
+          </div>
+        </div>
+
+        <!-- Live Chat View (Hidden by default) -->
+        <div id="help-modal-chat-view" style="display:none;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; margin-bottom:14px; border-bottom:1px solid #ECEFF1;">
+            <button onclick="switchHelpToFAQ()" style="border:none; background:#EEF0F3; border-radius:9999px; padding:6px 12px; font-size:11px; font-weight:700; color:#0A0B0D; cursor:pointer; display:flex; align-items:center; gap:4px;">
+              ← Back to Guides
+            </button>
+            <div style="font-size:11px; font-weight:700; color:#098551; display:flex; align-items:center; gap:5px;">
+              <span style="width:6px; height:6px; border-radius:50%; background:#098551; display:inline-block;"></span>
+              Agent Sarah M. Active
+            </div>
+          </div>
+
+          <!-- Chat messages box -->
+          <div id="help-chat-messages" style="height:200px; overflow-y:auto; background:#F8FAFC; border:1px solid #ECEFF1; border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
+            <div style="background:#EEF3FF; border:1px solid #D9E4FF; border-radius:14px 14px 14px 4px; padding:10px 12px; font-size:12px; color:#0A0B0D; max-width:85%; line-height:1.4;">
+              Hello! 👋 Welcome to <b>Bond Capital Support Desk</b>. How can I assist you with your investment package or withdrawal requests today?
+            </div>
+          </div>
+
+          <!-- Quick reply chips -->
+          <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:8px;" class="scrollbar-none">
+            <button onclick="sendQuickHelpMsg('How do I request a withdrawal?')" style="border:1px solid #D0D5DD; background:#ffffff; border-radius:9999px; padding:4px 10px; font-size:11px; font-weight:600; color:#344054; cursor:pointer; white-space:nowrap;">How to withdraw?</button>
+            <button onclick="sendQuickHelpMsg('How do I upgrade my level package?')" style="border:1px solid #D0D5DD; background:#ffffff; border-radius:9999px; padding:4px 10px; font-size:11px; font-weight:600; color:#344054; cursor:pointer; white-space:nowrap;">Upgrade level?</button>
+            <button onclick="sendQuickHelpMsg('Where can I see my digital products?')" style="border:1px solid #D0D5DD; background:#ffffff; border-radius:9999px; padding:4px 10px; font-size:11px; font-weight:600; color:#344054; cursor:pointer; white-space:nowrap;">Digital products?</button>
+          </div>
+
+          <!-- Input row -->
+          <div style="display:flex; gap:8px;">
+            <input id="help-chat-input" onkeydown="if(event.key==='Enter') sendHelpChatMsg()" type="text" placeholder="Type your question here..." style="flex:1; border:1px solid #D0D5DD; border-radius:9999px; padding:9px 16px; font-size:12px; outline:none; background:#ffffff; color:#0A0B0D;" />
+            <button onclick="sendHelpChatMsg()" style="border:none; background:#0052FF; color:#ffffff; border-radius:9999px; padding:9px 18px; font-size:12px; font-weight:700; cursor:pointer;">Send</button>
           </div>
         </div>
       </div>
     `);
   };
+
+  // Helper functions for Help Modal
+  window.toggleHelpAnswer = function (ansId) {
+    const el = document.getElementById(ansId);
+    if (!el) return;
+    const isHidden = el.style.display === 'none';
+    el.style.display = isHidden ? 'block' : 'none';
+  };
+
+  window.switchHelpToChat = function () {
+    const mainView = document.getElementById('help-modal-main-view');
+    const chatView = document.getElementById('help-modal-chat-view');
+    if (mainView && chatView) {
+      mainView.style.display = 'none';
+      chatView.style.display = 'block';
+    }
+  };
+
+  window.switchHelpToFAQ = function () {
+    const mainView = document.getElementById('help-modal-main-view');
+    const chatView = document.getElementById('help-modal-chat-view');
+    if (mainView && chatView) {
+      mainView.style.display = 'block';
+      chatView.style.display = 'none';
+    }
+  };
+
+  window.sendHelpChatMsg = function () {
+    const input = document.getElementById('help-chat-input');
+    if (!input || !input.value.trim()) return;
+    const msg = input.value.trim();
+    input.value = '';
+    renderChatMessage(msg, true);
+
+    setTimeout(() => {
+      let reply = "Thanks for your inquiry! Our support team has logged your ticket and an agent will assist you with this directly.";
+      const low = msg.toLowerCase();
+      if (low.includes('withdraw')) {
+        reply = "To request a withdrawal, visit your Home or Assets page and click Withdraw. You can withdraw up to your monthly tier allowance once per 30-day cycle.";
+      } else if (low.includes('upgrade') || low.includes('level')) {
+        reply = "You can upgrade to any of the 30 tiers at any time by going to the 30-Level Platform page and selecting your desired tier.";
+      } else if (low.includes('product') || low.includes('report') || low.includes('book')) {
+        reply = "Your unlocked digital products (intelligence reports, financial calculators, and guides) are accessible directly in the 'Included Digital Products' section on your Home page.";
+      }
+      renderChatMessage(reply, false);
+    }, 800);
+  };
+
+  window.sendQuickHelpMsg = function (text) {
+    const input = document.getElementById('help-chat-input');
+    if (input) input.value = text;
+    sendHelpChatMsg();
+  };
+
+  function renderChatMessage(text, isUser) {
+    const box = document.getElementById('help-chat-messages');
+    if (!box) return;
+    const msgDiv = document.createElement('div');
+    if (isUser) {
+      msgDiv.style.cssText = 'background:#0052FF; color:#ffffff; border-radius:14px 14px 4px 14px; padding:10px 12px; font-size:12px; align-self:flex-end; max-width:85%; line-height:1.4;';
+    } else {
+      msgDiv.style.cssText = 'background:#EEF3FF; border:1px solid #D9E4FF; border-radius:14px 14px 14px 4px; padding:10px 12px; font-size:12px; color:#0A0B0D; align-self:flex-start; max-width:85%; line-height:1.4;';
+    }
+    msgDiv.textContent = text;
+    box.appendChild(msgDiv);
+    box.scrollTop = box.scrollHeight;
+  }
+
 
   window.openProfileModal = function () {
     const userInitial = (appState.user.name || 'User').charAt(0).toUpperCase();
