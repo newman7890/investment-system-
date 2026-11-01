@@ -133,10 +133,18 @@
       try {
         const uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
         if (uid) {
-          window.location.replace('index.html');
+          window.location.replace('dashboard.html');
         }
       } catch (e) {}
     })();
+
+        // Support ?mode=signup query parameter
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('mode') === 'signup') {
+        setTimeout(() => switchAuthMode('signup'), 60);
+      }
+    } catch(e) {}
 
     function switchAuthMode(mode) {
       authMode = mode;
@@ -248,7 +256,7 @@
           localStorage.setItem('bond_user_name', displayName);
 
           showAlert('Account created successfully! Loading your portfolio...', false);
-          setTimeout(() => { window.location.replace('index.html'); }, 600);
+          setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
 
         } else {
           // --- SIGN IN FLOW ---
@@ -296,7 +304,7 @@
           localStorage.setItem('bond_user_name', displayName);
 
           showAlert('Signed in successfully! Loading your portfolio...', false);
-          setTimeout(() => { window.location.replace('index.html'); }, 600);
+          setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
         }
 
       } catch (err) {
