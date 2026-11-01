@@ -544,7 +544,7 @@
       tLower.includes('paid') ||
       tLower.includes('verified') ||
       typeOrIcon === 'success' ||
-      typeOrIcon === 'âœ“'
+      typeOrIcon === 'success' || typeOrIcon === 'check'
     ) {
       type = 'success';
       pillText = 'SETTLED & CONFIRMED';
@@ -685,9 +685,7 @@
       closeActiveModal();
       showToast(
         `Bought ${cryptoQty.toFixed(6)} ${symbol}`,
-        `Successfully executed at $${asset.priceUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-        'âœ“'
-      );
+        `Successfully executed at $${asset.priceUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 'success');
 
     } else if (action === 'Sell') {
       const currentCrypto = appState.balances[symbol] || 0;
@@ -716,9 +714,7 @@
       closeActiveModal();
       showToast(
         `Sold ${cryptoQty.toFixed(6)} ${symbol}`,
-        `Received $${amountUSD.toFixed(2)} USD in wallet`,
-        'âœ“'
-      );
+        `Received $${amountUSD.toFixed(2)} USD in wallet`, 'success');
     }
   };
 
@@ -1009,7 +1005,7 @@
               <p style="font-size:12px; color:var(--text-muted); margin:0;">Real-time WebSocket & REST Data Pipeline</p>
             </div>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <!-- Connection Status Banner -->
@@ -1098,7 +1094,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <h2 style="font-size:18px; font-weight:700;">Send ${asset.name}</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:16px;">
@@ -1150,7 +1146,7 @@
     saveState();
     updateAllUI();
     closeActiveModal();
-    showToast('Sent Successfully', `Transferred ${amt} ${symbol} to ${recipient.slice(0, 14)}...`, 'âœ“');
+    showToast('Sent Successfully', `Transferred ${amt} ${symbol} to ${recipient.slice(0, 14)}...`, 'success');
   };
 
   window.openReceiveCryptoModal = function () {
@@ -1161,7 +1157,7 @@
       <div style="padding: 24px; text-align:center;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <h2 style="font-size:18px; font-weight:700;">Receive ${asset.name}</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Only send <strong style="color:var(--text-primary);">${asset.name} (${asset.symbol})</strong> to this address.</p>
@@ -1205,7 +1201,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <h2 style="font-size:18px; font-weight:700;">Deposit USD Cash</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:18px;">
@@ -1256,7 +1252,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
           <h2 style="font-size:18px; font-weight:700;">Withdraw USD</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:18px;">
@@ -1300,7 +1296,7 @@
     saveState();
     updateAllUI();
     closeActiveModal();
-    showToast('Withdrawal Processed', `$${amt.toFixed(2)} USD transferred.`, 'âœ“');
+    showToast('Withdrawal Processed', `$${amt.toFixed(2)} USD transferred.`, 'success');
   };
 
   window.openAssetSelectorModal = function () {
@@ -1334,7 +1330,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Select Asset</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
         <div style="display:flex; flex-direction:column; gap:4px; max-height:320px; overflow-y:auto;">
           ${itemsHtml}
@@ -1347,7 +1343,7 @@
       saveState();
       closeActiveModal();
       updateAllUI();
-      showToast(`Selected ${appState.assets[sym].name}`, `Ready to trade ${sym}`, 'âœ“');
+      showToast(`Selected ${appState.assets[sym].name}`, `Ready to trade ${sym}`, 'success');
     };
   };
 
@@ -1356,7 +1352,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Payment Method</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:8px;">
@@ -1368,7 +1364,7 @@
                 <div style="font-size:12px; color:var(--text-muted);">Available: $${appState.balances.USD.toFixed(2)}</div>
               </div>
             </div>
-            <span style="color:#0052FF; font-weight:bold;">âœ“</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
           </div>
 
           <div onclick="selectPaymentMethod('Chase Bank (â€¢â€¢â€¢â€¢ 4291)')" style="display:flex; align-items:center; justify-content:space-between; padding:14px; border:1px solid var(--border-color); border-radius:18px; cursor:pointer;">
@@ -1391,7 +1387,7 @@
     window.selectPaymentMethod = function (name) {
       appState.order.paymentMethod = name;
       closeActiveModal();
-      showToast('Payment Method Selected', name, 'âœ“');
+      showToast('Payment Method Selected', name, 'success');
     };
   };
 
@@ -1403,7 +1399,7 @@
       html += `
         <div onclick="selectOrderFreq('${f}')" style="display:flex; align-items:center; justify-content:space-between; padding:14px; border-radius:16px; cursor:pointer; background:${active ? 'rgba(0,82,255,0.08)' : 'transparent'}; font-weight:600; font-size:14px;">
           <span>${f}</span>
-          ${active ? '<span style="color:#0052FF; font-weight:bold;">âœ“</span>' : ''}
+          ${active ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
         </div>
       `;
     });
@@ -1412,7 +1408,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Repeat Order</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
         <div style="display:flex; flex-direction:column; gap:4px;">${html}</div>
       </div>
@@ -1436,7 +1432,7 @@
       <div style="padding: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h2 style="font-size:18px; font-weight:700;">Notifications</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -1451,7 +1447,7 @@
           </div>
         </div>
 
-        <button onclick="closeActiveModal(); showToast('Notifications marked as read', '', 'âœ“');" style="margin-top:16px; width:100%; background:#EEF0F3; border:none; border-radius:9999px; padding:10px; font-size:13px; font-weight:700; cursor:pointer;">
+        <button onclick="closeActiveModal(); showToast('Notifications marked as read', '', 'success');" style="margin-top:16px; width:100%; background:#EEF0F3; border:none; border-radius:9999px; padding:10px; font-size:13px; font-weight:700; cursor:pointer;">
           Mark all as read
         </button>
       </div>
@@ -1478,7 +1474,7 @@
               </div>
             </div>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; color:#5B616E; display:flex; align-items:center; justify-content:center; transition:background 0.15s;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; color:#5B616E; display:flex; align-items:center; justify-content:center; transition:background 0.15s;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <div id="help-modal-main-view">
@@ -1682,7 +1678,7 @@
               <span style="width:5px; height:5px; border-radius:50%; background:#10B981;"></span> Verified
             </span>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <!-- User Identity Section -->
@@ -1753,7 +1749,7 @@
             </div>
             <p style="font-size:12px; color:var(--text-muted, #5B616E); margin:3px 0 0;">Advanced financial tools, Web3 gateways, and market intelligence</p>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;">âœ•</button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; color:#5B616E; transition:background 0.15s;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
 
         <!-- Products Grid -->
@@ -2153,7 +2149,7 @@
             b.className = 'flex-1 py-1.5 px-4 bg-[#0A0B0D] text-white text-sm font-semibold rounded-full shadow-sm text-center';
             appState.order.type = b.textContent.trim();
             updateAllUI();
-            showToast(`${appState.order.type} Mode Selected`, '', 'âœ“');
+            showToast(`${appState.order.type} Mode Selected`, '', 'success');
           };
         });
       }
@@ -2374,7 +2370,7 @@
           card.style.opacity = '0';
           card.style.transform = 'scale(0.9)';
           setTimeout(() => card.remove(), 300);
-          showToast('Card dismissed', '', 'âœ•');
+          showToast('Card dismissed', '', 'info');
         }
       };
     });

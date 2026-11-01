@@ -564,7 +564,7 @@
     const action = currentAction;
     const modal = document.getElementById('order-modal');
     modal.querySelector('.bg-white').innerHTML = `
-      <div class="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-4 text-3xl font-bold">✓</div>
+      <div class="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-4"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
       <h3 class="text-xl font-bold text-gray-900 mb-2">Order Submitted!</h3>
       <p class="text-sm text-gray-500 mb-6">Your ${action} order has been queued successfully on the investment ledger.</p>
       <button onclick="window.location.reload()" class="w-full py-3 rounded-full bg-[#0052FF] text-white font-bold text-sm">Done</button>
