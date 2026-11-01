@@ -326,11 +326,28 @@
     // Synchronize package allocated credit from 30-level platform
     let packageBal = 0;
     try {
+      const LEVEL_MAX = {
+        1: 1500, 2: 3000, 3: 4500, 4: 6000, 5: 7500, 6: 9000, 7: 10500, 8: 12000, 9: 13500, 10: 15000,
+        11: 16500, 12: 18000, 13: 19500, 14: 21000, 15: 22500, 16: 24000, 17: 25500, 18: 27000, 19: 45000, 20: 60000,
+        21: 90000, 22: 120000, 23: 150000, 24: 180000, 25: 210000, 26: 240000, 27: 270000, 28: 300000, 29: 330000, 30: 360000
+      };
+      let curLvl = 1;
+      const storedLvl = localStorage.getItem('bond_active_level');
+      if (storedLvl) curLvl = parseInt(storedLvl, 10);
+      const maxForLvl = LEVEL_MAX[curLvl] || 1500;
+
       const storedBal = localStorage.getItem('bond_allocated_balance');
       if (storedBal !== null && !isNaN(parseFloat(storedBal))) {
         packageBal = parseFloat(storedBal);
       } else if (appState.user && appState.user.level_balance !== undefined) {
         packageBal = appState.user.level_balance;
+      } else {
+        packageBal = maxForLvl;
+      }
+
+      if (packageBal > maxForLvl) {
+        packageBal = maxForLvl;
+        try { localStorage.setItem('bond_allocated_balance', maxForLvl); } catch(e){}
       }
     } catch (e) {}
 
@@ -1569,6 +1586,12 @@
       if (storedBal !== null && !isNaN(parseFloat(storedBal))) bal = parseFloat(storedBal);
       else if (appState.user && appState.user.level_balance !== undefined) bal = appState.user.level_balance;
       else bal = info.balance;
+
+      // Ensure balance never exceeds active tier maximum (fixes stale local storage test values)
+      if (bal > info.balance) {
+        bal = info.balance;
+        try { localStorage.setItem('bond_allocated_balance', bal); } catch(e){}
+      }
 
       if (appState.user) {
         appState.user.current_level = lvl;
