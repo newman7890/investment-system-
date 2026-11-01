@@ -30,6 +30,29 @@
     return null;
   }
 
+  // Full sign-out: clears all session keys then redirects to login
+  window.signOut = async function () {
+    try {
+      if (supabase && supabase.auth) await supabase.auth.signOut();
+    } catch (e) {}
+    // Clear every bond_* key from both storages
+    const keys = [
+      'bond_user_id', 'bond_user_email', 'bond_user_name',
+      'bond_is_admin', 'bond_user_role'
+    ];
+    keys.forEach(k => {
+      try { sessionStorage.removeItem(k); } catch (e) {}
+      try { localStorage.removeItem(k); } catch (e) {}
+    });
+    // Also clear any Supabase sb-* auth tokens
+    try {
+      Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
+      Object.keys(sessionStorage).filter(k => k.startsWith('sb-')).forEach(k => sessionStorage.removeItem(k));
+    } catch (e) {}
+    window.__currentUserId = null;
+    window.location.replace('login.html');
+  };
+
   // Route Protection & Authentication Guard
   // Public pages that do NOT require authentication
   const isPublicPage = window.location.pathname.endsWith('login.html')
@@ -1709,7 +1732,7 @@
           <div style="margin: 8px 0; height:1px; background:var(--border-color, #ECEFF1);"></div>
 
           <!-- Sign Out -->
-          <button onclick="closeActiveModal(); if (supabase && supabase.auth) supabase.auth.signOut(); showToast('Signed out', 'Session finished', 'ðŸ‘‹'); setTimeout(() => { window.location.href = 'login.html'; }, 600);" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; border:1px solid #FECDD3; background:#FFF1F2; color:#E11D48; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#FFE4E6'" onmouseout="this.style.background='#FFF1F2'">
+          <button onclick="closeActiveModal(); showToast('Signing out...', 'Clearing session', '👋'); setTimeout(() => window.signOut(), 600);" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:12px; border:1px solid #FECDD3; background:#FFF1F2; color:#E11D48; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#FFE4E6'" onmouseout="this.style.background='#FFF1F2'">
             <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Sign Out of Account
           </button>
