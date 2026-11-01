@@ -214,7 +214,7 @@
 <!-- BEGIN: ContentColumns -->
 <div class="flex-1 flex overflow-y-auto">
 <!-- Left/Center Primary Asset Details -->
-<main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-5xl border-r border-gray-200 overflow-x-hidden">
+<main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl overflow-x-hidden min-w-0">
 
 <!-- Portfolio Header -->
 <div class="mb-8">
@@ -327,14 +327,70 @@
   // Dynamic sync with active package tier from localStorage / Supabase
   function syncTierAssetPage() {
     try {
+      const LEVEL_MAP = {
+        1: { purchase: 500, balance: 1500, limit: 30 },
+        2: { purchase: 1000, balance: 3000, limit: 60 },
+        3: { purchase: 1500, balance: 4500, limit: 100 },
+        4: { purchase: 2000, balance: 6000, limit: 130 },
+        5: { purchase: 2500, balance: 7500, limit: 170 },
+        6: { purchase: 3000, balance: 9000, limit: 220 },
+        7: { purchase: 3500, balance: 10500, limit: 255 },
+        8: { purchase: 4000, balance: 12000, limit: 300 },
+        9: { purchase: 4500, balance: 13500, limit: 340 },
+        10: { purchase: 5000, balance: 15000, limit: 385 },
+        11: { purchase: 5500, balance: 16500, limit: 420 },
+        12: { purchase: 6000, balance: 18000, limit: 470 },
+        13: { purchase: 6500, balance: 19500, limit: 510 },
+        14: { purchase: 7000, balance: 21000, limit: 550 },
+        15: { purchase: 7500, balance: 22500, limit: 580 },
+        16: { purchase: 8000, balance: 24000, limit: 630 },
+        17: { purchase: 8500, balance: 25500, limit: 670 },
+        18: { purchase: 9000, balance: 27000, limit: 730 },
+        19: { purchase: 15000, balance: 45000, limit: 1200 },
+        20: { purchase: 20000, balance: 60000, limit: 1300 },
+        21: { purchase: 30000, balance: 90000, limit: 2000 },
+        22: { purchase: 40000, balance: 120000, limit: 3000 },
+        23: { purchase: 50000, balance: 150000, limit: 4000 },
+        24: { purchase: 60000, balance: 180000, limit: 4500 },
+        25: { purchase: 70000, balance: 210000, limit: 5200 },
+        26: { purchase: 80000, balance: 240000, limit: 6000 },
+        27: { purchase: 90000, balance: 270000, limit: 7000 },
+        28: { purchase: 100000, balance: 300000, limit: 8000 },
+        29: { purchase: 110000, balance: 330000, limit: 8800 },
+        30: { purchase: 120000, balance: 360000, limit: 9000 }
+      };
+
+      let lvl = 1;
+      const storedLvl = localStorage.getItem('bond_active_level');
+      if (storedLvl) lvl = parseInt(storedLvl, 10);
+
+      const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
+      let bal = info.balance;
+      let cost = info.purchase;
+      let lim = info.limit;
+
       const stored = localStorage.getItem('bond_tier_state');
       if (stored) {
-        const tier = JSON.parse(stored);
-        const lvl = tier.level || 1;
-        const bal = tier.allocatedBalance || 1500;
-        const cost = tier.purchaseCost || 500;
-        const lim = tier.monthlyLimit || 30;
-        const mult = bal - cost;
+        try {
+          const tier = JSON.parse(stored);
+          if (tier.level) lvl = tier.level;
+          if (tier.purchaseCost) cost = tier.purchaseCost;
+          if (tier.monthlyLimit) lim = tier.monthlyLimit;
+          if (tier.allocatedBalance !== undefined) bal = tier.allocatedBalance;
+        } catch(e){}
+      }
+
+      const storedBal = localStorage.getItem('bond_allocated_balance');
+      if (storedBal !== null && !isNaN(parseFloat(storedBal))) {
+        bal = parseFloat(storedBal);
+      }
+
+      // Clamp to tier balance limit
+      if (bal > info.balance) {
+        bal = info.balance;
+        try { localStorage.setItem('bond_allocated_balance', bal); } catch(e){}
+      }
+      const mult = bal - cost;
 
         const elBal = document.getElementById('asset-allocated-balance');
         if (elBal) elBal.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
