@@ -173,6 +173,7 @@
       }
 
       updateAllUI();
+    ensureAdminSidebarLink();
       setupRealtimeListeners(userId);
     } catch (err) {
       console.warn('Backend sync from Supabase notice:', err.message);
