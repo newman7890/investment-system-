@@ -269,7 +269,7 @@
 
   <!-- 4 Tier Category Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-    <div onclick="filterByTier('starter')" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
+    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold text-[#0052FF] bg-blue-50 px-2.5 py-0.5 rounded-full">Levels 1–5</span>
         <span class="text-xs font-bold text-[#5B616E]">3× Match</span>
@@ -279,7 +279,7 @@
       <div class="mt-3 text-xs font-bold text-[#098551]">Up to $170 / mo payout</div>
     </div>
 
-    <div onclick="filterByTier('growth')" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
+    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full">Levels 6–15</span>
         <span class="text-xs font-bold text-[#5B616E]">3× Match</span>
@@ -289,7 +289,7 @@
       <div class="mt-3 text-xs font-bold text-[#098551]">Up to $580 / mo payout</div>
     </div>
 
-    <div onclick="filterByTier('executive')" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
+    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full">Levels 16–25</span>
         <span class="text-xs font-bold text-[#5B616E]">3× Match</span>
@@ -299,7 +299,7 @@
       <div class="mt-3 text-xs font-bold text-[#098551]">Up to $5,200 / mo payout</div>
     </div>
 
-    <div onclick="filterByTier('institutional')" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
+    <div onclick="window.location.href='levels.html'" class="p-5 rounded-2xl border border-[#ECEFF1] bg-white hover:border-[#0052FF] hover:shadow-sm cursor-pointer transition-all">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full">Levels 26–30</span>
         <span class="text-xs font-bold text-[#5B616E]">VIP Tier</span>
@@ -309,39 +309,6 @@
       <div class="mt-3 text-xs font-bold text-[#098551]">Up to $9,000 / mo payout</div>
     </div>
   </div>
-
-  <!-- Package Catalog Table -->
-  <section class="mb-10">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h2 class="text-xl font-bold text-[#0A0B0D]">Package Catalog</h2>
-        <p class="text-xs text-[#5B616E] mt-0.5">Click any package tier to select or purchase on the 30-Level Platform</p>
-      </div>
-      <button onclick="resetExploreFilter()" class="text-xs font-bold text-[#0052FF] hover:underline cursor-pointer">
-        Show All 30 Tiers
-      </button>
-    </div>
-
-    <div class="bg-white border border-[#ECEFF1] rounded-3xl overflow-hidden shadow-xs">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-[#F8FAFC] border-b border-[#ECEFF1] text-[#5B616E] text-xs uppercase tracking-wider font-bold">
-            <tr>
-              <th class="py-4 px-6">Tier Level</th>
-              <th class="py-4 px-6">Purchase Price (USD)</th>
-              <th class="py-4 px-6">Dashboard Credit (3×)</th>
-              <th class="py-4 px-6">Monthly Withdrawal Limit</th>
-              <th class="py-4 px-6 text-center">Payout Period</th>
-              <th class="py-4 px-6 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody id="explore-packages-tbody" class="divide-y divide-[#ECEFF1]">
-            <!-- Generated dynamically -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
 
 </main>
 
