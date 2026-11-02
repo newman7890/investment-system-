@@ -1502,7 +1502,7 @@
               <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0; line-height:1.2;">Help & Support Desk</h2>
               <div style="display:flex; align-items:center; gap:6px; margin-top:3px;">
                 <span style="width:6px; height:6px; border-radius:50%; background:#098551; display:inline-block;"></span>
-                <span style="font-size:11px; font-weight:600; color:#098551;">Agents Online â€¢ 24/7 Priority Support</span>
+                <span style="font-size:11px; font-weight:600; color:#098551;">Agents Online &bull; 24/7 Priority Support</span>
               </div>
             </div>
           </div>
@@ -1532,13 +1532,15 @@
             <div onclick="toggleHelpAnswer('faq-ans-1')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">ðŸ“Š</span>
+                  <div style="width:28px; height:28px; border-radius:8px; background:#EEF3FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="16" height="16" fill="none" stroke="#0052FF" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                  </div>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">How the 30-Level Platform Works</span>
                 </div>
-                <span id="faq-arrow-1" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
+                <svg id="faq-arrow-1" width="14" height="14" fill="none" stroke="#5B616E" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
               <div id="faq-ans-1" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
-                Customers select from 30 structured investment tiers. Each tier unlocks a 300% (3Ã—) allocated dashboard balance and a guaranteed monthly withdrawal limit starting from $30/month up to $9,000/month.
+                Customers select from 30 structured investment tiers. Each tier unlocks a 300% (3&times;) allocated dashboard balance and a guaranteed monthly withdrawal limit starting from $30/month up to $9,000/month.
               </div>
             </div>
 
@@ -1546,10 +1548,12 @@
             <div onclick="toggleHelpAnswer('faq-ans-2')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">ðŸ’¸</span>
+                  <div style="width:28px; height:28px; border-radius:8px; background:#ECFDF5; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="16" height="16" fill="none" stroke="#059669" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  </div>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Withdrawals & Settlement Frequency</span>
                 </div>
-                <span id="faq-arrow-2" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
+                <svg id="faq-arrow-2" width="14" height="14" fill="none" stroke="#5B616E" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
               <div id="faq-ans-2" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
                 Every withdrawal directly deducts from your allocated dashboard balance. Withdrawals can be requested up to your monthly tier limit every 30 days via FAST Bank Transfer or Wire.
@@ -1560,10 +1564,12 @@
             <div onclick="toggleHelpAnswer('faq-ans-3')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">ðŸ“¦</span>
+                  <div style="width:28px; height:28px; border-radius:8px; background:#F5F3FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="16" height="16" fill="none" stroke="#7C3AED" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                  </div>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Accessing Your Digital Products</span>
                 </div>
-                <span id="faq-arrow-3" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
+                <svg id="faq-arrow-3" width="14" height="14" fill="none" stroke="#5B616E" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
               <div id="faq-ans-3" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
                 Your package tier automatically unlocks access to our digital research reports, algorithmic drawdown calculators, and weekly market intelligence briefs directly on your Home dashboard.
@@ -1574,10 +1580,12 @@
             <div onclick="toggleHelpAnswer('faq-ans-4')" style="padding:14px 16px; border:1px solid #ECEFF1; border-radius:16px; background:#FAFBFC; cursor:pointer; transition:all 0.15s;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:16px;">ðŸ›¡ï¸</span>
+                  <div style="width:28px; height:28px; border-radius:8px; background:#EEF3FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="16" height="16" fill="none" stroke="#0052FF" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
                   <span style="font-size:13px; font-weight:700; color:#0A0B0D;">Security & Account Verification</span>
                 </div>
-                <span id="faq-arrow-4" style="font-size:12px; color:#5B616E; font-weight:bold;">â–¼</span>
+                <svg id="faq-arrow-4" width="14" height="14" fill="none" stroke="#5B616E" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
               <div id="faq-ans-4" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ECEFF1; font-size:12px; color:#5B616E; line-height:1.5;">
                 All customer accounts and funds are protected by institutional-grade encrypted vaults, multi-factor authentication, and separate operating fund reserves.
@@ -1595,8 +1603,9 @@
         <!-- Live Chat View (Hidden by default) -->
         <div id="help-modal-chat-view" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; margin-bottom:14px; border-bottom:1px solid #ECEFF1;">
-            <button onclick="switchHelpToFAQ()" style="border:none; background:#EEF0F3; border-radius:9999px; padding:6px 12px; font-size:11px; font-weight:700; color:#0A0B0D; cursor:pointer; display:flex; align-items:center; gap:4px;">
-              â† Back to Guides
+            <button onclick="switchHelpToFAQ()" style="border:none; background:#EEF0F3; border-radius:9999px; padding:6px 12px; font-size:11px; font-weight:700; color:#0A0B0D; cursor:pointer; display:flex; align-items:center; gap:6px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              <span>Back to Guides</span>
             </button>
             <div style="font-size:11px; font-weight:700; color:#098551; display:flex; align-items:center; gap:5px;">
               <span style="width:6px; height:6px; border-radius:50%; background:#098551; display:inline-block;"></span>
@@ -1607,7 +1616,7 @@
           <!-- Chat messages box -->
           <div id="help-chat-messages" style="height:200px; overflow-y:auto; background:#F8FAFC; border:1px solid #ECEFF1; border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
             <div style="background:#EEF3FF; border:1px solid #D9E4FF; border-radius:14px 14px 14px 4px; padding:10px 12px; font-size:12px; color:#0A0B0D; max-width:85%; line-height:1.4;">
-              Hello! ðŸ‘‹ Welcome to <b>Bond Capital Support Desk</b>. How can I assist you with your investment package or withdrawal requests today?
+              Hello! Welcome to <b>Bond Capital Support Desk</b>. How can I assist you with your investment package or withdrawal requests today?
             </div>
           </div>
 
@@ -1634,6 +1643,11 @@
     if (!el) return;
     const isHidden = el.style.display === 'none';
     el.style.display = isHidden ? 'block' : 'none';
+    const num = ansId.replace('faq-ans-', '');
+    const arrow = document.getElementById('faq-arrow-' + num);
+    if (arrow) {
+      arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
   };
 
   window.switchHelpToChat = function () {
