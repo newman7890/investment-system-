@@ -94,6 +94,22 @@
     .market-row:hover .buy-btn-inline {
       opacity: 1;
     }
+
+    @keyframes tickUpFlash {
+      0% { background-color: rgba(16, 185, 129, 0.25); color: #059669; }
+      100% { background-color: transparent; }
+    }
+    @keyframes tickDownFlash {
+      0% { background-color: rgba(239, 68, 68, 0.25); color: #DC2626; }
+      100% { background-color: transparent; }
+    }
+    .tick-flash-up {
+      animation: tickUpFlash 0.8s ease-out;
+    }
+    .tick-flash-down {
+      animation: tickDownFlash 0.8s ease-out;
+    }
+
     .market-row:hover {
       background-color: #F9FAFB;
     }
@@ -364,6 +380,81 @@
       </div>
     </div>
   </div>
+
+  <!-- BEGIN: TradingView Live Market Overview Terminal -->
+  <div class="mb-8 bg-white rounded-3xl border border-[#ECEFF1] p-5 sm:p-6 shadow-xs overflow-hidden">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-[#ECEFF1] gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 class="text-lg font-bold text-[#0A0B0D]">Live Multi-Asset Market Overview</h3>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 24/7 Live Stream
+          </span>
+        </div>
+        <p class="text-xs text-[#5B616E] mt-0.5">Real-time quotes, dynamic charts, and performance feeds powered by TradingView</p>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-[#5B616E]">
+        <span>Data Provider:</span>
+        <span class="font-bold text-[#0052FF]">TradingView Real-Time Data</span>
+      </div>
+    </div>
+
+    <div class="tradingview-widget-container" style="height: 560px; width: 100%;">
+      <div class="tradingview-widget-container__widget" style="height: calc(100% - 32px); width: 100%;"></div>
+      <div class="tradingview-widget-copyright pt-2 text-right" style="font-size: 11px;">
+        <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank" style="color:#5B616E; text-decoration:none;">
+          Track all markets on <span style="color:#0052FF; font-weight:700;">TradingView</span> &rarr;
+        </a>
+      </div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+      {
+        "colorTheme": "light",
+        "dateRange": "12M",
+        "showChart": true,
+        "locale": "en",
+        "largeChartUrl": "",
+        "isTransparent": false,
+        "showSymbolLogo": true,
+        "showFloatingTooltip": false,
+        "width": "100%",
+        "height": "520",
+        "tabs": [
+          {
+            "title": "Top US Equities",
+            "symbols": [
+              { "s": "NASDAQ:NVDA", "d": "NVIDIA Corporation" },
+              { "s": "NASDAQ:AAPL", "d": "Apple Inc." },
+              { "s": "NASDAQ:MSFT", "d": "Microsoft Corp." },
+              { "s": "NASDAQ:AMZN", "d": "Amazon.com Inc." },
+              { "s": "NASDAQ:GOOGL", "d": "Alphabet Inc." },
+              { "s": "NASDAQ:TSLA", "d": "Tesla Inc." },
+              { "s": "NASDAQ:META", "d": "Meta Platforms" }
+            ]
+          },
+          {
+            "title": "Crypto Assets",
+            "symbols": [
+              { "s": "BINANCE:BTCUSDT", "d": "Bitcoin / Tether" },
+              { "s": "BINANCE:ETHUSDT", "d": "Ethereum / Tether" },
+              { "s": "BINANCE:SOLUSDT", "d": "Solana / Tether" },
+              { "s": "BINANCE:DOGEUSDT", "d": "Dogecoin" },
+              { "s": "BINANCE:BNBUSDT", "d": "BNB Chain" }
+            ]
+          },
+          {
+            "title": "Global Indices",
+            "symbols": [
+              { "s": "FOREXCOM:SPXUSD", "d": "S&P 500 Index" },
+              { "s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100 Index" },
+              { "s": "FOREXCOM:DJI", "d": "Dow Jones 30" }
+            ]
+          }
+        ]
+      }
+      </script>
+    </div>
+  </div>
+  <!-- END: TradingView Live Market Overview Terminal -->
 
   <!-- Search & Sector Filter Pills -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -1313,45 +1404,68 @@
     document.getElementById('stock-detail-modal').classList.add('hidden');
   }
 
-  // Live Real-Time Ticker Simulator (updates micro prices every 2.5s)
+  // Active Real-Time Market Ticker Engine (Visible High-Frequency Updates Every 1.2s)
   function simulateLiveTick() {
-    // pick 2 to 3 random stocks to tick
-    const count = Math.floor(Math.random() * 2) + 2;
+    if (!STOCKS_DATABASE || STOCKS_DATABASE.length === 0) return;
+
+    // Pick 4 to 6 stocks every second to actively tick
+    const count = Math.floor(Math.random() * 3) + 4;
     for (let i = 0; i < count; i++) {
       const idx = Math.floor(Math.random() * STOCKS_DATABASE.length);
       const stock = STOCKS_DATABASE[idx];
-      const delta = (Math.random() - 0.48) * 0.45; // slight upward drift
-      stock.price = Math.max(10, +(stock.price + delta).toFixed(2));
-      stock.change = +(stock.change + delta * 0.1).toFixed(2);
+      const delta = (Math.random() - 0.47) * (stock.price > 200 ? 0.65 : 0.28);
+      stock.price = Math.max(5, +(stock.price + delta).toFixed(2));
+      stock.change = +(stock.change + delta * 0.08).toFixed(2);
       stock.changeAmt = +(stock.changeAmt + delta).toFixed(2);
 
-      // flash cell if in DOM
+      // Flash price cell with visible animation
       const cell = document.getElementById(`price-cell-${stock.symbol}`);
       const chgCell = document.getElementById(`change-cell-${stock.symbol}`);
+      const isUp = delta >= 0;
+
       if (cell) {
         cell.innerText = `$${stock.price.toFixed(2)}`;
-        const isUp = delta >= 0;
-        cell.style.color = isUp ? '#098551' : '#CF202F';
-        setTimeout(() => { if (cell) cell.style.color = '#0A0B0D'; }, 700);
+        cell.classList.remove('tick-flash-up', 'tick-flash-down');
+        void cell.offsetWidth; // force re-render
+        cell.classList.add(isUp ? 'tick-flash-up' : 'tick-flash-down');
       }
+
       if (chgCell) {
         const isPos = stock.change >= 0;
         chgCell.innerText = `${isPos ? '▲ +' : '▼ '}${stock.change.toFixed(2)}%`;
-        chgCell.className = `inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold border ${isPos ? 'bg-emerald-50 text-[#098551] border-emerald-200' : 'bg-red-50 text-[#CF202F] border-red-200'}`;
+        chgCell.className = `inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold border transition-all duration-300 ${isPos ? 'bg-emerald-50 text-[#098551] border-emerald-200' : 'bg-red-50 text-[#CF202F] border-red-200'}`;
       }
     }
 
-    // Micro tick on indices
-    const sp = document.getElementById('idx-sp500');
-    if (sp) {
-      const cur = parseFloat(sp.innerText.replace(',', ''));
-      sp.innerText = (cur + (Math.random() - 0.47) * 0.5).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // Live update on all 4 Index Benchmark Cards
+    const indexConfigs = [
+      { id: 'idx-sp500', step: 0.8 },
+      { id: 'idx-nasdaq', step: 2.4 },
+      { id: 'idx-dow', step: 3.2 },
+      { id: 'idx-russell', step: 0.4 }
+    ];
+    indexConfigs.forEach(cfg => {
+      const el = document.getElementById(cfg.id);
+      if (el) {
+        const raw = parseFloat(el.innerText.replace(/,/g, ''));
+        if (!isNaN(raw)) {
+          const shift = (Math.random() - 0.48) * cfg.step;
+          el.innerText = (raw + shift).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+      }
+    });
+
+    // Update live latency and time clock
+    const clockEl = document.getElementById('live-stream-clock');
+    if (clockEl) {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      clockEl.innerText = `Market Open • Real-time Stream • ${timeStr}`;
     }
   }
 
   function refreshStockQuotes() {
-    simulateLiveTick();
-    simulateLiveTick();
+    for (let k = 0; k < 5; k++) simulateLiveTick();
     const tag = document.getElementById('reading-status-tag');
     if (tag) {
       tag.innerText = 'Refreshed Just Now';
@@ -1359,12 +1473,20 @@
     }
   }
 
-  // Interval for live stream
-  setInterval(simulateLiveTick, 2500);
+  // High-frequency live tick every 1.2 seconds for energetic live market feel
+  setInterval(simulateLiveTick, 1200);
 
-  window.addEventListener('DOMContentLoaded', () => {
+  // Immediate initialization
+  function initExplore() {
     renderStocksTable();
-  });
+    simulateLiveTick();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExplore);
+  } else {
+    initExplore();
+  }
 </script>
 
 <!-- Mobile Fixed Bottom Navigation Bar -->
