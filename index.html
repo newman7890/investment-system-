@@ -307,53 +307,35 @@
     </div>
   </section>
 
-  <!-- LIVE MARKET TICKER TAPE -->
-  <section class="bg-[#0A0B0D] text-white py-3.5 border-y border-slate-800 overflow-hidden marquee-container">
-    <div class="flex whitespace-nowrap animate-ticker">
-      <!-- Tape Group 1 -->
-      <div class="flex items-center gap-8 text-xs font-semibold tracking-wide px-4">
-        <span class="flex items-center gap-2"><strong class="text-slate-400">S&P 500</strong> 5,864.67 <span class="text-emerald-400">+0.41%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">NASDAQ</strong> 18,518.61 <span class="text-emerald-400">+0.56%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">NVDA</strong> $141.54 <span class="text-emerald-400">+2.15%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">AAPL</strong> $232.15 <span class="text-emerald-400">+0.78%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">MSFT</strong> $428.15 <span class="text-emerald-400">+0.92%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">AMZN</strong> $186.40 <span class="text-emerald-400">+1.10%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">BTC/USD</strong> $68,450.00 <span class="text-emerald-400">+1.85%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">ETH/USD</strong> $2,520.00 <span class="text-emerald-400">+2.40%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">SOL/USD</strong> $178.50 <span class="text-emerald-400">+3.20%</span></span>
-        <span class="text-slate-700">•</span>
-      </div>
-      <!-- Tape Group 2 (Duplicate for continuous loop) -->
-      <div class="flex items-center gap-8 text-xs font-semibold tracking-wide px-4">
-        <span class="flex items-center gap-2"><strong class="text-slate-400">S&P 500</strong> 5,864.67 <span class="text-emerald-400">+0.41%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">NASDAQ</strong> 18,518.61 <span class="text-emerald-400">+0.56%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">NVDA</strong> $141.54 <span class="text-emerald-400">+2.15%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">AAPL</strong> $232.15 <span class="text-emerald-400">+0.78%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">MSFT</strong> $428.15 <span class="text-emerald-400">+0.92%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">AMZN</strong> $186.40 <span class="text-emerald-400">+1.10%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">BTC/USD</strong> $68,450.00 <span class="text-emerald-400">+1.85%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">ETH/USD</strong> $2,520.00 <span class="text-emerald-400">+2.40%</span></span>
-        <span class="text-slate-700">•</span>
-        <span class="flex items-center gap-2"><strong class="text-slate-400">SOL/USD</strong> $178.50 <span class="text-emerald-400">+3.20%</span></span>
-        <span class="text-slate-700">•</span>
-      </div>
+  <!-- LIVE MARKET TICKER TAPE — TradingView Real-Time -->
+  <div class="bg-[#0A0B0D] border-y border-slate-800 overflow-hidden" style="height:46px;">
+    <div class="tradingview-widget-container" style="height:46px;">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          {"proName":"FOREXCOM:SPXUSD","title":"S&P 500"},
+          {"proName":"FOREXCOM:NSXUSD","title":"NASDAQ 100"},
+          {"proName":"BITSTAMP:BTCUSD","title":"BTC/USD"},
+          {"proName":"BITSTAMP:ETHUSD","title":"ETH/USD"},
+          {"proName":"NASDAQ:NVDA","title":"NVDA"},
+          {"proName":"NASDAQ:AAPL","title":"AAPL"},
+          {"proName":"NASDAQ:MSFT","title":"MSFT"},
+          {"proName":"NASDAQ:AMZN","title":"AMZN"},
+          {"proName":"NASDAQ:TSLA","title":"TSLA"},
+          {"proName":"CRYPTO:SOLUSD","title":"SOL/USD"},
+          {"proName":"TVC:DJI","title":"DOW 30"},
+          {"proName":"TVC:GOLD","title":"GOLD"}
+        ],
+        "showSymbolLogo": true,
+        "isTransparent": true,
+        "displayMode": "adaptive",
+        "colorTheme": "dark",
+        "locale": "en"
+      }
+      </script>
     </div>
-  </section>
+  </div>
 
   <!-- HOW IT WORKS (3 SIMPLE STEPS) -->
   <section id="how-it-works" class="py-20 sm:py-28 bg-white">
@@ -626,6 +608,178 @@
             <span class="text-emerald-600 font-bold">&bull; Unlocked with Tier</span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE MARKETS — Real-Time Mini Charts -->
+  <section id="live-markets" class="py-20 sm:py-28 bg-[#0A0B0D] text-white relative overflow-hidden">
+    <!-- Ambient glow accents -->
+    <div class="absolute top-0 left-1/4 w-[600px] h-[300px] bg-blue-600/8 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-emerald-600/8 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <!-- Header -->
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>Live Market Data</span>
+          <span class="text-white/20">•</span>
+          <span class="text-white/60 font-semibold">Real-Time Prices</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-white mb-4 tracking-tight">
+          Global Asset Markets
+        </h2>
+        <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+          Bond Capital tracks institutional-grade equities, crypto, and indices — live, 24/7, across every asset class we monitor.
+        </p>
+      </div>
+
+      <!-- Mini Sparkline Chart Grid: 4 assets -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
+
+        <!-- BTC/USD -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/40 hover:bg-white/8 transition-all group">
+          <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold text-xs">₿</div>
+              <div>
+                <div class="text-sm font-bold text-white">BTC/USD</div>
+                <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">Bitcoin</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[10px] font-bold">LIVE</span>
+          </div>
+          <div class="tradingview-widget-container" style="height:130px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {
+              "symbol": "BITSTAMP:BTCUSD",
+              "width": "100%",
+              "height": 130,
+              "locale": "en",
+              "dateRange": "1D",
+              "colorTheme": "dark",
+              "isTransparent": true,
+              "autosize": true,
+              "largeChartUrl": "",
+              "noTimeScale": false,
+              "chartOnly": true
+            }
+            </script>
+          </div>
+        </div>
+
+        <!-- ETH/USD -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/40 hover:bg-white/8 transition-all group">
+          <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs">Ξ</div>
+              <div>
+                <div class="text-sm font-bold text-white">ETH/USD</div>
+                <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">Ethereum</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[10px] font-bold">LIVE</span>
+          </div>
+          <div class="tradingview-widget-container" style="height:130px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {
+              "symbol": "BITSTAMP:ETHUSD",
+              "width": "100%",
+              "height": 130,
+              "locale": "en",
+              "dateRange": "1D",
+              "colorTheme": "dark",
+              "isTransparent": true,
+              "autosize": true,
+              "largeChartUrl": "",
+              "noTimeScale": false,
+              "chartOnly": true
+            }
+            </script>
+          </div>
+        </div>
+
+        <!-- NVDA -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/40 hover:bg-white/8 transition-all group">
+          <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-[9px]">NVDA</div>
+              <div>
+                <div class="text-sm font-bold text-white">NVDA</div>
+                <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">NVIDIA Corp</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[10px] font-bold">LIVE</span>
+          </div>
+          <div class="tradingview-widget-container" style="height:130px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {
+              "symbol": "NASDAQ:NVDA",
+              "width": "100%",
+              "height": 130,
+              "locale": "en",
+              "dateRange": "1D",
+              "colorTheme": "dark",
+              "isTransparent": true,
+              "autosize": true,
+              "largeChartUrl": "",
+              "noTimeScale": false,
+              "chartOnly": true
+            }
+            </script>
+          </div>
+        </div>
+
+        <!-- S&P 500 -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/40 hover:bg-white/8 transition-all group">
+          <div class="px-4 pt-4 pb-2 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold text-[9px]">SPX</div>
+              <div>
+                <div class="text-sm font-bold text-white">S&amp;P 500</div>
+                <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">US Index</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[10px] font-bold">LIVE</span>
+          </div>
+          <div class="tradingview-widget-container" style="height:130px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {
+              "symbol": "FOREXCOM:SPXUSD",
+              "width": "100%",
+              "height": 130,
+              "locale": "en",
+              "dateRange": "1D",
+              "colorTheme": "dark",
+              "isTransparent": true,
+              "autosize": true,
+              "largeChartUrl": "",
+              "noTimeScale": false,
+              "chartOnly": true
+            }
+            </script>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA row -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5 pt-2">
+        <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Live data powered by TradingView
+        </div>
+        <span class="hidden sm:block text-slate-700">•</span>
+        <a href="login.html?mode=signup" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all">
+          <span>Start Investing Today</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </a>
       </div>
     </div>
   </section>
