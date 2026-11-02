@@ -1,4 +1,4 @@
-﻿// Bond Capital Investment System - Complete Master Application Engine
+// Bond Capital Investment System - Complete Master Application Engine
 
 (function () {
   'use strict';
@@ -1961,7 +1961,15 @@
 
     // 0. Update Profile Avatar Icon in Header
     try {
-      const uInitial = ((appState.user && appState.user.name) || (appState.user && appState.user.email) || 'U').trim().charAt(0).toUpperCase();
+      const uInitial = (
+        (appState.user && appState.user.name) ||
+        (appState.user && appState.user.email) ||
+        sessionStorage.getItem('bond_user_name') ||
+        localStorage.getItem('bond_user_name') ||
+        sessionStorage.getItem('bond_user_email') ||
+        localStorage.getItem('bond_user_email') ||
+        'U'
+      ).trim().charAt(0).toUpperCase();
       document.querySelectorAll('button[aria-label="Profile Avatar"], button[aria-label="User Profile"], button[onclick*="openProfileModal"]').forEach(b => {
         if (!b.querySelector('svg') && !b.querySelector('img')) {
           b.textContent = uInitial || 'U';

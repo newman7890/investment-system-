@@ -123,9 +123,7 @@
       </svg>
     </button>
     <!-- User Avatar Circle -->
-    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-8 h-8 rounded-full bg-[#1652f0] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm hover:opacity-95 cursor-pointer" type="button">
-      C
-    </button>
+    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-8 h-8 rounded-full bg-[#1652f0] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm hover:opacity-95 cursor-pointer" type="button"></button>
   </div>
 </header>
 
@@ -151,9 +149,7 @@
     </button>
     
     <!-- User Avatar Circle -->
-    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-9 h-9 rounded-full bg-[#1652f0] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm hover:opacity-95 cursor-pointer" type="button">
-      C
-    </button>
+    <button onclick="openProfileModal()" aria-label="Profile Avatar" class="w-9 h-9 rounded-full bg-[#1652f0] text-white flex items-center justify-center font-bold text-xs ml-1 shadow-sm hover:opacity-95 cursor-pointer" type="button"></button>
   </div>
     </header>
 
@@ -632,5 +628,18 @@
   </a>
 </nav>
 
+<script>
+  /* Avatar early-init: set initial letter before main JS loads to prevent flicker */
+  (function() {
+    try {
+      var name = sessionStorage.getItem('bond_user_name') || localStorage.getItem('bond_user_name') || '';
+      var email = sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '';
+      var initial = (name || email || 'U').trim().charAt(0).toUpperCase();
+      document.querySelectorAll('button[aria-label="Profile Avatar"], button[aria-label="User Profile"], button[onclick*="openProfileModal"]').forEach(function(btn) {
+        if (!btn.querySelector('svg') && !btn.querySelector('img')) btn.textContent = initial;
+      });
+    } catch(e) {}
+  })();
+</script>
 </body>
 </html>
