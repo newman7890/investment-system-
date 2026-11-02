@@ -86,15 +86,6 @@
       border-radius: 9999px;
     }
 
-    /* Table row hover reveals buy button */
-    .market-row .buy-btn-inline {
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-    .market-row:hover .buy-btn-inline {
-      opacity: 1;
-    }
-
     @keyframes tickUpFlash {
       0% { background-color: rgba(16, 185, 129, 0.25); color: #059669; }
       100% { background-color: transparent; }
@@ -597,9 +588,6 @@
       <button onclick="closeStockModal()" class="px-5 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 font-bold text-xs text-[#0A0B0D] transition-colors cursor-pointer">
         Close
       </button>
-      <a href="levels.html" class="px-6 py-2.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] font-bold text-xs text-white transition-all shadow-sm">
-        Connect to Investment Tier
-      </a>
     </div>
   </div>
 </div>
