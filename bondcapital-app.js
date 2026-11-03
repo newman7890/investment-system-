@@ -2691,12 +2691,14 @@
       });
     } catch (e) {}
 
-    // 1. Update Portfolio Header Display
-    document.querySelectorAll('h2, h1, .portfolio-total').forEach(el => {
-      if (el.textContent.includes('$1.90') || el.classList.contains('portfolio-total') || el.dataset.purpose === 'portfolio-header-val') {
-        el.textContent = `$${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      }
-    });
+    // 1. Update Portfolio Header Display (asset detail pages only — dashboard uses syncHomePackageCard)
+    if (!document.querySelector('[data-purpose="portfolio-balance-section"]')) {
+      document.querySelectorAll('h2, h1, .portfolio-total').forEach(el => {
+        if (el.textContent.includes('$1.90') || el.dataset.purpose === 'portfolio-header-val') {
+          el.textContent = `${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+      });
+    }
 
     // 2. Asset Detail Page: update hero price & change badge
     (function updateAssetPage() {
@@ -2755,7 +2757,7 @@
       const cryptoEquivEl = document.getElementById('trade-crypto-equiv');
       if (cryptoEquivEl) {
         const amtUSD = parseFloat(document.getElementById('trade-amount-input')?.value || appState.order.amountUSD || 100);
-        cryptoEquivEl.textContent = 'â‰ˆ ' + (amtUSD / a.priceUSD).toFixed(6) + ' ' + pageSym;
+        cryptoEquivEl.textContent = '≈ ' + (amtUSD / a.priceUSD).toFixed(6) + ' ' + pageSym;
       }
     })();
 
