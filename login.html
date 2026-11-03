@@ -189,7 +189,12 @@
       const submitBtn = document.getElementById('auth-submit-btn');
 
       if (!email || !password) {
-        showAlert('Please enter both your email and password.', true);
+        showAlert('Please enter both email and password.', true);
+        return;
+      }
+
+      if (password.length < 6) {
+        showAlert('Password must be at least 6 characters.', true);
         return;
       }
 
@@ -198,55 +203,65 @@
 
       try {
         const client = window.__supabase;
+        if (!client) {
+          throw new Error('Database connection initializing. Please try again in a few seconds.');
+        }
+
         let userId = null;
         let displayName = fullname || email.split('@')[0];
 
         if (authMode === 'signup') {
-          // --- CREATE ACCOUNT FLOW ---
-          if (client) {
-            const { data, error } = await client.auth.signUp({
-              email,
-              password,
-              options: { data: { full_name: fullname || email.split('@')[0] } }
-            });
-
-            if (error) throw error;
-
-            if (data && data.user) {
-              userId = data.user.id;
-              displayName = fullname || email.split('@')[0];
-
-              try {
-                await client.from('profiles').upsert([{
-                  id: userId,
-                  email: email,
-                  name: displayName,
-                  tier: 'Level 1 Verified',
-                  current_level: 1,
-                  level_balance: 1500.00,
-                  monthly_limit: 30.00,
-                  updated_at: new Date().toISOString()
-                }]);
-
-                await client.from('balances').upsert([{
-                  user_id: userId,
-                  usd: 10000.00,
-                  btc: 0.00,
-                  eth: 0.00,
-                  sol: 0.00,
-                  doge: 0.00,
-                  updated_at: new Date().toISOString()
-                }]);
-              } catch (dbErr) {
-                console.warn('DB profile setup notice:', dbErr);
-              }
+          // ── REAL SIGN UP FLOW ──
+          const { data, error } = await client.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { full_name: displayName }
             }
+          });
+
+          if (error) {
+            throw error;
           }
 
-          if (!userId) {
-            userId = 'usr_' + Math.random().toString(36).substring(2, 10);
+          if (!data || !data.user) {
+            throw new Error('Sign up failed. Please check your email and try again.');
           }
 
+          userId = data.user.id;
+          displayName = fullname || (data.user.user_metadata && data.user.user_metadata.full_name) || displayName;
+
+          // Initialize fresh real account profile with 0 balances
+          try {
+            await client.from('profiles').upsert([{
+              id: userId,
+              email: email,
+              name: displayName,
+              tier: 'Member',
+              current_level: 0,
+              level_balance: 0.00,
+              monthly_limit: 0.00,
+              updated_at: new Date().toISOString()
+            }]);
+
+            await client.from('balances').upsert([{
+              user_id: userId,
+              usd: 0.00,
+              btc: 0.00,
+              eth: 0.00,
+              sol: 0.00,
+              doge: 0.00,
+              updated_at: new Date().toISOString()
+            }]);
+          } catch (dbErr) {
+            console.warn('Profile init:', dbErr);
+          }
+
+          // Initialize local state to clean $0 / Level 0
+          localStorage.setItem('bond_active_level', '0');
+          localStorage.setItem('bond_allocated_balance', '0');
+          localStorage.setItem('bond_cash_balance', '0');
+          localStorage.setItem('bond_transactions', '[]');
           sessionStorage.setItem('bond_user_id', userId);
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
@@ -254,46 +269,36 @@
           localStorage.setItem('bond_user_email', email);
           localStorage.setItem('bond_user_name', displayName);
 
-          showAlert('Account created successfully! Loading your portfolio...', false);
+          showAlert('Account created successfully! Loading your dashboard...', false);
           setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
 
         } else {
-          // --- SIGN IN FLOW ---
-          if (client) {
-            try {
-              const { data, error } = await client.auth.signInWithPassword({ email, password });
-              if (error) {
-                // If invalid credentials, reject immediately
-                if (error.message && (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('credentials'))) {
-                  throw error;
-                }
-              }
-              if (data && data.user) {
-                userId = data.user.id;
-                displayName = (data.user.user_metadata && data.user.user_metadata.full_name) || displayName;
-              }
-            } catch (authErr) {
-              if (authErr.message && authErr.message.toLowerCase().includes('invalid')) {
-                throw authErr;
-              }
-              console.warn('Supabase auth notice:', authErr);
-            }
-
-            // Also check profiles table for this email
-            if (!userId) {
-              try {
-                const { data: prof } = await client.from('profiles').select('*').eq('email', email).maybeSingle();
-                if (prof) {
-                  userId = prof.id;
-                  displayName = prof.name || displayName;
-                }
-              } catch (e) {}
-            }
+          // ── REAL SIGN IN FLOW ──
+          const { data, error } = await client.auth.signInWithPassword({ email, password });
+          if (error) {
+            throw new Error(error.message || 'Invalid email or password.');
           }
 
-          if (!userId) {
-            userId = 'usr_' + Math.random().toString(36).substring(2, 10);
+          if (!data || !data.user) {
+            throw new Error('Sign in failed. Please verify your credentials.');
           }
+
+          userId = data.user.id;
+          displayName = (data.user.user_metadata && data.user.user_metadata.full_name) || displayName;
+
+          // Fetch real user data from Supabase profiles
+          try {
+            const { data: prof } = await client.from('profiles').select('*').eq('id', userId).maybeSingle();
+            if (prof) {
+              displayName = prof.name || displayName;
+              localStorage.setItem('bond_active_level', (prof.current_level || 0).toString());
+              localStorage.setItem('bond_allocated_balance', (prof.level_balance || 0).toString());
+            }
+            const { data: bal } = await client.from('balances').select('*').eq('user_id', userId).maybeSingle();
+            if (bal && bal.usd !== undefined) {
+              localStorage.setItem('bond_cash_balance', (bal.usd || 0).toString());
+            }
+          } catch (e) {}
 
           sessionStorage.setItem('bond_user_id', userId);
           sessionStorage.setItem('bond_user_email', email);
@@ -306,7 +311,8 @@
           localStorage.removeItem('bond_is_admin');
           sessionStorage.removeItem('bond_user_role');
           localStorage.removeItem('bond_user_role');
-          showAlert('Signed in successfully! Loading your portfolio...', false);
+
+          showAlert('Signed in successfully! Loading your dashboard...', false);
           setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
         }
 

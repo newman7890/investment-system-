@@ -320,10 +320,10 @@
     user: {
       name: '',
       email: '',
-      tier: 'Verified Member',
-      current_level: 1,
-      level_balance: 1500.00,
-      monthly_limit: 30.00
+      tier: 'Member',
+      current_level: 0,
+      level_balance: 0.00,
+      monthly_limit: 0.00
     },
     balances: {
       USD: 0.00,
@@ -346,11 +346,7 @@
       paymentMethod: 'USD Wallet',
       targetAsset: 'BTC'
     },
-    transactions: [
-      { id: 'TX-9042', type: 'Buy', asset: 'BTC', cryptoAmount: 0.05, usdAmount: 4590.20, price: 91804.00, date: 'Oct 30, 2026, 09:14 AM', status: 'Completed' },
-      { id: 'TX-8821', type: 'Buy', asset: 'ETH', cryptoAmount: 1.00, usdAmount: 3350.00, price: 3350.00, date: 'Oct 28, 2026, 02:45 PM', status: 'Completed' },
-      { id: 'TX-7640', type: 'Deposit', asset: 'USD', cryptoAmount: 0, usdAmount: 10000.00, price: 1.00, date: 'Oct 25, 2026, 11:30 AM', status: 'Completed' }
-    ],
+    transactions: [],
     starred: {
       BTC: true,
       ETH: true,
@@ -404,17 +400,26 @@
   window.BOND_LEVEL_MAP = LEVEL_MAP;
 
   function getActiveTierInfo() {
-    let lvl = 1;
+    let lvl = 0;
     try {
       const storedLvl = localStorage.getItem('bond_active_level');
-      if (storedLvl) lvl = parseInt(storedLvl, 10);
-      else if (appState.user && appState.user.current_level) lvl = parseInt(appState.user.current_level, 10);
+      if (storedLvl !== null) lvl = parseInt(storedLvl, 10);
+      else if (appState.user && appState.user.current_level !== undefined) lvl = parseInt(appState.user.current_level, 10);
     } catch (e) {}
 
-    if (isNaN(lvl) || lvl < 1) lvl = 1;
+    if (isNaN(lvl) || lvl < 0) lvl = 0;
     if (lvl > 30) lvl = 30;
 
-    const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
+    if (lvl === 0) {
+      return {
+        level: 0,
+        purchase: 0,
+        balance: 0,
+        limit: 0
+      };
+    }
+
+    const info = LEVEL_MAP[lvl] || { purchase: 0, balance: 0, limit: 0 };
     let bal = info.balance;
 
     try {
@@ -1859,11 +1864,7 @@
       }
     } catch (e) {}
 
-    const seed = getSeedTransactions();
-    try {
-      localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(seed));
-    } catch (e) {}
-    return seed;
+    return [];
   };
 
   window.saveLiveTransactions = function (txList) {
@@ -2651,7 +2652,12 @@
       appState.user.current_level = lvl;
       appState.user.level_balance = bal;
       appState.user.monthly_limit = limit;
-      appState.user.tier = `Level ${lvl} Package`;
+      appState.user.tier = lvl > 0 ? ('Level ' + lvl + ' Package') : 'No Active Package';
+    }
+
+    const portTotalEl = document.querySelector('.portfolio-total');
+    if (portTotalEl) {
+      portTotalEl.textContent = "$" + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
     }
 
     // 1. Home Dashboard Elements

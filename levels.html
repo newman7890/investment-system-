@@ -509,7 +509,7 @@
     // Persist directly to Supabase cloud
     if (window.__supabase) {
       try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
         await window.__supabase.from('profiles').upsert([{
           id: user_id,
           tier: `Level ${item.level} Verified`,
@@ -581,7 +581,7 @@
     // Persist withdrawal deduction to Supabase
     if (window.__supabase) {
       try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
         await window.__supabase.from('profiles').upsert([{
           id: user_id,
           level_balance: currentTierState.allocatedBalance,
@@ -627,11 +627,19 @@
   }
 
   function updateActiveDisplay() {
-    document.getElementById('active-tier-badge').textContent = `Level ${currentTierState.level} Package`;
-    document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
-    document.getElementById('active-purchase-cost').textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
-    document.getElementById('allocated-credit-balance').textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-    document.getElementById('monthly-limit-display').innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
+    if (!currentTierState.level || currentTierState.level === 0) {
+      document.getElementById('active-tier-badge').textContent = 'No Active Package';
+      document.getElementById('active-level-title').textContent = 'No Active Package';
+      document.getElementById('active-purchase-cost').textContent = '$0.00 USD';
+      document.getElementById('allocated-credit-balance').textContent = '$0.00';
+      document.getElementById('monthly-limit-display').innerHTML = '$0.00 <span class="text-xs text-gray-500 font-normal">/ month</span>';
+    } else {
+      document.getElementById('active-tier-badge').textContent = `Level ${currentTierState.level} Package`;
+      document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
+      document.getElementById('active-purchase-cost').textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+      document.getElementById('allocated-credit-balance').textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('monthly-limit-display').innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
+    }
     const cashEl = document.getElementById('levels-available-cash');
     if (cashEl && typeof window.getAvailableCashBalance === 'function') {
       cashEl.textContent = '$' + window.getAvailableCashBalance().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
@@ -662,7 +670,7 @@
     // 2. Hydrate from Supabase cloud
     if (window.__supabase) {
       try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
         const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
         if (data && data.current_level) {
           const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);
@@ -753,7 +761,7 @@
     // 2. Hydrate from Supabase cloud
     if (window.__supabase) {
       try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || 'usr_master_chris');
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
         const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
         if (data && data.current_level) {
           const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);

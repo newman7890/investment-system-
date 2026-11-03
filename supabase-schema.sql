@@ -14,12 +14,12 @@ CREATE TABLE public.profiles (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT DEFAULT 'Crypto Investor',
-  tier TEXT DEFAULT 'Level 3 Verified',
+  tier TEXT DEFAULT 'Member',
   theme TEXT DEFAULT 'light',
   advanced_mode BOOLEAN DEFAULT FALSE,
-  current_level INT DEFAULT 1,
-  level_balance NUMERIC(18, 2) DEFAULT 1500.00,
-  monthly_limit NUMERIC(18, 2) DEFAULT 30.00,
+  current_level INT DEFAULT 0,
+  level_balance NUMERIC(18, 2) DEFAULT 0.00,
+  monthly_limit NUMERIC(18, 2) DEFAULT 0.00,
   api_provider TEXT DEFAULT 'bondcapital',
   api_key TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -29,10 +29,10 @@ CREATE TABLE public.profiles (
 -- 3. Balances Table (Real-time wallet holdings)
 CREATE TABLE public.balances (
   user_id TEXT PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
-  usd NUMERIC(18, 2) DEFAULT 10000.00,
-  btc NUMERIC(18, 8) DEFAULT 0.15000000,
-  eth NUMERIC(18, 8) DEFAULT 1.50000000,
-  sol NUMERIC(18, 8) DEFAULT 12.00000000,
+  usd NUMERIC(18, 2) DEFAULT 0.00,
+  btc NUMERIC(18, 8) DEFAULT 0.00000000,
+  eth NUMERIC(18, 8) DEFAULT 0.00000000,
+  sol NUMERIC(18, 8) DEFAULT 0.00000000,
   doge NUMERIC(18, 8) DEFAULT 0.00000000,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -70,15 +70,4 @@ CREATE POLICY "Allow all on balances" ON public.balances FOR ALL USING (true) WI
 DROP POLICY IF EXISTS "Allow all on transactions" ON public.transactions;
 CREATE POLICY "Allow all on transactions" ON public.transactions FOR ALL USING (true) WITH CHECK (true);
 
--- 7. Insert Primary Default User Record
-INSERT INTO public.profiles (id, email, name, tier, theme, advanced_mode, current_level, level_balance, monthly_limit)
-VALUES ('usr_master_chris', 'chris.wong@example.com', 'Chris Wong', 'Level 3 Verified', 'light', false, 1, 1500.00, 30.00);
-
-INSERT INTO public.balances (user_id, usd, btc, eth, sol, doge)
-VALUES ('usr_master_chris', 10000.00, 0.15000000, 1.50000000, 12.00000000, 0.00000000);
-
-INSERT INTO public.transactions (id, user_id, type, asset, crypto_amount, usd_amount, price, date, status)
-VALUES
-  ('TX-9042', 'usr_master_chris', 'Buy', 'BTC', 0.05, 4590.20, 91804.00, 'Oct 30, 2026, 09:14 AM', 'Completed'),
-  ('TX-8821', 'usr_master_chris', 'Buy', 'ETH', 1.00, 3350.00, 3350.00, 'Oct 28, 2026, 02:45 PM', 'Completed'),
-  ('TX-7640', 'usr_master_chris', 'Deposit', 'USD', 0, 10000.00, 1.00, 'Oct 25, 2026, 11:30 AM', 'Completed');
+-- 7. Ready for real user registrations via Supabase Auth
