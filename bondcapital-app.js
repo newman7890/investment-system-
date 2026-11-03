@@ -181,15 +181,18 @@
         if (balanceData.doge !== undefined && balanceData.doge !== null) appState.balances.DOGE = parseFloat(balanceData.doge);
       } else {
         // First-time user initialization in backend
-        await supabase.from('balances').insert([{
-          user_id: userId,
-          usd: appState.balances.USD,
-          btc: appState.balances.BTC,
-          eth: appState.balances.ETH,
-          sol: appState.balances.SOL,
-          doge: appState.balances.DOGE || 0,
-          updated_at: new Date().toISOString()
-        }]);
+        try {
+          const { error: bInitErr } = await supabase.from('balances').upsert(
+            [{ user_id: userId, usd: 0, btc: 0, eth: 0, sol: 0, doge: 0 }],
+            { onConflict: 'user_id' }
+          );
+          if (bInitErr) {
+            await supabase.from('balances').upsert(
+              [{ user_id: userId, usd: 0 }],
+              { onConflict: 'user_id' }
+            );
+          }
+        } catch (bEx) { console.warn('Balance init:', bEx); }
       }
 
       // 3. Fetch Full Transaction History from public.transactions
@@ -291,15 +294,18 @@
       }
 
       if (changeType === 'balances') {
-        await supabase.from('balances').upsert([{
-          user_id: userId,
-          usd: appState.balances.USD,
-          btc: appState.balances.BTC,
-          eth: appState.balances.ETH,
-          sol: appState.balances.SOL,
-          doge: appState.balances.DOGE || 0,
-          updated_at: new Date().toISOString()
-        }]);
+        try {
+          const { error: bErr } = await supabase.from('balances').upsert(
+            [{ user_id: userId, usd: appState.balances.USD, btc: appState.balances.BTC, eth: appState.balances.ETH, sol: appState.balances.SOL, doge: appState.balances.DOGE || 0 }],
+            { onConflict: 'user_id' }
+          );
+          if (bErr) {
+            await supabase.from('balances').upsert(
+              [{ user_id: userId, usd: appState.balances.USD }],
+              { onConflict: 'user_id' }
+            );
+          }
+        } catch (bEx) { console.warn('Balance push:', bEx); }
       }
 
       if (changeType === 'settings') {
@@ -1511,7 +1517,7 @@
     if (typeof supabase !== 'undefined' && supabase) {
       try {
         const uid = getActiveUserId();
-        supabase.from('balances').upsert([{ user_id: uid, usd: val, updated_at: new Date().toISOString() }]).then();
+        supabase.from('balances').upsert([{ user_id: uid, usd: val }], { onConflict: 'user_id' }).then();
       } catch (e) {}
     }
 

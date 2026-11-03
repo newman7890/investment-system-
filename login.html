@@ -266,15 +266,17 @@
           }
 
           try {
-            await client.from('balances').upsert([{
-              user_id: userId,
-              usd: 0.00,
-              btc: 0.00,
-              eth: 0.00,
-              sol: 0.00,
-              doge: 0.00,
-              updated_at: new Date().toISOString()
-            }]);
+            // Try full schema first; fall back to usd-only if extra cols don't exist
+            const { error: bErrFull } = await client.from('balances').upsert(
+              [{ user_id: userId, usd: 0.00, btc: 0.00, eth: 0.00, sol: 0.00, doge: 0.00 }],
+              { onConflict: 'user_id' }
+            );
+            if (bErrFull) {
+              await client.from('balances').upsert(
+                [{ user_id: userId, usd: 0.00 }],
+                { onConflict: 'user_id' }
+              );
+            }
           } catch (dbErr) {
             console.warn('Balance init:', dbErr);
           }
