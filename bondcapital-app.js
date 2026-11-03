@@ -539,7 +539,7 @@
     }
   }
 
-  window.showToast = function (title, message = '', typeOrIcon = 'success', duration = 4500) {
+  window.showToast = function (title, message = '', typeOrIcon = 'success', duration = 4500, opts = {}) {
     const container = ensureToastContainer();
     const toast = document.createElement('div');
     toast.className = 'cb-toast';
@@ -636,6 +636,22 @@
     }
 
     container.appendChild(toast);
+
+    // Automatically record important actions to notifications feed
+    try {
+      if (!opts.skipNotification && typeof getStoredNotifications === 'function') {
+        const skipWords = ['address copied', 'referral link copied', 'marked as read', 'notifications cleared', 'timeframe', 'browsing'];
+        const tLowerStr = (String(title) + ' ' + String(message)).toLowerCase();
+        const shouldSkip = skipWords.some(w => tLowerStr.includes(w));
+        if (!shouldSkip) {
+          const list = getStoredNotifications();
+          const recentDup = list.find(n => n.title === title && (Date.now() - n.time < 5000));
+          if (!recentDup) {
+            window.addNotification(title, message, type, { silent: true });
+          }
+        }
+      }
+    } catch (e) {}
 
     // Auto dismiss with hover-pause
     let dismissTimer = setTimeout(() => {
@@ -1459,34 +1475,312 @@
     };
   };
 
-  window.openNotificationsModal = function () {
-    openModal(`
-      <div style="padding: 24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h2 style="font-size:18px; font-weight:700;">Notifications</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-        </div>
+  // ==========================================
+  // REAL-TIME NOTIFICATIONS ENGINE
+  // ==========================================
+  const NOTIFICATIONS_STORAGE_KEY = 'bond_notifications';
 
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <div style="background:var(--bg-secondary); border-left:4px solid #0052FF; padding:12px; border-radius:8px;">
-            <div style="font-weight:700; font-size:13px; color:var(--text-primary);">Market Update: Bitcoin</div>
-            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Bitcoin price is $${appState.assets.BTC.priceUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}. 24h volume high.</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Live</div>
-          </div>
-          <div style="background:var(--bg-secondary); padding:12px; border-radius:8px;">
-            <div style="font-weight:700; font-size:13px; color:var(--text-primary);">Zero Fee Trading Active</div>
-            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Zero fees enabled across all crypto trades on your account.</div>
-          </div>
-        </div>
+  function getStoredNotifications() {
+    try {
+      const raw = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
 
-        <button onclick="closeActiveModal(); showToast('Notifications marked as read', '', 'success');" style="margin-top:16px; width:100%; background:#EEF0F3; border:none; border-radius:9999px; padding:10px; font-size:13px; font-weight:700; cursor:pointer;">
-          Mark all as read
-        </button>
-      </div>
-    `);
+    // Initial realistic notification seed for verified account
+    const initial = [
+      {
+        id: 'notif_init_1',
+        title: 'Encrypted Vault Custody Active',
+        message: 'Multi-sig cold storage vault security verified for your portfolio allocation.',
+        type: 'security',
+        time: Date.now() - 1000 * 60 * 12,
+        read: false
+      },
+      {
+        id: 'notif_init_2',
+        title: '300% (3×) Multiplier Provisioned',
+        message: 'Your active package tier credit multiplier has been locked and provisioned.',
+        type: 'tier',
+        time: Date.now() - 1000 * 60 * 35,
+        read: false
+      },
+      {
+        id: 'notif_init_3',
+        title: 'Welcome to Bond Capital',
+        message: 'Account verified. Scheduled 30-day liquidity cashflow cycle initialized.',
+        type: 'info',
+        time: Date.now() - 1000 * 60 * 120,
+        read: true
+      }
+    ];
+    try {
+      localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(initial));
+    } catch (e) {}
+    return initial;
+  }
+
+  function saveStoredNotifications(notifs) {
+    try {
+      localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(notifs));
+      localStorage.setItem('bond_notifications_sync', Date.now().toString());
+    } catch (e) {}
+    updateNotificationBadges();
+  }
+
+  function formatRelativeTime(ts) {
+    if (!ts) return 'Just now';
+    const diffSec = Math.floor((Date.now() - ts) / 1000);
+    if (diffSec < 45) return 'Just now';
+    if (diffSec < 3600) return Math.floor(diffSec / 60) + 'm ago';
+    if (diffSec < 86400) return Math.floor(diffSec / 3600) + 'h ago';
+    return Math.floor(diffSec / 86400) + 'd ago';
+  }
+
+  function getNotificationIcon(type) {
+    if (type === 'tier') {
+      return `<div style="width:36px; height:36px; border-radius:10px; background:#EEF3FF; color:#0052FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>`;
+    }
+    if (type === 'success' || type === 'withdrawal') {
+      return `<div style="width:36px; height:36px; border-radius:10px; background:#ECFDF5; color:#059669; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16.667 5L7.5 14.167 3.333 10"/></svg>
+      </div>`;
+    }
+    if (type === 'security') {
+      return `<div style="width:36px; height:36px; border-radius:10px; background:#F0FDF4; color:#16A34A; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>`;
+    }
+    if (type === 'market') {
+      return `<div style="width:36px; height:36px; border-radius:10px; background:#F5F3FF; color:#7C3AED; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>`;
+    }
+    if (type === 'warning' || type === 'error') {
+      return `<div style="width:36px; height:36px; border-radius:10px; background:#FEF3C7; color:#D97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6.667V10m0 3.333h.008M10 18.333a8.333 8.333 0 100-16.666 8.333 8.333 0 000 16.666z"/></svg>
+      </div>`;
+    }
+    return `<div style="width:36px; height:36px; border-radius:10px; background:#F1F5F9; color:#0284C7; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="8"/><line x1="10" y1="14" x2="10" y2="10"/><line x1="10" y1="6" x2="10.01" y2="6"/></svg>
+    </div>`;
+  }
+
+  window.addNotification = function (title, message = '', type = 'info', opts = {}) {
+    const list = getStoredNotifications();
+    const newNotif = {
+      id: 'notif_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+      title: title,
+      message: message,
+      type: type,
+      time: Date.now(),
+      read: false
+    };
+    list.unshift(newNotif);
+    if (list.length > 50) list.pop();
+    saveStoredNotifications(list);
+
+    // Show floating toast alert in real time if not silent
+    if (!opts.silent && typeof window.showToast === 'function') {
+      window.showToast(title, message, type, 5000, { skipNotification: true });
+    }
+
+    // Refresh modal in real time if open
+    renderNotificationsModalList();
   };
 
-    window.openHelpModal = function () {
+  window.updateNotificationBadges = function () {
+    const list = getStoredNotifications();
+    const unread = list.filter(n => !n.read).length;
+
+    document.querySelectorAll('button[aria-label="Notifications"], button[onclick*="openNotificationsModal"]').forEach(btn => {
+      btn.style.position = 'relative';
+      let badge = btn.querySelector('.bell-notification-badge');
+
+      if (unread > 0) {
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'bell-notification-badge';
+          badge.style.cssText = 'position:absolute; top:-2px; right:-2px; min-width:18px; height:18px; padding:0 4px; border-radius:9999px; background:#EF4444; color:#ffffff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid #ffffff; box-shadow:0 2px 6px rgba(239,68,68,0.45); pointer-events:none; z-index:10; line-height:1;';
+          btn.appendChild(badge);
+        }
+        badge.textContent = unread > 9 ? '9+' : unread;
+        badge.style.display = 'flex';
+      } else if (badge) {
+        badge.style.display = 'none';
+      }
+    });
+  };
+
+  window.markAllNotificationsRead = function () {
+    const list = getStoredNotifications();
+    list.forEach(n => { n.read = true; });
+    saveStoredNotifications(list);
+    renderNotificationsModalList();
+    if (typeof showToast === 'function') {
+      showToast('All Marked Read', 'All notifications updated.', 'success', 2500, { skipNotification: true });
+    }
+  };
+
+  window.clearAllNotifications = function () {
+    saveStoredNotifications([]);
+    renderNotificationsModalList();
+    if (typeof showToast === 'function') {
+      showToast('Notifications Cleared', 'Notification history emptied.', 'info', 2500, { skipNotification: true });
+    }
+  };
+
+  window.markNotificationRead = function (id) {
+    const list = getStoredNotifications();
+    const item = list.find(n => n.id === id);
+    if (item && !item.read) {
+      item.read = true;
+      saveStoredNotifications(list);
+      renderNotificationsModalList();
+    }
+  };
+
+  function renderNotificationsModalList() {
+    const container = document.getElementById('notifications-modal-items');
+    const badgeEl = document.getElementById('notifications-modal-unread-badge');
+    if (!container) return;
+
+    const list = getStoredNotifications();
+    const unread = list.filter(n => !n.read).length;
+
+    if (badgeEl) {
+      if (unread > 0) {
+        badgeEl.textContent = `${unread} New`;
+        badgeEl.style.display = 'inline-block';
+      } else {
+        badgeEl.textContent = 'All caught up';
+        badgeEl.style.background = '#ECFDF5';
+        badgeEl.style.color = '#059669';
+        badgeEl.style.display = 'inline-block';
+      }
+    }
+
+    if (list.length === 0) {
+      container.innerHTML = `
+        <div style="padding:40px 20px; text-align:center; color:#64748B;">
+          <div style="width:48px; height:48px; border-radius:50%; background:#F1F5F9; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; color:#94A3B8;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </div>
+          <div style="font-size:14px; font-weight:700; color:#0A0B0D; margin-bottom:4px;">No Notifications</div>
+          <div style="font-size:12px;">You're completely up to date. Alerts will appear here in real time.</div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = list.map(item => `
+      <div onclick="markNotificationRead('${item.id}')" style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:14px; background:${item.read ? 'transparent' : '#F4F7FF'}; border:1px solid ${item.read ? '#ECEFF1' : '#DCE7FE'}; cursor:pointer; transition:all 0.15s; margin-bottom:8px;">
+        ${getNotificationIcon(item.type)}
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+            <div style="font-size:13px; font-weight:700; color:#0A0B0D; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+            <span style="font-size:10px; font-weight:600; color:#94A3B8; flex-shrink:0;">${formatRelativeTime(item.time)}</span>
+          </div>
+          <div style="font-size:12px; color:#5B616E; margin-top:3px; line-height:1.4;">${item.message}</div>
+        </div>
+        ${!item.read ? '<span style="width:7px; height:7px; border-radius:50%; background:#0052FF; flex-shrink:0; margin-top:6px;"></span>' : ''}
+      </div>
+    `).join('');
+  }
+
+  window.openNotificationsModal = function () {
+    const list = getStoredNotifications();
+    const unread = list.filter(n => !n.read).length;
+
+    openModal(`
+      <div id="notifications-modal-container" style="padding: 22px 20px;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0;">Notifications</h2>
+            <span id="notifications-modal-unread-badge" style="font-size:11px; font-weight:700; background:#EFF6FF; color:#0052FF; padding:2px 8px; border-radius:9999px;">
+              ${unread > 0 ? `${unread} New` : 'All caught up'}
+            </span>
+          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#5B616E;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+
+        <!-- Action bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid #ECEFF1; font-size:11px;">
+          <span style="color:#64748B; font-weight:600;">Real-Time Activity Feed</span>
+          <div style="display:flex; gap:12px;">
+            <button onclick="markAllNotificationsRead()" style="border:none; background:transparent; color:#0052FF; font-weight:700; cursor:pointer; padding:0;">Mark all read</button>
+            <span style="color:#CBD5E1;">•</span>
+            <button onclick="clearAllNotifications()" style="border:none; background:transparent; color:#94A3B8; font-weight:600; cursor:pointer; padding:0;">Clear all</button>
+          </div>
+        </div>
+
+        <!-- Scrollable Notifications List -->
+        <div id="notifications-modal-items" style="max-height:360px; overflow-y:auto; padding-right:2px;" class="scrollbar-thin">
+        </div>
+      </div>
+    `);
+
+    renderNotificationsModalList();
+  };
+
+  // Cross-tab sync for notifications
+  window.addEventListener('storage', (e) => {
+    if (e.key === NOTIFICATIONS_STORAGE_KEY || e.key === 'bond_notifications_sync') {
+      updateNotificationBadges();
+      renderNotificationsModalList();
+    }
+  });
+
+  // Real-time market & institutional updates generator (fires periodically while browsing)
+  function startRealtimeNotificationTicker() {
+    if (window.__bondNotifTickerStarted) return;
+    window.__bondNotifTickerStarted = true;
+
+    const periodicAlerts = [
+      {
+        title: 'Institutional Liquidity Audit',
+        message: 'Daily vault proof-of-reserves matched with zero latency discrepancy.',
+        type: 'security'
+      },
+      {
+        title: 'Market Pulse: Bitcoin Volume Surge',
+        message: 'High institutional buying pressure detected across Tier-1 global liquidity pools.',
+        type: 'market'
+      },
+      {
+        title: '30-Day Settlement Cycle Check',
+        message: 'Disbursement reserve pipeline verified for active package accounts.',
+        type: 'tier'
+      },
+      {
+        title: 'Macro Intelligence Report Released',
+        message: 'Q4 Global Capital & Bond Yield brief now unlocked in Digital Products.',
+        type: 'info'
+      }
+    ];
+
+    let alertIndex = 0;
+    setInterval(() => {
+      const lastTrigger = parseInt(localStorage.getItem('bond_last_periodic_notif') || '0', 10);
+      const now = Date.now();
+      // Fire once every 2.5 minutes across open tabs
+      if (now - lastTrigger >= 150000) {
+        localStorage.setItem('bond_last_periodic_notif', now.toString());
+        const alert = periodicAlerts[alertIndex % periodicAlerts.length];
+        alertIndex++;
+        if (typeof window.addNotification === 'function') {
+          window.addNotification(alert.title, alert.message, alert.type, { silent: false });
+        }
+      }
+    }, 20000); // Check interval
+  }
+
+  window.openHelpModal = function () {
     openModal(`
       <div style="padding: 24px 22px;">
         <!-- Header -->
@@ -1973,6 +2267,13 @@
     syncHomePackageCard();
     const totalVal = calculateTotalPortfolio();
 
+    // Notification Bell Badges Update
+    try {
+      if (typeof window.updateNotificationBadges === 'function') {
+        window.updateNotificationBadges();
+      }
+    } catch (e) {}
+
     // 0. Update Profile Avatar Icon in Header
     try {
       const uInitial = (
@@ -2444,6 +2745,8 @@
     startLiveMarketFeed();
     updateAllUI();
     syncFromSupabase();
+    updateNotificationBadges();
+    startRealtimeNotificationTicker();
   }
 
   // Auto initialize

@@ -499,9 +499,17 @@
 
     showToast(
       `Level ${item.level} Package Activated`,
-      `$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD credit successfully provisioned to your account.`,
+      `$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD credit provisioned with 300% (3×) multiplier match.`,
       'tier'
     );
+    if (typeof window.addNotification === 'function') {
+      window.addNotification(
+        `Level ${item.level} Package Activated`,
+        `$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD provisioned with 3× credit match. Monthly limit: $${item.limit.toLocaleString()}/mo.`,
+        'tier',
+        { silent: true }
+      );
+    }
   }
 
   async function requestTierWithdrawal() {
@@ -545,7 +553,15 @@
       }
     }
 
-    showToast('Withdrawal Processed', `$${withdrawAmt.toLocaleString()} deducted from dashboard credit.`, '💰');
+    showToast('Withdrawal Processed', `$${withdrawAmt.toLocaleString()} deducted from dashboard credit.`, 'success');
+    if (typeof window.addNotification === 'function') {
+      window.addNotification(
+        `Monthly Withdrawal Disbursed: $${withdrawAmt.toLocaleString()}`,
+        `Payout scheduled via FAST Bank / Direct Wire. Deducted from Level ${currentTierState.level} package balance.`,
+        'withdrawal',
+        { silent: true }
+      );
+    }
   }
 
   function updateActiveDisplay() {
