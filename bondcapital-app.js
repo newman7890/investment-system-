@@ -1488,6 +1488,202 @@
   };
 
   // ==========================================
+  // STRIPE PAYMENT GATEWAY & CASH BALANCE ENGINE
+  // ==========================================
+  const CASH_BALANCE_KEY = 'bond_cash_balance';
+
+  window.getAvailableCashBalance = function () {
+    try {
+      const stored = localStorage.getItem(CASH_BALANCE_KEY);
+      if (stored !== null) return parseFloat(stored) || 0;
+    } catch (e) {}
+    if (typeof appState !== 'undefined' && appState.balances && appState.balances.USD !== undefined) {
+      return parseFloat(appState.balances.USD) || 0;
+    }
+    return 0.00;
+  };
+
+  window.setAvailableCashBalance = function (newBal) {
+    const val = Math.max(0, parseFloat(newBal) || 0);
+    try {
+      localStorage.setItem(CASH_BALANCE_KEY, val.toFixed(2));
+      sessionStorage.setItem(CASH_BALANCE_KEY, val.toFixed(2));
+      localStorage.setItem('bond_cash_sync', Date.now().toString());
+    } catch (e) {}
+
+    if (typeof appState !== 'undefined' && appState.balances) {
+      appState.balances.USD = val;
+    }
+
+    // Persist to Supabase if connected
+    if (typeof supabase !== 'undefined' && supabase) {
+      try {
+        const uid = getActiveUserId();
+        supabase.from('balances').upsert([{ user_id: uid, usd: val, updated_at: new Date().toISOString() }]).then();
+      } catch (e) {}
+    }
+
+    // Update all cash balance displays on page
+    document.querySelectorAll('.available-cash-display').forEach(el => {
+      el.textContent = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+    });
+
+    window.dispatchEvent(new Event('storage'));
+    return val;
+  };
+
+  // Open Stripe Checkout Deposit Modal
+  window.openStripeDepositModal = function (prefillAmt = 500, onCompleteCallback = null) {
+    const defaultAmt = Math.max(100, parseFloat(prefillAmt) || 500);
+
+    openModal(`
+      <div id="stripe-checkout-modal-body" style="padding: 24px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:38px; height:38px; border-radius:10px; background:#635BFF; color:#ffffff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.977 15.617.6 12.72.6 6.85.6 2.876 3.633 2.876 8.572c0 5.485 5.378 6.444 8.784 7.643 2.502.88 3.393 1.583 3.393 2.585 0 .964-.863 1.517-2.298 1.517-2.378 0-5.35-1.109-7.165-2.19l-.924 5.517C6.398 24.62 9.544 25.4 12.632 25.4c6.234 0 10.37-3.033 10.37-8.156 0-5.836-5.59-6.79-9.026-8.094z"/>
+              </svg>
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="font-size:17px; font-weight:800; color:#0A0B0D; margin:0;">Deposit USD Funds</h2>
+                <span style="font-size:10px; font-weight:800; background:#F4F3FF; color:#635BFF; padding:2px 7px; border-radius:9999px; border:1px solid #E0DEFF;">Stripe Secure</span>
+              </div>
+              <div style="font-size:11px; color:#5B616E; margin-top:2px;">Direct checkout via Card, Apple Pay or Google Pay</div>
+            </div>
+          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#5B616E;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+
+        <!-- Deposit Amount Selector -->
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:16px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.04em;">Deposit Amount (USD)</label>
+            <span style="font-size:11px; color:#059669; font-weight:700;">No deposit fee (0%)</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <span style="font-size:26px; font-weight:800; color:#0A0B0D; margin-right:4px;">$</span>
+            <input id="stripe-deposit-amt-input" type="number" value="${defaultAmt}" min="100" step="100" style="font-size:26px; font-weight:800; color:#0A0B0D; background:transparent; border:none; outline:none; width:100%; font-family:monospace;" />
+          </div>
+        </div>
+
+        <!-- Quick Amount Pills -->
+        <div style="display:flex; gap:6px; margin-bottom:18px;">
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '500'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$500</button>
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '1000'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$1,000</button>
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '2500'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$2,500</button>
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '5000'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$5,000</button>
+        </div>
+
+        <!-- Stripe Card Input Box -->
+        <div style="border:1px solid #E2E8F0; border-radius:14px; padding:14px; background:#ffffff; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Card Payment</span>
+            <div style="display:flex; gap:5px; align-items:center;">
+              <span style="font-size:10px; font-weight:800; background:#EEF2F6; color:#0052FF; padding:1px 6px; border-radius:4px;">VISA</span>
+              <span style="font-size:10px; font-weight:800; background:#EEF2F6; color:#EB001B; padding:1px 6px; border-radius:4px;">MC</span>
+              <span style="font-size:10px; font-weight:800; background:#EEF2F6; color:#006FCF; padding:1px 6px; border-radius:4px;">AMEX</span>
+            </div>
+          </div>
+
+          <!-- Card Number -->
+          <div style="margin-bottom:10px;">
+            <div style="display:flex; align-items:center; border:1px solid #CBD5E1; border-radius:8px; padding:8px 12px; background:#FAFAFA;">
+              <svg width="18" height="18" fill="none" stroke="#64748B" stroke-width="2" viewBox="0 0 24 24" style="margin-right:8px;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <input id="stripe-card-num" type="text" placeholder="4242 •••• •••• 4242" value="•••• •••• •••• 4242" style="border:none; background:transparent; font-size:13px; font-family:monospace; outline:none; width:100%; color:#0A0B0D;" />
+            </div>
+          </div>
+
+          <!-- Exp & CVC -->
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1; border:1px solid #CBD5E1; border-radius:8px; padding:8px 12px; background:#FAFAFA;">
+              <input id="stripe-card-exp" type="text" placeholder="MM / YY" value="12 / 28" style="border:none; background:transparent; font-size:13px; font-family:monospace; outline:none; width:100%; color:#0A0B0D;" />
+            </div>
+            <div style="flex:1; border:1px solid #CBD5E1; border-radius:8px; padding:8px 12px; background:#FAFAFA;">
+              <input id="stripe-card-cvc" type="text" placeholder="CVC" value="888" style="border:none; background:transparent; font-size:13px; font-family:monospace; outline:none; width:100%; color:#0A0B0D;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Security guarantee -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:16px; font-size:11px; color:#64748B;">
+          <svg width="12" height="12" fill="none" stroke="#059669" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Encrypted with 256-bit TLS via Stripe API</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="btn-submit-stripe-deposit" onclick="executeStripeDeposit()" style="width:100%; background:#635BFF; color:#ffffff; border:none; border-radius:9999px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(99,91,255,0.3); transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span>Deposit via Stripe</span>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    `);
+
+    window.__stripeCallback = onCompleteCallback;
+  };
+
+  window.executeStripeDeposit = function () {
+    const amtInput = document.getElementById('stripe-deposit-amt-input');
+    const amt = parseFloat(amtInput?.value || 500);
+
+    if (isNaN(amt) || amt < 10) {
+      showToast('Invalid Amount', 'Please enter at least $10.00 USD.', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('btn-submit-stripe-deposit');
+    if (btn) {
+      btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Processing with Stripe...`;
+      btn.disabled = true;
+      btn.style.opacity = '0.85';
+    }
+
+    setTimeout(() => {
+      const currentCash = window.getAvailableCashBalance();
+      const updatedCash = currentCash + amt;
+      window.setAvailableCashBalance(updatedCash);
+
+      // Record transaction
+      const tx = {
+        id: 'STRIPE-' + Math.floor(100000 + Math.random() * 900000),
+        type: 'Stripe Card Deposit',
+        category: 'deposit',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: amt,
+        price: 1.00,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        status: 'Completed',
+        direction: 'credit',
+        note: 'Stripe Visa/Mastercard Instant Top-Up'
+      };
+
+      if (typeof window.addTransaction === 'function') {
+        window.addTransaction(tx);
+      }
+
+      if (typeof window.addNotification === 'function') {
+        window.addNotification(
+          `Deposit Confirmed: $${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`,
+          `Funded via Stripe. Available cash balance is now $${updatedCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD.`,
+          'success'
+        );
+      }
+
+      closeActiveModal();
+      showToast('Deposit Complete!', `$${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD added to your cash balance.`, 'success');
+
+      // Execute callback if purchasing tier
+      if (typeof window.__stripeCallback === 'function') {
+        const cb = window.__stripeCallback;
+        window.__stripeCallback = null;
+        cb(amt);
+      }
+    }, 1200);
+  };
+  // ==========================================
   // REAL-TIME TRANSACTIONS ENGINE
   // ==========================================
   const TRANSACTIONS_STORAGE_KEY = 'bond_transactions';

@@ -209,18 +209,50 @@
 <!-- Left / Primary Column (Feed, Chart, Prices) -->
 <div class="flex-1 px-4 sm:px-6 lg:px-8 pb-12 pt-2 overflow-x-hidden min-w-0">
 <!-- BEGIN: PortfolioBalanceChart -->
-<section class="mb-10" data-purpose="portfolio-balance-section">
-<div class="flex items-center justify-between h-[80px]">
-<div>
-<div>
-  <div class="flex items-baseline gap-3">
-    <h2 class="portfolio-total text-4xl font-semibold tracking-tight text-[#0A0B0D]">$1,500.00</h2>
-  </div>
-  <div class="text-xs text-[#5B616E] font-medium mt-1 flex items-center gap-1.5"><span>Allocated Package Balance</span><span class="text-gray-300">•</span><span id="home-active-tier-tag" class="text-[#0052FF] font-semibold">Level 1 Package</span></div>
-</div>
-</div>
+<section class="mb-8" data-purpose="portfolio-balance-section">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Allocated Credit Card -->
+    <div class="p-6 bg-white border border-[#ECEFF1] rounded-3xl shadow-xs flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-[#5B616E] uppercase tracking-wider">Allocated Credit Balance</span>
+          <span class="px-2 py-0.5 rounded-full bg-blue-50 text-[#0052FF] font-bold text-[10px]">3× Capital Multiplier</span>
+        </div>
+        <h2 class="portfolio-total text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A0B0D]">$1,500.00</h2>
+        <div class="text-xs text-[#5B616E] font-medium mt-1.5 flex items-center gap-1.5">
+          <span>Active Tier:</span>
+          <span id="home-active-tier-tag" class="text-[#0052FF] font-semibold">Level 1 Package</span>
+        </div>
+      </div>
+      <div class="pt-4 mt-4 border-t border-[#ECEFF1] flex items-center justify-between text-xs">
+        <span class="text-slate-500">Scheduled Drawdown:</span>
+        <a href="levels.html" class="font-bold text-[#0052FF] hover:underline flex items-center gap-1">Manage Package &rarr;</a>
+      </div>
+    </div>
 
-</div></section>
+    <!-- Available Cash Balance Card -->
+    <div class="p-6 bg-gradient-to-br from-white to-[#F8F9FE] border border-[#ECEFF1] rounded-3xl shadow-xs flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-[#5B616E] uppercase tracking-wider">Available Cash Balance</span>
+          <span class="px-2 py-0.5 rounded-full bg-purple-50 text-[#635BFF] font-bold text-[10px] flex items-center gap-1">
+            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.977 15.617.6 12.72.6 6.85.6 2.876 3.633 2.876 8.572c0 5.485 5.378 6.444 8.784 7.643 2.502.88 3.393 1.583 3.393 2.585 0 .964-.863 1.517-2.298 1.517-2.378 0-5.35-1.109-7.165-2.19l-.924 5.517C6.398 24.62 9.544 25.4 12.632 25.4c6.234 0 10.37-3.033 10.37-8.156 0-5.836-5.59-6.79-9.026-8.094z"/></svg>
+            Stripe Powered
+          </span>
+        </div>
+        <div class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A0B0D] font-mono available-cash-display" id="dashboard-available-cash">$0.00 USD</div>
+        <div class="text-xs text-[#5B616E] font-medium mt-1.5">Ready for instant tier purchase or capital allocation</div>
+      </div>
+      <div class="pt-4 mt-4 border-t border-[#ECEFF1] flex items-center justify-between">
+        <span class="text-xs text-slate-500">Direct fiat deposit</span>
+        <button onclick="openStripeDepositModal(500)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#635BFF] hover:bg-[#5349EE] text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+          <span>Deposit via Stripe</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
 <!-- END: PortfolioBalanceChart -->
 
 <!-- BEGIN: ActivePackageShowcase -->
@@ -427,7 +459,7 @@
       <button onclick="document.getElementById('deposit-modal').classList.add('hidden')" class="flex-1 py-3 px-4 rounded-full border border-gray-200 hover:bg-gray-50 font-bold text-sm text-gray-700 transition-colors cursor-pointer">
         Close
       </button>
-      <button onclick="alert('Virtual account details copied to clipboard!')" class="flex-1 py-3 px-4 rounded-full bg-[#0052FF] hover:bg-blue-700 font-bold text-sm text-white transition-colors cursor-pointer shadow-sm">
+      <button onclick="document.getElementById('deposit-modal').classList.add('hidden'); openStripeDepositModal(500);" class="flex-1 py-3 px-4 rounded-full bg-[#635BFF] hover:bg-blue-700 font-bold text-sm text-white transition-colors cursor-pointer shadow-sm">
         Copy Account
       </button>
     </div>
