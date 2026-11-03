@@ -634,10 +634,11 @@
     document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
     document.getElementById('active-purchase-cost').textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
     document.getElementById('allocated-credit-balance').textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-    document.getElementById('monthly-limit-display').innerHTML = `${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
+    document.getElementById('monthly-limit-display').innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
     const cashEl = document.getElementById('levels-available-cash');
     if (cashEl && typeof window.getAvailableCashBalance === 'function') {
-      cashEl.textContent = '
+      cashEl.textContent = '$' + window.getAvailableCashBalance().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+    }
   }
 
   // Load from Supabase on start
