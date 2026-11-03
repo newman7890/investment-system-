@@ -194,16 +194,28 @@
         .limit(50);
 
       if (txList && txList.length > 0) {
-        appState.transactions = txList.map(t => ({
+        const liveFetched = txList.map(t => ({
           id: t.id || ('TX-' + Math.floor(1000 + Math.random() * 9000)),
           type: t.type,
-          asset: t.asset,
+          category: t.type && t.type.toLowerCase().includes('withdraw') ? 'withdrawal' : (t.type && t.type.toLowerCase().includes('package') ? 'package' : 'return'),
+          asset: t.asset || 'USD',
           cryptoAmount: parseFloat(t.crypto_amount || 0),
           usdAmount: parseFloat(t.usd_amount || 0),
-          price: parseFloat(t.price || 0),
+          price: parseFloat(t.price || 1.00),
           date: t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'),
-          status: t.status || 'Completed'
+          status: t.status || 'Completed',
+          direction: t.type && (t.type.toLowerCase().includes('withdraw') || t.type.toLowerCase().includes('funding') || t.type.toLowerCase().includes('purchase')) ? 'debit' : 'credit',
+          note: t.note || 'Institutional Settlement'
         }));
+        appState.transactions = liveFetched;
+        // Merge with existing local transactions
+        const existingLocal = window.getLiveTransactions ? window.getLiveTransactions() : [];
+        const mergedMap = new Map();
+        liveFetched.forEach(item => mergedMap.set(item.id, item));
+        existingLocal.forEach(item => {
+          if (!mergedMap.has(item.id)) mergedMap.set(item.id, item);
+        });
+        window.saveLiveTransactions(Array.from(mergedMap.values()));
       }
 
       updateAllUI();
@@ -1473,6 +1485,197 @@
       });
       showToast('Order Frequency Set', f, 'ðŸ”„');
     };
+  };
+
+  // ==========================================
+  // REAL-TIME TRANSACTIONS ENGINE
+  // ==========================================
+  const TRANSACTIONS_STORAGE_KEY = 'bond_transactions';
+
+  function getSeedTransactions() {
+    let lvl = 1;
+    try {
+      const stored = localStorage.getItem('bond_active_level');
+      if (stored) lvl = parseInt(stored, 10) || 1;
+    } catch (e) {}
+    const info = (window.BOND_LEVEL_MAP && window.BOND_LEVEL_MAP[lvl]) || { purchase: 500, balance: 1500, limit: 30 };
+
+    return [
+      {
+        id: 'TX-9842',
+        type: `Level ${lvl} Package Activated`,
+        category: 'package',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: info.balance,
+        price: 1.00,
+        date: 'Oct 28, 2026 · 2:41 PM',
+        status: 'Completed',
+        direction: 'credit',
+        note: '3× Capital Credit Allocation'
+      },
+      {
+        id: 'TX-9831',
+        type: 'Monthly Return Credited',
+        category: 'return',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: info.limit,
+        price: 1.00,
+        date: 'Oct 25, 2026 · 10:14 AM',
+        status: 'Completed',
+        direction: 'credit',
+        note: 'Scheduled 30-Day Liquidity Allowance'
+      },
+      {
+        id: 'TX-9788',
+        type: 'Monthly Drawdown Withdrawal',
+        category: 'withdrawal',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: info.limit,
+        price: 1.00,
+        date: 'Oct 22, 2026 · 6:03 PM',
+        status: 'Completed',
+        direction: 'debit',
+        note: 'FAST Bank Transfer Settled'
+      },
+      {
+        id: 'TX-9640',
+        type: `Level ${lvl} Package Funding Deposit`,
+        category: 'deposit',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: info.purchase,
+        price: 1.00,
+        date: 'Oct 15, 2026 · 9:00 AM',
+        status: 'Completed',
+        direction: 'debit',
+        note: 'USD Capital Commitment'
+      },
+      {
+        id: 'TX-9410',
+        type: 'Tier Allocation Bonus',
+        category: 'return',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: 50.00,
+        price: 1.00,
+        date: 'Sep 15, 2026 · 2:15 PM',
+        status: 'Completed',
+        direction: 'credit',
+        note: 'Welcome Tier Incentive'
+      },
+      {
+        id: 'TX-9102',
+        type: 'Investor Account Activated',
+        category: 'setup',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: 0,
+        price: 1.00,
+        date: 'Sep 01, 2026 · 9:00 AM',
+        status: 'Completed',
+        direction: 'neutral',
+        note: 'Security Vault & KYC Verification'
+      }
+    ];
+  }
+
+  window.getLiveTransactions = function () {
+    try {
+      const raw = localStorage.getItem(TRANSACTIONS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+
+    const seed = getSeedTransactions();
+    try {
+      localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(seed));
+    } catch (e) {}
+    return seed;
+  };
+
+  window.saveLiveTransactions = function (txList) {
+    try {
+      localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(txList));
+      localStorage.setItem('bond_tx_sync', Date.now().toString());
+    } catch (e) {}
+    window.dispatchEvent(new CustomEvent('bond:transactions_updated', { detail: txList }));
+  };
+
+  window.addTransaction = function (tx) {
+    const list = window.getLiveTransactions();
+    const typeStr = String(tx.type || 'Transaction');
+    const isWd = typeStr.toLowerCase().includes('withdraw');
+    const isPkg = typeStr.toLowerCase().includes('package') || typeStr.toLowerCase().includes('tier');
+    const isDep = typeStr.toLowerCase().includes('deposit') || typeStr.toLowerCase().includes('fund');
+
+    const newTx = {
+      id: tx.id || ('TX-' + Math.floor(1000 + Math.random() * 9000)),
+      type: typeStr,
+      category: tx.category || (isWd ? 'withdrawal' : isPkg ? 'package' : isDep ? 'deposit' : 'return'),
+      asset: tx.asset || 'USD',
+      cryptoAmount: parseFloat(tx.cryptoAmount || tx.crypto_amount || 0),
+      usdAmount: parseFloat(tx.usdAmount || tx.usd_amount || 0),
+      price: parseFloat(tx.price || 1.00),
+      date: tx.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      status: tx.status || 'Completed',
+      direction: tx.direction || (isWd || (isDep && typeStr.includes('Deposit')) ? (isWd ? 'debit' : 'debit') : 'credit'),
+      note: tx.note || (isWd ? 'FAST Bank Transfer' : isPkg ? '3× Multiplier Allocation' : 'Settled to Account')
+    };
+
+    if (!list.some(item => item.id === newTx.id)) {
+      list.unshift(newTx);
+      window.saveLiveTransactions(list);
+    }
+
+    // Also mirror to memory appState
+    if (typeof appState !== 'undefined' && Array.isArray(appState.transactions)) {
+      if (!appState.transactions.some(item => item.id === newTx.id)) {
+        appState.transactions.unshift(newTx);
+      }
+    }
+
+    // Sync to Supabase
+    if (typeof syncToSupabase === 'function') {
+      syncToSupabase('transaction', newTx);
+    }
+
+    // Re-render transaction page if active
+    if (typeof window.renderTransactionsPage === 'function') {
+      window.renderTransactionsPage();
+    }
+    return newTx;
+  };
+
+  window.exportTransactionsCSV = function () {
+    const list = window.getLiveTransactions ? window.getLiveTransactions() : [];
+    if (!list || list.length === 0) {
+      if (typeof showToast === 'function') showToast('No Transactions', 'No transaction history to export.', 'info');
+      return;
+    }
+
+    let csv = 'Transaction ID,Date,Type,Category,Asset,Amount (USD),Status,Notes\n';
+    list.forEach(tx => {
+      const sign = tx.direction === 'debit' ? '-' : (tx.direction === 'credit' ? '+' : '');
+      const amt = sign + '$' + (tx.usdAmount || 0).toFixed(2);
+      csv += `"${tx.id}","${tx.date}","${tx.type}","${tx.category || ''}","${tx.asset || 'USD'}","${amt}","${tx.status || 'Completed'}","${tx.note || ''}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `BondCapital_Transactions_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    if (typeof showToast === 'function') {
+      showToast('Export Successful', 'Downloaded transaction ledger CSV.', 'success');
+    }
   };
 
   // ==========================================

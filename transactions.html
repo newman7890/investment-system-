@@ -255,153 +255,47 @@
   </div>
 
   <!-- Section Title + Export -->
-  <div class="flex items-center justify-between mb-4">
-    <h3 class="text-xl font-bold text-[#0A0B0D]">Transaction history</h3>
-    <button class="flex items-center gap-2 px-4 py-2 bg-[#EEF0F3] hover:bg-[#E2E5E9] rounded-full text-sm font-semibold text-[#0A0B0D] transition-colors">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+    <div class="flex items-center gap-3">
+      <h3 class="text-xl font-bold text-[#0A0B0D]">Transaction history</h3>
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[11px] tracking-wide border border-emerald-100">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Live Ledger Synced
+      </span>
+    </div>
+    <button onclick="exportTransactionsCSV()" class="inline-flex items-center gap-2 px-4 py-2 bg-[#EEF0F3] hover:bg-[#E2E5E9] active:bg-[#DDE2E7] rounded-full text-sm font-semibold text-[#0A0B0D] transition-colors cursor-pointer self-start sm:self-auto shadow-2xs">
       <svg class="w-4 h-4 stroke-[2] stroke-current fill-none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export CSV
     </button>
   </div>
 
+  <!-- Filter Pills Bar -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none" id="tx-filter-bar">
+    <button class="filter-pill active px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#0A0B0D] text-white" data-filter="all" onclick="setFilter('all')">All Activity</button>
+    <button class="filter-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#EEF0F3] text-[#5B616E] hover:bg-[#E2E5E9]" data-filter="withdrawal" onclick="setFilter('withdrawal')">Withdrawals</button>
+    <button class="filter-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#EEF0F3] text-[#5B616E] hover:bg-[#E2E5E9]" data-filter="package" onclick="setFilter('package')">Package Tiers</button>
+    <button class="filter-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#EEF0F3] text-[#5B616E] hover:bg-[#E2E5E9]" data-filter="return" onclick="setFilter('return')">Monthly Cashflow</button>
+    <button class="filter-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#EEF0F3] text-[#5B616E] hover:bg-[#E2E5E9]" data-filter="deposit" onclick="setFilter('deposit')">Deposits</button>
+  </div>
 
 
-  <!-- Transactions List -->
+
+  <!-- Dynamic Real-Time Transactions List -->
   <div class="bg-white rounded-3xl border border-[#ECEFF1] overflow-hidden" id="tx-list">
-
-    <!-- ── October 2026 ── -->
-    <div class="px-5 py-3 bg-[#F5F8FF] border-b border-[#ECEFF1]">
-      <span class="text-xs font-bold text-[#5B616E] uppercase tracking-wider">October 2026</span>
+    <div id="tx-dynamic-container">
+      <!-- Injected dynamically in real time -->
     </div>
 
-    <!-- Row 1: Package Activation -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="package" data-search="package activation level tier credit">
-      <div class="w-10 h-10 rounded-full bg-blue-50 text-[#0052FF] flex items-center justify-center font-bold shrink-0">
-        <svg class="w-5 h-5 text-[#0052FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight" id="tx-row1-title">Level 1 Package Activated</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Oct 28, 2026 · 2:41 PM · 3× Credit Allocation</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#098551]" id="tx-row1-amount">+$1,500.00</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Allocated Credit</div>
-      </div>
-    </div>
-
-    <!-- Row 2: Monthly Return Payout -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="return" data-search="monthly return yield payout credit">
-      <div class="w-10 h-10 rounded-full bg-[#E6F7EF] flex items-center justify-center shrink-0">
-        <svg class="w-5 h-5 text-[#098551]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight">Monthly Return Credited</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Oct 25, 2026 · 10:14 AM · Scheduled Cycle</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#098551]">+$30.00</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Monthly Payout</div>
-      </div>
-    </div>
-
-    <!-- Row 3: Monthly Withdrawal -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="withdrawal" data-search="monthly withdrawal drawdown bank transfer">
-      <div class="w-10 h-10 rounded-full bg-[#FEE9EB] flex items-center justify-center shrink-0">
-        <svg class="w-5 h-5 text-[#CF202F]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight">Monthly Drawdown Withdrawal</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Oct 22, 2026 · 6:03 PM · FAST Bank Transfer</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#CF202F]">-$30.00</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Completed</div>
-      </div>
-    </div>
-
-    <!-- Row 4: Package Purchase Deposit -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="purchase" data-search="package purchase payment subscription funding">
-      <div class="w-10 h-10 rounded-full bg-[#EEF3FF] flex items-center justify-center shrink-0">
-        <svg class="w-5 h-5 text-[#0052FF]" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-4H9l3-3 3 3h-2v4zm0-8h-2V7h2v2z"/>
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight" id="tx-row4-title">Package Funding Deposit</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Oct 15, 2026 · 9:00 AM · USD Deposit</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#098551]" id="tx-row4-amount">+$500.00</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Purchased</div>
-      </div>
-    </div>
-
-    <!-- ── September 2026 ── -->
-    <div class="px-5 py-3 bg-[#F5F8FF] border-b border-[#ECEFF1] section-header" data-section="sep">
-      <span class="text-xs font-bold text-[#5B616E] uppercase tracking-wider">September 2026</span>
-    </div>
-
-    <!-- Row 5: Monthly Return Payout -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="return" data-search="monthly return yield payout credit">
-      <div class="w-10 h-10 rounded-full bg-[#E6F7EF] flex items-center justify-center shrink-0">
-        <svg class="w-5 h-5 text-[#098551]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight">Monthly Return Credited</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Sep 25, 2026 · 10:00 AM · Scheduled Cycle</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#098551]">+$30.00</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Monthly Payout</div>
-      </div>
-    </div>
-
-    <!-- Row 6: Yield Bonus Allocation -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="bonus" data-search="yield allocation loyalty tier bonus">
-      <div class="w-10 h-10 rounded-full bg-emerald-50 text-[#098551] flex items-center justify-center font-bold shrink-0">
-        ★
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight">Tier Allocation Bonus</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Sep 15, 2026 · 2:15 PM · Welcome Credit</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#098551]">+$50.00</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Bonus Credit</div>
-      </div>
-    </div>
-
-    <!-- Row 7: Initial Setup -->
-    <div class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 cursor-pointer transition-colors" data-type="setup" data-search="initial account setup verified">
-      <div class="w-10 h-10 rounded-full bg-[#EEF0F3] text-gray-700 flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-      <div class="flex-1 min-w-0">
-        <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight">Investor Account Activated</div>
-        <div class="text-xs text-[#5B616E] font-medium mt-0.5">Sep 01, 2026 · 9:00 AM · Security Verification</div>
-      </div>
-      <div class="text-right shrink-0">
-        <div class="font-bold text-[15px] text-[#0A0B0D]">Verified</div>
-        <div class="text-xs text-[#098551] font-semibold mt-0.5">Active</div>
-      </div>
-    </div>
-
-    <!-- Empty state (shown when filter has no results) -->
+    <!-- Empty state (shown when filter or search has no results) -->
     <div id="tx-empty-state" class="hidden px-5 py-16 text-center">
-      <div class="w-14 h-14 rounded-full bg-[#EEF0F3] flex items-center justify-center mx-auto mb-4">
-        <svg class="w-7 h-7 text-[#5B616E] stroke-[2] stroke-current fill-none" viewBox="0 0 24 24">
+      <div class="w-14 h-14 rounded-full bg-[#EEF0F3] flex items-center justify-center mx-auto mb-4 text-[#5B616E]">
+        <svg class="w-7 h-7 stroke-[2] stroke-current fill-none" viewBox="0 0 24 24">
           <rect height="16" rx="2" width="18" x="3" y="4"/><line x1="7" x2="17" y1="9" y2="9"/><line x1="7" x2="13" y1="13" y2="13"/>
         </svg>
       </div>
       <p class="text-[15px] font-semibold text-[#0A0B0D]">No transactions found</p>
-      <p class="text-sm text-[#5B616E] mt-1">Try a different search term.</p>
+      <p class="text-sm text-[#5B616E] mt-1">Try selecting a different filter or search term.</p>
     </div>
-
   </div>
 
 </div>
@@ -411,82 +305,98 @@
 </div>
 </div>
 
-<!-- Mobile Fixed Bottom Navigation Bar -->
-<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEFF1] px-3 pt-2 pb-safe z-40 flex justify-around items-center text-[10px] font-semibold text-[#5B616E] shadow-lg" data-purpose="mobile-bottom-nav">
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="dashboard.html">
-    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    <span>Home</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="levels.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    <span>Levels</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="desktop-asset-bitcoin.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-    <span>Assets</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-[#0052FF] flex-1 text-center" href="transactions.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="4"/><line x1="7" x2="17" y1="9" y2="9"/><line x1="7" x2="13" y1="13" y2="13"/></svg>
-    <span>History</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="explore.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-    <span>Explore</span>
-  </a>
-</nav>
+<!-- Transaction Receipt Modal -->
+<div id="tx-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 animate-in fade-in duration-150">
+    <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Transaction Receipt</span>
+      </div>
+      <button onclick="closeTxDetailModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors cursor-pointer">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 1l12 12M13 1L1 13"/></svg>
+      </button>
+    </div>
+
+    <div class="text-center py-6">
+      <div id="modal-tx-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"></div>
+      <div id="modal-tx-amount" class="text-3xl font-extrabold text-[#0A0B0D] font-mono"></div>
+      <div id="modal-tx-title" class="text-sm font-bold text-gray-800 mt-1"></div>
+      <span id="modal-tx-status" class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">Completed</span>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-4 space-y-3 text-xs mb-6 border border-gray-100 font-medium">
+      <div class="flex justify-between">
+        <span class="text-gray-500">Reference ID</span>
+        <span id="modal-tx-id" class="font-bold text-gray-900 font-mono"></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Date & Time</span>
+        <span id="modal-tx-date" class="font-bold text-gray-900"></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Disbursement Channel</span>
+        <span id="modal-tx-note" class="font-bold text-gray-900"></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Custody Audit</span>
+        <span class="font-bold text-[#0052FF]">Verified Vault Ledger</span>
+      </div>
+    </div>
+
+    <button onclick="closeTxDetailModal()" class="w-full py-3 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs shadow-sm transition-all cursor-pointer">
+      Done
+    </button>
+  </div>
+</div>
 
 <script>
-  // ── Filter pill logic ──────────────────────────────────────────────────────
   let currentFilter = 'all';
   let currentSearch = '';
 
   function setFilter(type) {
     currentFilter = type;
-    // Update pill UI
     document.querySelectorAll('.filter-pill').forEach(btn => {
       if (btn.dataset.filter === type) {
-        btn.classList.add('active');
+        btn.className = 'filter-pill active px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#0A0B0D] text-white shadow-xs';
       } else {
-        btn.classList.remove('active');
+        btn.className = 'filter-pill px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer bg-[#EEF0F3] text-[#5B616E] hover:bg-[#E2E5E9]';
       }
     });
     applyFilters();
   }
 
   function filterTransactions(query) {
-    currentSearch = query.toLowerCase().trim();
+    currentSearch = (query || '').toLowerCase().trim();
     applyFilters();
   }
 
   function applyFilters() {
     const rows = document.querySelectorAll('.tx-row');
-    let visible = 0;
+    let visibleCount = 0;
 
     rows.forEach(row => {
       const typeMatch = currentFilter === 'all' || row.dataset.type === currentFilter;
-      const searchMatch = !currentSearch || row.dataset.search.includes(currentSearch) || row.textContent.toLowerCase().includes(currentSearch);
+      const searchMatch = !currentSearch || (row.dataset.search || '').includes(currentSearch);
       if (typeMatch && searchMatch) {
         row.style.display = 'flex';
-        visible++;
+        visibleCount++;
       } else {
         row.style.display = 'none';
       }
     });
 
-    // Toggle empty state
-    const emptyState = document.getElementById('tx-empty-state');
-    if (visible === 0) {
-      emptyState.classList.remove('hidden');
-    } else {
-      emptyState.classList.add('hidden');
+    const empty = document.getElementById('tx-empty-state');
+    if (empty) {
+      if (visibleCount === 0) empty.classList.remove('hidden');
+      else empty.classList.add('hidden');
     }
 
-    // Hide section headers that have no visible rows below them
-    const headers = document.querySelectorAll('.section-header');
-    headers.forEach(header => {
+    // Toggle month header sections
+    document.querySelectorAll('.section-header').forEach(header => {
       let next = header.nextElementSibling;
       let hasVisible = false;
-      while (next && !next.classList.contains('section-header') && !next.id) {
+      while (next && !next.classList.contains('section-header') && next.id !== 'tx-empty-state') {
         if (next.classList.contains('tx-row') && next.style.display !== 'none') {
           hasVisible = true;
           break;
@@ -496,86 +406,159 @@
       header.style.display = hasVisible ? 'block' : 'none';
     });
   }
+
+  function getTxIconSvg(tx) {
+    const cat = tx.category || '';
+    const dir = tx.direction || '';
+
+    if (dir === 'debit') {
+      return `<div class="w-10 h-10 rounded-full bg-[#FEE9EB] text-[#CF202F] flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>`;
+    }
+    if (cat === 'package') {
+      return `<div class="w-10 h-10 rounded-full bg-blue-50 text-[#0052FF] flex items-center justify-center font-bold shrink-0">
+        <svg class="w-5 h-5 text-[#0052FF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>`;
+    }
+    if (cat === 'deposit') {
+      return `<div class="w-10 h-10 rounded-full bg-[#EEF3FF] text-[#0052FF] flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-4H9l3-3 3 3h-2v4zm0-8h-2V7h2v2z"/></svg>
+      </div>`;
+    }
+    if (cat === 'setup') {
+      return `<div class="w-10 h-10 rounded-full bg-[#EEF0F3] text-gray-700 flex items-center justify-center shrink-0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>`;
+    }
+    // Default credit / return
+    return `<div class="w-10 h-10 rounded-full bg-[#E6F7EF] text-[#098551] flex items-center justify-center shrink-0">
+      <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </div>`;
+  }
+
+  window.renderTransactionsPage = function () {
+    const container = document.getElementById('tx-dynamic-container');
+    if (!container) return;
+
+    const list = window.getLiveTransactions ? window.getLiveTransactions() : [];
+
+    if (!list || list.length === 0) {
+      container.innerHTML = '';
+      applyFilters();
+      return;
+    }
+
+    // Group transactions by Month Year
+    const groups = {};
+    list.forEach(tx => {
+      let monthGroup = 'Recent Activity';
+      if (tx.date) {
+        const parts = tx.date.split('·')[0].trim().split(' ');
+        if (parts.length >= 2) {
+          monthGroup = parts[0] + ' ' + (parts[2] || '2026');
+        }
+      }
+      if (!groups[monthGroup]) groups[monthGroup] = [];
+      groups[monthGroup].push(tx);
+    });
+
+    let html = '';
+    for (const [month, txs] of Object.entries(groups)) {
+      html += `
+        <div class="px-5 py-3 bg-[#F5F8FF] border-b border-[#ECEFF1] section-header">
+          <span class="text-xs font-bold text-[#5B616E] uppercase tracking-wider">${month}</span>
+        </div>
+      `;
+
+      txs.forEach(tx => {
+        const isDebit = tx.direction === 'debit';
+        const isCredit = tx.direction === 'credit';
+        const sign = isDebit ? '-$' : (isCredit ? '+$' : '');
+        const amtStr = sign ? sign + (tx.usdAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Verified';
+        const amtColor = isDebit ? 'text-[#CF202F]' : (isCredit ? 'text-[#098551]' : 'text-[#0A0B0D]');
+        const subNote = tx.note || (isDebit ? 'Completed Payout' : 'Allocated Credit');
+        const searchBlob = `${tx.type} ${tx.id} ${tx.note || ''} ${tx.category || ''} ${tx.date}`.toLowerCase();
+
+        html += `
+          <div onclick="openTxDetailModal('${tx.id}')" class="tx-row flex items-center gap-4 px-5 py-4 hover:bg-gray-50 border-b border-[#ECEFF1] cursor-pointer transition-colors" data-type="${tx.category || 'return'}" data-search="${searchBlob}">
+            ${getTxIconSvg(tx)}
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-[15px] text-[#0A0B0D] leading-tight truncate">${tx.type}</div>
+              <div class="text-xs text-[#5B616E] font-medium mt-0.5 truncate">${tx.date} · ${tx.id}</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-bold text-[15px] ${amtColor} font-mono">${amtStr}</div>
+              <div class="text-xs text-[#5B616E] font-medium mt-0.5">${subNote}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    container.innerHTML = html;
+    applyFilters();
+  };
+
+  window.openTxDetailModal = function (txId) {
+    const list = window.getLiveTransactions ? window.getLiveTransactions() : [];
+    const tx = list.find(t => t.id === txId);
+    if (!tx) return;
+
+    const modal = document.getElementById('tx-detail-modal');
+    if (!modal) return;
+
+    const isDebit = tx.direction === 'debit';
+    const isCredit = tx.direction === 'credit';
+    const sign = isDebit ? '-$' : (isCredit ? '+$' : '');
+    const amtStr = sign ? sign + (tx.usdAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) : 'Verified';
+    const amtColor = isDebit ? '#CF202F' : (isCredit ? '#098551' : '#0A0B0D');
+
+    document.getElementById('modal-tx-amount').textContent = amtStr;
+    document.getElementById('modal-tx-amount').style.color = amtColor;
+    document.getElementById('modal-tx-title').textContent = tx.type;
+    document.getElementById('modal-tx-id').textContent = tx.id;
+    document.getElementById('modal-tx-date').textContent = tx.date;
+    document.getElementById('modal-tx-note').textContent = tx.note || 'Institutional Settlement';
+    document.getElementById('modal-tx-icon').innerHTML = getTxIconSvg(tx);
+
+    modal.classList.remove('hidden');
+  };
+
+  window.closeTxDetailModal = function () {
+    const modal = document.getElementById('tx-detail-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  // Cross-tab and real-time live sync
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'bond_transactions' || e.key === 'bond_tx_sync') {
+      window.renderTransactionsPage();
+    }
+  });
+
+  window.addEventListener('bond:transactions_updated', () => {
+    window.renderTransactionsPage();
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    window.renderTransactionsPage();
+  });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="bondcapital-app.js"></script>
 <script>
-  // Dynamic sync with active package tier from localStorage / bondcapital-app.js
+  // Dynamic sync with active package tier and real-time ledger
   function syncTierTransactions() {
     if (typeof window.syncHomePackageCard === 'function') {
       window.syncHomePackageCard();
-      return;
     }
-    try {
-      const LEVEL_MAP = window.BOND_LEVEL_MAP || {
-        1: { purchase: 500, balance: 1500, limit: 30 },
-        2: { purchase: 1000, balance: 3000, limit: 60 },
-        3: { purchase: 1500, balance: 4500, limit: 100 },
-        4: { purchase: 2000, balance: 6000, limit: 130 },
-        5: { purchase: 2500, balance: 7500, limit: 170 },
-        6: { purchase: 3000, balance: 9000, limit: 220 },
-        7: { purchase: 3500, balance: 10500, limit: 255 },
-        8: { purchase: 4000, balance: 12000, limit: 300 },
-        9: { purchase: 4500, balance: 13500, limit: 340 },
-        10: { purchase: 5000, balance: 15000, limit: 385 },
-        11: { purchase: 5500, balance: 16500, limit: 420 },
-        12: { purchase: 6000, balance: 18000, limit: 470 },
-        13: { purchase: 6500, balance: 19500, limit: 510 },
-        14: { purchase: 7000, balance: 21000, limit: 550 },
-        15: { purchase: 7500, balance: 22500, limit: 580 },
-        16: { purchase: 8000, balance: 24000, limit: 630 },
-        17: { purchase: 8500, balance: 25500, limit: 670 },
-        18: { purchase: 9000, balance: 27000, limit: 730 },
-        19: { purchase: 15000, balance: 45000, limit: 1200 },
-        20: { purchase: 20000, balance: 60000, limit: 1300 },
-        21: { purchase: 30000, balance: 90000, limit: 2000 },
-        22: { purchase: 40000, balance: 120000, limit: 3000 },
-        23: { purchase: 50000, balance: 150000, limit: 4000 },
-        24: { purchase: 60000, balance: 180000, limit: 4500 },
-        25: { purchase: 70000, balance: 210000, limit: 5200 },
-        26: { purchase: 80000, balance: 240000, limit: 6000 },
-        27: { purchase: 90000, balance: 270000, limit: 7000 },
-        28: { purchase: 100000, balance: 300000, limit: 8000 },
-        29: { purchase: 110000, balance: 330000, limit: 8800 },
-        30: { purchase: 120000, balance: 360000, limit: 9000 }
-      };
-
-      let lvl = 1;
-      const storedLvl = localStorage.getItem('bond_active_level');
-      if (storedLvl) lvl = parseInt(storedLvl, 10);
-      if (isNaN(lvl) || lvl < 1) lvl = 1;
-      if (lvl > 30) lvl = 30;
-
-      const info = LEVEL_MAP[lvl] || LEVEL_MAP[1];
-      const bal = info.balance;
-      const cost = info.purchase;
-
-      const totalEl = document.getElementById('tx-portfolio-total');
-      if (totalEl) totalEl.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
-
-      const tagEl = document.getElementById('tx-active-tag');
-      if (tagEl) {
-        tagEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></span> Level ${lvl} Package Active`;
-      }
-
-      const r1Title = document.getElementById('tx-row1-title');
-      if (r1Title) r1Title.textContent = `Level ${lvl} Package Activated`;
-
-      const r1Amt = document.getElementById('tx-row1-amount');
-      if (r1Amt) r1Amt.textContent = '+$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
-
-      const r4Title = document.getElementById('tx-row4-title');
-      if (r4Title) r4Title.textContent = `Level ${lvl} Package Funding Deposit`;
-
-      const r4Amt = document.getElementById('tx-row4-amount');
-      if (r4Amt) r4Amt.textContent = '-$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
-    } catch (e) {
-      console.error('Error syncing tier transactions:', e);
+    if (typeof window.renderTransactionsPage === 'function') {
+      window.renderTransactionsPage();
     }
   }
-
-  window.addEventListener('DOMContentLoaded', syncTierTransactions);
+    window.addEventListener('DOMContentLoaded', syncTierTransactions);
   window.addEventListener('storage', syncTierTransactions);
 </script>
 <script>

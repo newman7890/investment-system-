@@ -510,6 +510,17 @@
         { silent: true }
       );
     }
+    if (typeof window.addTransaction === 'function') {
+      window.addTransaction({
+        type: `Level ${item.level} Package Activated`,
+        category: 'package',
+        asset: 'USD',
+        usdAmount: item.balance,
+        status: 'Completed',
+        direction: 'credit',
+        note: '3× Capital Credit Allocation'
+      });
+    }
   }
 
   async function requestTierWithdrawal() {
@@ -561,6 +572,17 @@
         'withdrawal',
         { silent: true }
       );
+    }
+    if (typeof window.addTransaction === 'function') {
+      window.addTransaction({
+        type: 'Monthly Drawdown Withdrawal',
+        category: 'withdrawal',
+        asset: 'USD',
+        usdAmount: withdrawAmt,
+        status: 'Completed',
+        direction: 'debit',
+        note: 'FAST Bank Transfer Settled'
+      });
     }
   }
 
