@@ -1620,7 +1620,7 @@
     window.__stripeCallback = onCompleteCallback;
   };
 
-    window.executeStripeDeposit = function () {
+  window.executeStripeDeposit = async function () {
     const amtInput = document.getElementById('stripe-deposit-amt-input');
     const amt = parseFloat(amtInput?.value || 500);
 
@@ -1631,20 +1631,36 @@
 
     const btn = document.getElementById('btn-submit-stripe-deposit');
     if (btn) {
-      btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Processing with Stripe...`;
+      btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;"></span> Processing...';
       btn.disabled = true;
-      btn.style.opacity = '0.85';
+      btn.style.opacity = '0.8';
     }
 
-    setTimeout(() => {
+    // ─────────────────────────────────────────────────────────────────
+    // STRIPE LIVE CONFIG
+    // When ready to go live, set these two values and deploy.
+    // Leave STRIPE_ENDPOINT as null to stay in demo / simulation mode.
+    //
+    //   STRIPE_ENDPOINT        → your Supabase Edge Function URL
+    //   STRIPE_PUBLISHABLE_KEY → your Stripe publishable key (pk_live_...)
+    // ─────────────────────────────────────────────────────────────────
+    const STRIPE_ENDPOINT = null;
+    // e.g. 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/stripe-deposit'
+    const STRIPE_PUBLISHABLE_KEY = null;
+    // e.g. 'pk_live_xxxxxxxxxxxxxxxxxxxxxxxx'
+    // ─────────────────────────────────────────────────────────────────
+
+    const _creditBalance = (amt) => {
       const currentCash = window.getAvailableCashBalance();
       const updatedCash = currentCash + amt;
       window.setAvailableCashBalance(updatedCash);
+      return updatedCash;
+    };
 
-      // Record transaction
+    const _onSuccess = (amt, updatedCash) => {
       const tx = {
-        id: 'STRIPE-' + Math.floor(100000 + Math.random() * 900000),
-        type: 'Stripe Card Deposit',
+        id: 'DEP-' + Math.floor(100000 + Math.random() * 900000),
+        type: 'Card Deposit',
         category: 'deposit',
         asset: 'USD',
         cryptoAmount: 0,
@@ -1653,32 +1669,92 @@
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         status: 'Completed',
         direction: 'credit',
-        note: 'Stripe Visa/Mastercard Instant Top-Up'
+        note: 'Visa / Mastercard Deposit'
       };
-
-      if (typeof window.addTransaction === 'function') {
-        window.addTransaction(tx);
-      }
-
+      if (typeof window.addTransaction === 'function') window.addTransaction(tx);
       if (typeof window.addNotification === 'function') {
         window.addNotification(
-          `Deposit Confirmed: $${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`,
-          `Funded via Stripe. Available cash balance is now $${updatedCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD.`,
+          'Deposit Confirmed: $' + amt.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD',
+          'Your cash balance is now $' + updatedCash.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD.',
           'success'
         );
       }
-
       closeActiveModal();
-      showToast('Deposit Complete!', `$${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD added to your cash balance.`, 'success');
-
-      // Execute callback if purchasing tier
+      showToast('Deposit Successful', '$' + amt.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD added to your account.', 'success');
       if (typeof window.__stripeCallback === 'function') {
         const cb = window.__stripeCallback;
         window.__stripeCallback = null;
         cb(amt);
       }
+    };
+
+    const _onError = (msg) => {
+      if (btn) { btn.innerHTML = '<span>Confirm Deposit</span>'; btn.disabled = false; btn.style.opacity = '1'; }
+      showToast('Payment Failed', msg || 'Please try again or contact support.', 'error');
+    };
+
+    // ── LIVE MODE: real Stripe integration ───────────────────────────
+    if (STRIPE_ENDPOINT && STRIPE_PUBLISHABLE_KEY) {
+      try {
+        // 1. Backend creates a Stripe PaymentIntent and returns client_secret
+        const userId = (typeof window.getActiveUserId === 'function')
+          ? window.getActiveUserId()
+          : (localStorage.getItem('bond_user_id') || 'guest');
+
+        const res = await fetch(STRIPE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount_cents: Math.round(amt * 100),  // Stripe uses cents
+            currency: 'usd',
+            user_id: userId
+          })
+        });
+        if (!res.ok) throw new Error('Server error (' + res.status + '). Please try again.');
+        const { client_secret } = await res.json();
+        if (!client_secret) throw new Error('No payment session returned.');
+
+        // 2. Load Stripe.js on-demand (only when needed)
+        if (!window.Stripe) {
+          await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://js.stripe.com/v3/';
+            s.onload = resolve;
+            s.onerror = () => reject(new Error('Failed to load Stripe.js'));
+            document.head.appendChild(s);
+          });
+        }
+
+        // 3. Confirm the card payment via Stripe.js
+        //    In production: replace manual card input with stripe.elements()
+        //    for full PCI-DSS compliance.
+        const stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
+        const result = await stripe.confirmCardPayment(client_secret, {
+          payment_method: {
+            card: { token: 'tok_visa' }  // replace with stripe.elements() card in production
+          }
+        });
+        if (result.error) throw new Error(result.error.message);
+        if (result.paymentIntent.status !== 'succeeded') throw new Error('Payment not completed.');
+
+        // 4. Credit balance after confirmed payment
+        const updatedCash = _creditBalance(amt);
+        _onSuccess(amt, updatedCash);
+
+      } catch (err) {
+        console.error('[Stripe] deposit error:', err);
+        _onError(err.message);
+      }
+      return;
+    }
+
+    // ── DEMO / SIMULATION MODE (active until API keys are set) ───────
+    setTimeout(() => {
+      const updatedCash = _creditBalance(amt);
+      _onSuccess(amt, updatedCash);
     }, 1200);
   };
+
   // ==========================================
   // REAL-TIME TRANSACTIONS ENGINE
   // ==========================================
