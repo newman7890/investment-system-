@@ -1537,94 +1537,90 @@
     const defaultAmt = Math.max(100, parseFloat(prefillAmt) || 500);
 
     openModal(`
-      <div id="stripe-checkout-modal-body" style="padding: 24px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <div id="deposit-modal-body" style="padding: 28px 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+
         <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:38px; height:38px; border-radius:10px; background:#635BFF; color:#ffffff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.977 15.617.6 12.72.6 6.85.6 2.876 3.633 2.876 8.572c0 5.485 5.378 6.444 8.784 7.643 2.502.88 3.393 1.583 3.393 2.585 0 .964-.863 1.517-2.298 1.517-2.378 0-5.35-1.109-7.165-2.19l-.924 5.517C6.398 24.62 9.544 25.4 12.632 25.4c6.234 0 10.37-3.033 10.37-8.156 0-5.836-5.59-6.79-9.026-8.094z"/>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:44px; height:44px; border-radius:12px; background:#EEF3FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
               </svg>
             </div>
             <div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <h2 style="font-size:17px; font-weight:800; color:#0A0B0D; margin:0;">Deposit USD Funds</h2>
-                <span style="font-size:10px; font-weight:800; background:#F4F3FF; color:#635BFF; padding:2px 7px; border-radius:9999px; border:1px solid #E0DEFF;">Stripe Secure</span>
-              </div>
-              <div style="font-size:11px; color:#5B616E; margin-top:2px;">Direct checkout via Card, Apple Pay or Google Pay</div>
+              <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0 0 2px 0;">Add Funds</h2>
+              <div style="font-size:11px; color:#5B616E;">Secure card payment &middot; Processed by Stripe</div>
             </div>
           </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#5B616E;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#5B616E; flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
-        <!-- Deposit Amount Selector -->
-        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:16px; margin-bottom:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.04em;">Deposit Amount (USD)</label>
-            <span style="font-size:11px; color:#059669; font-weight:700;">No deposit fee (0%)</span>
-          </div>
-          <div style="display:flex; align-items:center;">
-            <span style="font-size:26px; font-weight:800; color:#0A0B0D; margin-right:4px;">$</span>
-            <input id="stripe-deposit-amt-input" type="number" value="${defaultAmt}" min="100" step="100" style="font-size:26px; font-weight:800; color:#0A0B0D; background:transparent; border:none; outline:none; width:100%; font-family:monospace;" />
+        <!-- Amount Input -->
+        <div style="background:#F8FAFF; border:1.5px solid #D6E4FF; border-radius:14px; padding:16px 18px; margin-bottom:12px;">
+          <div style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Deposit Amount</div>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <span style="font-size:28px; font-weight:700; color:#0052FF;">$</span>
+            <input id="stripe-deposit-amt-input" type="number" value="${defaultAmt}" min="100" step="100"
+              style="font-size:28px; font-weight:700; color:#0A0B0D; background:transparent; border:none; outline:none; width:100%;" />
+            <span style="font-size:13px; font-weight:600; color:#5B616E;">USD</span>
           </div>
         </div>
 
         <!-- Quick Amount Pills -->
-        <div style="display:flex; gap:6px; margin-bottom:18px;">
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '500'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$500</button>
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '1000'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$1,000</button>
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '2500'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$2,500</button>
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value = '5000'" style="flex:1; padding:7px; border-radius:8px; background:#EEF0F3; border:none; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">$5,000</button>
+        <div style="display:flex; gap:8px; margin-bottom:20px;">
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='500'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$500</button>
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='1000'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$1,000</button>
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='2500'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$2,500</button>
+          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='5000'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$5,000</button>
         </div>
 
-        <!-- Stripe Card Input Box -->
-        <div style="border:1px solid #E2E8F0; border-radius:14px; padding:14px; background:#ffffff; margin-bottom:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Card Payment</span>
-            <div style="display:flex; gap:5px; align-items:center;">
-              <span style="font-size:10px; font-weight:800; background:#EEF2F6; color:#0052FF; padding:1px 6px; border-radius:4px;">VISA</span>
-              <span style="font-size:10px; font-weight:800; background:#EEF2F6; color:#EB001B; padding:1px 6px; border-radius:4px;">MC</span>
-              <span style="font-size:10px; font-weight:800; background:#EEF2F6; color:#006FCF; padding:1px 6px; border-radius:4px;">AMEX</span>
+        <!-- Card Input Section -->
+        <div style="border:1px solid #E2E8F0; border-radius:12px; padding:16px; background:#fff; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em;">Card Details</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <span style="font-size:10px; font-weight:700; background:#EEF2F6; color:#0052FF; padding:1px 7px; border-radius:4px; border:1px solid #D6E4FF;">VISA</span>
+              <span style="font-size:10px; font-weight:700; background:#FFF0F0; color:#EB001B; padding:1px 7px; border-radius:4px; border:1px solid #FFD6D6;">MC</span>
+              <span style="font-size:10px; font-weight:700; background:#F0F4FF; color:#006FCF; padding:1px 7px; border-radius:4px; border:1px solid #D6E4FF;">AMEX</span>
             </div>
           </div>
-
-          <!-- Card Number -->
-          <div style="margin-bottom:10px;">
-            <div style="display:flex; align-items:center; border:1px solid #CBD5E1; border-radius:8px; padding:8px 12px; background:#FAFAFA;">
-              <svg width="18" height="18" fill="none" stroke="#64748B" stroke-width="2" viewBox="0 0 24 24" style="margin-right:8px;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-              <input id="stripe-card-num" type="text" placeholder="4242 •••• •••• 4242" value="•••• •••• •••• 4242" style="border:none; background:transparent; font-size:13px; font-family:monospace; outline:none; width:100%; color:#0A0B0D;" />
-            </div>
+          <div style="display:flex; align-items:center; border:1px solid #D8DCE2; border-radius:8px; padding:10px 12px; background:#FAFBFC; margin-bottom:8px;">
+            <svg width="16" height="16" fill="none" stroke="#5B616E" stroke-width="2" viewBox="0 0 24 24" style="margin-right:10px; flex-shrink:0;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <input id="stripe-card-num" type="text" placeholder="Card number" style="border:none; background:transparent; font-size:14px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
           </div>
-
-          <!-- Exp & CVC -->
           <div style="display:flex; gap:8px;">
-            <div style="flex:1; border:1px solid #CBD5E1; border-radius:8px; padding:8px 12px; background:#FAFAFA;">
-              <input id="stripe-card-exp" type="text" placeholder="MM / YY" value="12 / 28" style="border:none; background:transparent; font-size:13px; font-family:monospace; outline:none; width:100%; color:#0A0B0D;" />
+            <div style="flex:1; border:1px solid #D8DCE2; border-radius:8px; padding:10px 12px; background:#FAFBFC;">
+              <input id="stripe-card-exp" type="text" placeholder="MM / YY" style="border:none; background:transparent; font-size:14px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
             </div>
-            <div style="flex:1; border:1px solid #CBD5E1; border-radius:8px; padding:8px 12px; background:#FAFAFA;">
-              <input id="stripe-card-cvc" type="text" placeholder="CVC" value="888" style="border:none; background:transparent; font-size:13px; font-family:monospace; outline:none; width:100%; color:#0A0B0D;" />
+            <div style="flex:1; border:1px solid #D8DCE2; border-radius:8px; padding:10px 12px; background:#FAFBFC;">
+              <input id="stripe-card-cvc" type="text" placeholder="CVC" style="border:none; background:transparent; font-size:14px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
             </div>
           </div>
         </div>
 
-        <!-- Security guarantee -->
-        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:16px; font-size:11px; color:#64748B;">
-          <svg width="12" height="12" fill="none" stroke="#059669" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span>Encrypted with 256-bit TLS via Stripe API</span>
+        <!-- Security Note -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:18px; font-size:11px; color:#8A909C;">
+          <svg width="11" height="11" fill="none" stroke="#098551" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>256-bit SSL encrypted &middot; Payments processed securely by Stripe</span>
         </div>
 
-        <!-- Submit Button -->
-        <button id="btn-submit-stripe-deposit" onclick="executeStripeDeposit()" style="width:100%; background:#635BFF; color:#ffffff; border:none; border-radius:9999px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(99,91,255,0.3); transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <span>Deposit via Stripe</span>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <!-- Submit Button — Bond Capital Blue -->
+        <button id="btn-submit-stripe-deposit" onclick="executeStripeDeposit()"
+          style="width:100%; background:#0052FF; color:#ffffff; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,82,255,0.2); transition:background 0.15s; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span>Confirm Deposit</span>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </button>
+
       </div>
     `);
 
     window.__stripeCallback = onCompleteCallback;
   };
 
-  window.executeStripeDeposit = function () {
+    window.executeStripeDeposit = function () {
     const amtInput = document.getElementById('stripe-deposit-amt-input');
     const amt = parseFloat(amtInput?.value || 500);
 

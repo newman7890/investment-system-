@@ -159,19 +159,19 @@
       <!-- Available Cash Balance & Stripe Deposit Banner -->
       <div class="mb-6 p-4 sm:p-5 bg-white border border-[#ECEFF1] rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-2xl bg-[#635BFF]/10 text-[#635BFF] flex items-center justify-center font-bold shrink-0">
+          <div class="w-11 h-11 rounded-2xl bg-[#0052FF]/10 text-[#0052FF] flex items-center justify-center font-bold shrink-0">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.977 15.617.6 12.72.6 6.85.6 2.876 3.633 2.876 8.572c0 5.485 5.378 6.444 8.784 7.643 2.502.88 3.393 1.583 3.393 2.585 0 .964-.863 1.517-2.298 1.517-2.378 0-5.35-1.109-7.165-2.19l-.924 5.517C6.398 24.62 9.544 25.4 12.632 25.4c6.234 0 10.37-3.033 10.37-8.156 0-5.836-5.59-6.79-9.026-8.094z"/></svg>
           </div>
           <div>
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Available Cash Balance</span>
-              <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]">Stripe Powered</span>
+              
             </div>
             <div class="text-2xl font-extrabold text-slate-900 font-mono available-cash-display" id="levels-available-cash">$0.00 USD</div>
           </div>
         </div>
-        <button onclick="openStripeDepositModal(500)" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#635BFF] hover:bg-[#5349EE] text-white font-bold text-xs shadow-md shadow-purple-500/20 transition-all cursor-pointer self-start sm:self-auto">
-          <span>Deposit Funds via Stripe</span>
+        <button onclick="openStripeDepositModal(500)" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer self-start sm:self-auto">
+          <span>Add Funds</span>
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </button>
       </div>
@@ -426,8 +426,8 @@
 
         ${!hasEnough ? `
         <!-- Insufficient Balance Stripe Callout -->
-        <div class="p-4 rounded-2xl bg-purple-50 border border-purple-100 flex items-start gap-3 mb-6 text-xs text-purple-900">
-          <div class="w-8 h-8 rounded-lg bg-[#635BFF] text-white flex items-center justify-center shrink-0 mt-0.5">
+        <div class="p-4 rounded-2xl bg-blue-50 border border-blue-100 flex items-start gap-3 mb-6 text-xs text-blue-900">
+          <div class="w-8 h-8 rounded-lg bg-[#0052FF] text-white flex items-center justify-center shrink-0 mt-0.5">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.977 15.617.6 12.72.6 6.85.6 2.876 3.633 2.876 8.572c0 5.485 5.378 6.444 8.784 7.643 2.502.88 3.393 1.583 3.393 2.585 0 .964-.863 1.517-2.298 1.517-2.378 0-5.35-1.109-7.165-2.19l-.924 5.517C6.398 24.62 9.544 25.4 12.632 25.4c6.234 0 10.37-3.033 10.37-8.156 0-5.836-5.59-6.79-9.026-8.094z"/></svg>
           </div>
           <div>
@@ -453,7 +453,7 @@
             <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
           </button>
           ` : `
-          <button onclick="closePackageAllocationModal(); openStripeDepositModal(${diff > 0 ? Math.ceil(diff) : item.purchase}, () => openPackageAllocationModal(LEVEL_SCHEDULE.find(x => x.level === ${item.level})))" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#635BFF] hover:bg-[#5349EE] transition-all shadow-md shadow-purple-500/20 text-sm flex items-center justify-center gap-2 cursor-pointer">
+          <button onclick="closePackageAllocationModal(); openStripeDepositModal(${diff > 0 ? Math.ceil(diff) : item.purchase}, () => openPackageAllocationModal(LEVEL_SCHEDULE.find(x => x.level === ${item.level})))" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-sm flex items-center justify-center gap-2 cursor-pointer">
             <span>Deposit $${diff.toLocaleString()} via Stripe</span>
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </button>
