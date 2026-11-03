@@ -231,9 +231,9 @@
           userId = data.user.id;
           displayName = fullname || (data.user.user_metadata && data.user.user_metadata.full_name) || displayName;
 
-          // Initialize fresh real account profile with 0 balances
+          // Initialize fresh real account profile with 0 balances strictly in Supabase
           try {
-            await client.from('profiles').upsert([{
+            const { error: pErr } = await client.from('profiles').upsert([{
               id: userId,
               email: email,
               name: displayName,
@@ -244,6 +244,28 @@
               updated_at: new Date().toISOString()
             }]);
 
+            if (pErr) {
+              await client.from('profiles').upsert([{
+                id: userId,
+                email: email,
+                name: displayName,
+                tier: 'Member',
+                updated_at: new Date().toISOString()
+              }]);
+            }
+          } catch (e) {
+            try {
+              await client.from('profiles').upsert([{
+                id: userId,
+                email: email,
+                name: displayName,
+                tier: 'Member',
+                updated_at: new Date().toISOString()
+              }]);
+            } catch (ign) {}
+          }
+
+          try {
             await client.from('balances').upsert([{
               user_id: userId,
               usd: 0.00,
@@ -254,20 +276,17 @@
               updated_at: new Date().toISOString()
             }]);
           } catch (dbErr) {
-            console.warn('Profile init:', dbErr);
+            console.warn('Balance init:', dbErr);
           }
 
-          // Initialize local state to clean $0 / Level 0
-          localStorage.setItem('bond_active_level', '0');
-          localStorage.setItem('bond_allocated_balance', '0');
-          localStorage.setItem('bond_cash_balance', '0');
-          localStorage.setItem('bond_transactions', '[]');
+          // Wipe any legacy localStorage keys - all state is in Supabase
+          try {
+            localStorage.clear();
+          } catch (e) {}
+
           sessionStorage.setItem('bond_user_id', userId);
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
-          localStorage.setItem('bond_user_id', userId);
-          localStorage.setItem('bond_user_email', email);
-          localStorage.setItem('bond_user_name', displayName);
 
           showAlert('Account created successfully! Loading your dashboard...', false);
           setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
@@ -289,23 +308,19 @@
           // Fetch real user data from Supabase profiles
           try {
             const { data: prof } = await client.from('profiles').select('*').eq('id', userId).maybeSingle();
-            if (prof) {
-              displayName = prof.name || displayName;
-              localStorage.setItem('bond_active_level', (prof.current_level || 0).toString());
-              localStorage.setItem('bond_allocated_balance', (prof.level_balance || 0).toString());
+            if (prof && prof.name) {
+              displayName = prof.name;
             }
-            const { data: bal } = await client.from('balances').select('*').eq('user_id', userId).maybeSingle();
-            if (bal && bal.usd !== undefined) {
-              localStorage.setItem('bond_cash_balance', (bal.usd || 0).toString());
-            }
+          } catch (e) {}
+
+          // Wipe any legacy localStorage keys - all state is in Supabase
+          try {
+            localStorage.clear();
           } catch (e) {}
 
           sessionStorage.setItem('bond_user_id', userId);
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
-          localStorage.setItem('bond_user_id', userId);
-          localStorage.setItem('bond_user_email', email);
-          localStorage.setItem('bond_user_name', displayName);
 
           sessionStorage.removeItem('bond_is_admin');
           localStorage.removeItem('bond_is_admin');

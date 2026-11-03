@@ -4,6 +4,12 @@
   'use strict';
 
   // --- Storage Key ---
+  try {
+    ['bond_cash_balance','bond_allocated_balance','bond_active_level','bond_monthly_limit','bond_purchase_cost','bond_tier_name','bond_tier_state','bond_transactions'].forEach(function(k){
+      try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch(e){}
+    });
+  } catch(e){}
+
   const STORAGE_KEY = 'bondcapital_investment_system_v4';
 
   // --- Supabase Client Integration ---
@@ -138,15 +144,15 @@
         if (profile.tier) appState.user.tier = profile.tier;
         if (profile.current_level !== undefined && profile.current_level !== null) {
           appState.user.current_level = profile.current_level;
-          try { localStorage.setItem('bond_active_level', profile.current_level); } catch(e){}
+          
         }
         if (profile.level_balance !== undefined && profile.level_balance !== null) {
           appState.user.level_balance = parseFloat(profile.level_balance);
-          try { localStorage.setItem('bond_allocated_balance', profile.level_balance); } catch(e){}
+          
         }
         if (profile.monthly_limit !== undefined && profile.monthly_limit !== null) {
           appState.user.monthly_limit = parseFloat(profile.monthly_limit);
-          try { localStorage.setItem('bond_monthly_limit', profile.monthly_limit); } catch(e){}
+          
         }
         if (profile.theme && profile.theme !== appState.theme) {
           appState.theme = profile.theme;
@@ -401,12 +407,9 @@
 
   function getActiveTierInfo() {
     let lvl = 0;
-    try {
-      const storedLvl = localStorage.getItem('bond_active_level');
-      if (storedLvl !== null) lvl = parseInt(storedLvl, 10);
-      else if (appState.user && appState.user.current_level !== undefined) lvl = parseInt(appState.user.current_level, 10);
-    } catch (e) {}
-
+    if (appState.user && appState.user.current_level !== undefined) {
+      lvl = parseInt(appState.user.current_level, 10);
+    }
     if (isNaN(lvl) || lvl < 0) lvl = 0;
     if (lvl > 30) lvl = 30;
 
@@ -421,16 +424,9 @@
 
     const info = LEVEL_MAP[lvl] || { purchase: 0, balance: 0, limit: 0 };
     let bal = info.balance;
-
-    try {
-      const storedBal = localStorage.getItem('bond_allocated_balance');
-      if (storedBal !== null && !isNaN(parseFloat(storedBal))) {
-        const parsed = parseFloat(storedBal);
-        bal = Math.min(parsed, info.balance);
-      } else if (appState.user && appState.user.level_balance !== undefined) {
-        bal = Math.min(parseFloat(appState.user.level_balance), info.balance);
-      }
-    } catch (e) {}
+    if (appState.user && appState.user.level_balance !== undefined) {
+      bal = Math.min(parseFloat(appState.user.level_balance) || 0, info.balance);
+    }
 
     return {
       level: lvl,
@@ -1498,10 +1494,6 @@
   const CASH_BALANCE_KEY = 'bond_cash_balance';
 
   window.getAvailableCashBalance = function () {
-    try {
-      const stored = localStorage.getItem(CASH_BALANCE_KEY);
-      if (stored !== null) return parseFloat(stored) || 0;
-    } catch (e) {}
     if (typeof appState !== 'undefined' && appState.balances && appState.balances.USD !== undefined) {
       return parseFloat(appState.balances.USD) || 0;
     }
@@ -1510,17 +1502,12 @@
 
   window.setAvailableCashBalance = function (newBal) {
     const val = Math.max(0, parseFloat(newBal) || 0);
-    try {
-      localStorage.setItem(CASH_BALANCE_KEY, val.toFixed(2));
-      sessionStorage.setItem(CASH_BALANCE_KEY, val.toFixed(2));
-      localStorage.setItem('bond_cash_sync', Date.now().toString());
-    } catch (e) {}
 
     if (typeof appState !== 'undefined' && appState.balances) {
       appState.balances.USD = val;
     }
 
-    // Persist to Supabase if connected
+    // Persist directly to Supabase cloud
     if (typeof supabase !== 'undefined' && supabase) {
       try {
         const uid = getActiveUserId();
@@ -1529,11 +1516,10 @@
     }
 
     // Update all cash balance displays on page
-    document.querySelectorAll('.available-cash-display').forEach(el => {
-      el.textContent = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+    document.querySelectorAll('.available-cash-display, #levels-available-cash').forEach(function (el) {
+      el.textContent = String.fromCharCode(36) + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
     });
 
-    window.dispatchEvent(new Event('storage'));
     return val;
   };
 

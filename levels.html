@@ -493,18 +493,7 @@
     updateActiveDisplay();
     renderLevelsTable(LEVEL_SCHEDULE);
 
-    // Instant local sync across all pages
-    try {
-      localStorage.setItem('bond_active_level', item.level);
-      localStorage.setItem('bond_allocated_balance', item.balance);
-      localStorage.setItem('bond_monthly_limit', item.limit);
-      localStorage.setItem('bond_purchase_cost', item.purchase);
-      localStorage.setItem('bond_tier_name', `Level ${item.level} Package`);
-      localStorage.setItem('bond_tier_state', JSON.stringify(currentTierState));
-      sessionStorage.setItem('bond_active_level', item.level);
-      sessionStorage.setItem('bond_allocated_balance', item.balance);
-      window.dispatchEvent(new Event('storage'));
-    } catch (e) {}
+
 
     // Persist directly to Supabase cloud
     if (window.__supabase) {
@@ -573,10 +562,7 @@
     currentTierState.allocatedBalance -= withdrawAmt;
     updateActiveDisplay();
 
-    try {
-      localStorage.setItem('bond_allocated_balance', currentTierState.allocatedBalance);
-      window.dispatchEvent(new Event('storage'));
-    } catch (e) {}
+
 
     // Persist withdrawal deduction to Supabase
     if (window.__supabase) {
@@ -648,130 +634,21 @@
 
   // Load from Supabase on start
   async function hydrateTierFromCloud() {
-    // 1. Instant hydration from localStorage
-    try {
-      const savedLevel = localStorage.getItem('bond_active_level');
-      if (savedLevel) {
-        const item = LEVEL_SCHEDULE.find(x => x.level === parseInt(savedLevel, 10));
-        if (item) {
-          const savedBal = localStorage.getItem('bond_allocated_balance');
-          currentTierState = {
-            level: item.level,
-            allocatedBalance: savedBal !== null ? parseFloat(savedBal) : item.balance,
-            monthlyLimit: item.limit,
-            purchaseCost: item.purchase
-          };
-        }
-      }
-    } catch (e) {}
-    updateActiveDisplay();
-    renderLevelsTable(LEVEL_SCHEDULE);
-
-    // 2. Hydrate from Supabase cloud
     if (window.__supabase) {
       try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
-        const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
-        if (data && data.current_level) {
-          const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);
-          if (item) {
-            currentTierState = {
-              level: item.level,
-              allocatedBalance: data.level_balance !== undefined ? parseFloat(data.level_balance) : item.balance,
-              monthlyLimit: item.limit,
-              purchaseCost: item.purchase
-            };
-          }
-        }
-      } catch (e) {}
-    }
-    updateActiveDisplay();
-    renderLevelsTable(LEVEL_SCHEDULE);
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    hydrateTierFromCloud();
-  });
-</script>
-
-<!-- Mobile Fixed Bottom Navigation Bar (Visible on mobile/tablet < 1024px) -->
-<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#ECEFF1] px-3 pt-2 pb-safe z-40 flex justify-around items-center text-[10px] font-semibold text-[#5B616E] shadow-lg" data-purpose="mobile-bottom-nav">
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="dashboard.html">
-    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    <span>Home</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-[#0052FF] flex-1 text-center" href="levels.html">
-    <svg class="w-5 h-5 stroke-[#0052FF] stroke-[2] fill-none" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    <span>Levels</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="desktop-asset-bitcoin.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-    <span>Assets</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="transactions.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="4"/><line x1="7" x2="17" y1="9" y2="9"/><line x1="7" x2="13" y1="13" y2="13"/></svg>
-    <span>History</span>
-  </a>
-  <a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-900 flex-1 text-center" href="explore.html">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-    <span>Explore</span>
-  </a>
-</nav>
-
-<script>
-  /* Avatar early-init: set initial letter before main JS loads to prevent flicker */
-  (function() {
-    try {
-      var name = sessionStorage.getItem('bond_user_name') || localStorage.getItem('bond_user_name') || '';
-      var email = sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '';
-      var initial = (name || email || 'U').trim().charAt(0).toUpperCase();
-      document.querySelectorAll('button[aria-label="Profile Avatar"], button[aria-label="User Profile"], button[onclick*="openProfileModal"]').forEach(function(btn) {
-        if (!btn.querySelector('svg') && !btn.querySelector('img')) btn.textContent = initial;
-      });
-    } catch(e) {}
-  })();
-</script>
-</body>
-</html>
- + window.getAvailableCashBalance().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
-    }
-  }
-
-  // Load from Supabase on start
-  async function hydrateTierFromCloud() {
-    // 1. Instant hydration from localStorage
-    try {
-      const savedLevel = localStorage.getItem('bond_active_level');
-      if (savedLevel) {
-        const item = LEVEL_SCHEDULE.find(x => x.level === parseInt(savedLevel, 10));
-        if (item) {
-          const savedBal = localStorage.getItem('bond_allocated_balance');
-          currentTierState = {
-            level: item.level,
-            allocatedBalance: savedBal !== null ? parseFloat(savedBal) : item.balance,
-            monthlyLimit: item.limit,
-            purchaseCost: item.purchase
-          };
-        }
-      }
-    } catch (e) {}
-    updateActiveDisplay();
-    renderLevelsTable(LEVEL_SCHEDULE);
-
-    // 2. Hydrate from Supabase cloud
-    if (window.__supabase) {
-      try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
-        const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
-        if (data && data.current_level) {
-          const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);
-          if (item) {
-            currentTierState = {
-              level: item.level,
-              allocatedBalance: data.level_balance !== undefined ? parseFloat(data.level_balance) : item.balance,
-              monthlyLimit: item.limit,
-              purchaseCost: item.purchase
-            };
+        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || '');
+        if (user_id) {
+          const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
+          if (data && data.current_level) {
+            const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);
+            if (item) {
+              currentTierState = {
+                level: item.level,
+                allocatedBalance: data.level_balance !== undefined ? parseFloat(data.level_balance) : item.balance,
+                monthlyLimit: item.limit,
+                purchaseCost: item.purchase
+              };
+            }
           }
         }
       } catch (e) {}
