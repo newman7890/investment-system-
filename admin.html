@@ -1053,7 +1053,7 @@
       try {
         if (sbClient) {
           // 1. Update Profiles Table
-          await sbClient.from('profiles').update({
+          const { error: pErr } = await sbClient.from('profiles').update({
             name: name,
             current_level: level,
             level_balance: allocated,
@@ -1061,9 +1061,10 @@
             tier: level > 0 ? `Level ${level} Package` : 'Member',
             updated_at: new Date().toISOString()
           }).eq('id', userId);
+          if (pErr) console.warn('Profile update notice:', pErr);
 
           // 2. Update Balances Table
-          await sbClient.from('balances').upsert({
+          const { error: bErr } = await sbClient.from('balances').upsert({
             user_id: userId,
             usd: usd,
             btc: btc,
@@ -1071,6 +1072,24 @@
             sol: sol,
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_id' });
+          if (bErr) console.warn('Balance upsert notice:', bErr);
+
+          // 3. Record funding transaction so user sees it in their transaction history
+          if (usd > 0) {
+            try {
+              await sbClient.from('transactions').insert([{
+                id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
+                user_id: userId,
+                type: 'Deposit',
+                asset: 'USD',
+                crypto_amount: 0,
+                usd_amount: usd,
+                price: 1.00,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                status: 'Completed'
+              }]);
+            } catch (tErr) {}
+          }
         }
 
         // Update local state

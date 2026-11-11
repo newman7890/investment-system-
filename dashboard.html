@@ -254,7 +254,7 @@
         <div class="flex items-baseline gap-3">
           <h2 class="portfolio-total text-4xl font-semibold tracking-tight text-[#0A0B0D]">$0.00</h2>
         </div>
-        <div class="text-xs text-[#5B616E] font-medium mt-1 flex items-center gap-1.5"><span>Allocated Package Balance</span><span class="text-gray-300">•</span><span id="home-active-tier-tag" class="text-[#0052FF] font-semibold">No Active Package</span></div>
+        <div class="text-xs text-[#5B616E] font-medium mt-1 flex items-center gap-1.5"><span id="home-balance-label">Total Portfolio Balance</span><span class="text-gray-300">•</span><span id="home-active-tier-tag" class="text-[#0052FF] font-semibold">No Active Package</span></div>
       </div>
     </div>
   </div>
@@ -268,9 +268,10 @@
     <div class="relative z-10 flex-1">
       
       <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="home-card-title">No Active Package</h3>
-      <div class="text-xs text-blue-100 mt-3 grid grid-cols-1 gap-y-1.5">
-        <div>Purchase Cost: <b class="text-white font-bold" id="home-card-cost">$0.00 USD</b></div>
+      <div class="text-xs text-blue-100 mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 gap-x-4">
+        <div>Available Cash: <b class="text-emerald-300 font-bold available-cash-display" id="home-card-cash">$0.00 USD</b></div>
         <div>Allocated Credit: <b class="text-white font-bold" id="home-card-allocated">$0.00</b></div>
+        <div>Purchase Cost: <b class="text-white font-bold" id="home-card-cost">$0.00 USD</b></div>
         <div>Monthly Limit: <b class="text-emerald-300 font-bold" id="home-card-limit">$0.00 / month</b></div>
       </div>
     </div>

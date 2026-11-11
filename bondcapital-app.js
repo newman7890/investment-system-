@@ -449,11 +449,13 @@
     if (lvl > 30) lvl = 30;
 
     if (lvl === 0) {
+      const customBal = (appState.user && appState.user.level_balance !== undefined) ? parseFloat(appState.user.level_balance) : 0;
+      const customLimit = (appState.user && appState.user.monthly_limit !== undefined) ? parseFloat(appState.user.monthly_limit) : 0;
       return {
         level: 0,
         purchase: 0,
-        balance: 0,
-        limit: 0
+        balance: customBal,
+        limit: customLimit
       };
     }
 
@@ -474,7 +476,17 @@
 
   function calculateTotalPortfolio() {
     const tier = getActiveTierInfo();
-    return tier.balance;
+    const packageBal = parseFloat(tier.balance) || 0;
+    const usdCash = (appState.balances && appState.balances.USD !== undefined) ? parseFloat(appState.balances.USD) : 0;
+    let cryptoVal = 0;
+    if (appState.balances && appState.assets) {
+      ['BTC', 'ETH', 'SOL', 'DOGE'].forEach(sym => {
+        const qty = parseFloat(appState.balances[sym]) || 0;
+        const price = appState.assets[sym] ? parseFloat(appState.assets[sym].priceUSD) || 0 : 0;
+        cryptoVal += qty * price;
+      });
+    }
+    return packageBal + usdCash + cryptoVal;
   }
 
   // --- Theme Management ---
@@ -2673,20 +2685,23 @@
       appState.user.current_level = lvl;
       appState.user.level_balance = bal;
       appState.user.monthly_limit = limit;
-      appState.user.tier = lvl > 0 ? ('Level ' + lvl + ' Package') : 'No Active Package';
+      appState.user.tier = lvl > 0 ? ('Level ' + lvl + ' Package') : (bal > 0 ? 'Allocated Balance Active' : 'No Active Package');
     }
+
+    const usdCash = (appState.balances && appState.balances.USD !== undefined) ? parseFloat(appState.balances.USD) : 0;
+    const totalPortfolio = (parseFloat(bal) || 0) + usdCash;
 
     const portTotalEl = document.querySelector('.portfolio-total');
     if (portTotalEl) {
-      portTotalEl.textContent = "$" + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      portTotalEl.textContent = "$" + totalPortfolio.toLocaleString('en-US', { minimumFractionDigits: 2 });
     }
 
     // 1. Home Dashboard Elements
     const badge = document.getElementById('home-card-badge');
-    if (badge) badge.textContent = `Level ${lvl} Package`;
+    if (badge) badge.textContent = lvl > 0 ? `Level ${lvl} Package` : 'Standard Account';
 
     const title = document.getElementById('home-card-title');
-    if (title) title.textContent = `Level ${lvl} Active`;
+    if (title) title.textContent = lvl > 0 ? `Level ${lvl} Active` : (usdCash > 0 ? 'Account Funded' : 'No Active Package');
 
     const costEl = document.getElementById('home-card-cost');
     if (costEl) costEl.textContent = `$${cost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
@@ -2694,11 +2709,27 @@
     const balEl = document.getElementById('home-card-allocated');
     if (balEl) balEl.textContent = `$${bal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
+    const cashEl = document.getElementById('home-card-cash');
+    if (cashEl) cashEl.textContent = `$${usdCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+
     const limitEl = document.getElementById('home-card-limit');
     if (limitEl) limitEl.textContent = `$${limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / month`;
 
     const tierTag = document.getElementById('home-active-tier-tag');
-    if (tierTag) tierTag.textContent = `Level ${lvl} Package`;
+    if (tierTag) {
+      if (lvl > 0) {
+        tierTag.textContent = `Level ${lvl} Active • $${usdCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} Cash`;
+      } else if (usdCash > 0) {
+        tierTag.textContent = `$${usdCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} Cash Available`;
+      } else {
+        tierTag.textContent = 'No Active Package';
+      }
+    }
+
+    // Update all cash balance indicators
+    document.querySelectorAll('.available-cash-display, #levels-available-cash').forEach(function (el) {
+      el.textContent = '$' + usdCash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+    });
 
     // 2. Asset Page Elements (desktop-asset-bitcoin.html)
     const elBal = document.getElementById('asset-allocated-balance');
@@ -2733,11 +2764,17 @@
 
     // 3. Transactions Page Elements (transactions.html)
     const totalEl = document.getElementById('tx-portfolio-total');
-    if (totalEl) totalEl.textContent = '$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    if (totalEl) totalEl.textContent = '$' + totalPortfolio.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
     const tagEl = document.getElementById('tx-active-tag');
     if (tagEl) {
-      tagEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></span> Level ${lvl} Package Active`;
+      if (lvl > 0) {
+        tagEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></span> Level ${lvl} Package Active`;
+      } else if (usdCash > 0) {
+        tagEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Cash Balance Available`;
+      } else {
+        tagEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span> No Active Package`;
+      }
     }
 
     const r1Title = document.getElementById('tx-row1-title');
