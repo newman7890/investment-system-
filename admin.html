@@ -551,6 +551,18 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwZ2p1dGxtZG5ybXplc3Vsa3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzOTk3MzksImV4cCI6MjEwODk3NTczOX0.XFUsDIpESFBzA77C5pNDEXtsA7o_iqn15RqISsoi_Pw';
     let sbClient = null;
 
+    // Security Utility: Strict HTML Sanitization
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+
     let adminState = {
       users: [],
       balances: {},
@@ -568,6 +580,41 @@
     } catch (e) {
       console.warn('Supabase init:', e);
     }
+
+    
+    // Cryptographic Supabase Session Verification for Administrator
+    async function verifyAdminAuth() {
+      if (!sbClient || !sbClient.auth) return true;
+      try {
+        const { data: { session }, error } = await sbClient.auth.getSession();
+        if (error || !session || !session.user || (session.user.email || '').toLowerCase().trim() !== 'newm5811@gmail.com') {
+          sessionStorage.clear();
+          localStorage.removeItem('bond_is_admin');
+          localStorage.removeItem('bond_user_role');
+          alert('Access Restricted: Cryptographically verified administrator session required (newm5811@gmail.com). Redirecting to login.');
+          window.location.replace('login.html');
+          return false;
+        }
+        return true;
+      } catch (err) {
+        console.warn('Session verification exception:', err);
+        return true;
+      }
+    }
+
+    // Inactivity Auto-Lock for Admin (30 minutes)
+    let adminInactivityTimer;
+    function resetAdminInactivity() {
+      clearTimeout(adminInactivityTimer);
+      adminInactivityTimer = setTimeout(() => {
+        alert('Security Alert: Administrator session terminated due to 30 minutes of inactivity.');
+        adminSignOut();
+      }, 30 * 60 * 1000);
+    }
+    ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetAdminInactivity, { passive: true });
+    });
+    resetAdminInactivity();
 
     // Sign Out
     function adminSignOut() {
@@ -896,10 +943,10 @@
                 </div>
                 <div>
                   <div class="font-bold text-[#0A0B0D] flex items-center gap-1.5">
-                    <span>${u.name || 'Investor'}</span>
+                    <span>${escapeHTML(u.name || 'Investor')}</span>
                     ${isAdmin ? '<span class="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 border border-purple-200">Super Admin</span>' : ''}
                   </div>
-                  <div class="text-[11px] text-[#5B616E] font-normal">${u.email}</div>
+                  <div class="text-[11px] text-[#5B616E] font-normal">${escapeHTML(u.email)}</div>
                 </div>
               </div>
             </td>
@@ -1241,7 +1288,8 @@
     }
 
     // Initial Bootstrap
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await verifyAdminAuth();
       initLevelSelectOptions();
       renderTierMatrix();
       refreshAdminData(false);

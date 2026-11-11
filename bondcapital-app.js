@@ -2161,13 +2161,13 @@
     container.innerHTML = list.map(item => `
       <div onclick="markNotificationRead('${item.id}')" style="padding:13px 18px; border-bottom:1px solid #F1F5F9; background:${item.read ? '#FFFFFF' : '#F8FAFC'}; cursor:pointer; transition:background 0.15s;">
         <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:3px;">
-          <div style="font-size:13px; font-weight:${item.read ? '600' : '700'}; color:#0A0B0D;">${item.title}</div>
+          <div style="font-size:13px; font-weight:${item.read ? '600' : '700'}; color:#0A0B0D;">${escapeHTML(item.title)}</div>
           <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
             <span style="font-size:11px; color:#94A3B8;">${formatRelativeTime(item.time)}</span>
             ${!item.read ? '<span style="width:6px; height:6px; border-radius:50%; background:#0052FF;"></span>' : ''}
           </div>
         </div>
-        <div style="font-size:12px; color:#5B616E; line-height:1.45; word-break:break-word;">${item.message}</div>
+        <div style="font-size:12px; color:#5B616E; line-height:1.45; word-break:break-word;">${escapeHTML(item.message)}</div>
         <div style="font-size:11px; color:#94A3B8; margin-top:4px;">${getNotificationCategoryName(item.type, item.title, item.message)} Notice</div>
       </div>
     `).join('');
@@ -3231,3 +3231,30 @@
 
 })();
 
+
+  // Security Layer: 30-Minute Inactivity Auto-Lock
+  (function initSessionSecurity() {
+    let inactivityTimer;
+    function resetInactivity() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        const uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
+        if (uid) {
+          alert('Security Alert: You have been logged out due to 30 minutes of inactivity for your protection.');
+          if (typeof window.signOut === 'function') {
+            window.signOut();
+          } else {
+            sessionStorage.clear();
+            localStorage.removeItem('bond_user_id');
+            localStorage.removeItem('bond_is_admin');
+            localStorage.removeItem('bond_user_role');
+            window.location.replace('login.html');
+          }
+        }
+      }, 30 * 60 * 1000);
+    }
+    ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetInactivity, { passive: true });
+    });
+    resetInactivity();
+  })();
