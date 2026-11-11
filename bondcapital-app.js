@@ -147,6 +147,15 @@
         if (storedName) appState.user.name = storedName;
       } catch (e) {}
 
+      // Show cached balance instantly so user never sees $0 on page load
+      try {
+        const cachedUSD = sessionStorage.getItem('bond_optimistic_usd');
+        if (cachedUSD !== null && !isNaN(parseFloat(cachedUSD))) {
+          appState.balances.USD = parseFloat(cachedUSD);
+          updateAllUI();
+        }
+      } catch (_) {}
+
       const userId = getActiveUserId();
 
       // 1. Fetch Profile & Settings from public.profiles
@@ -197,6 +206,8 @@
         if (balanceData.eth !== undefined && balanceData.eth !== null) appState.balances.ETH = parseFloat(balanceData.eth);
         if (balanceData.sol !== undefined && balanceData.sol !== null) appState.balances.SOL = parseFloat(balanceData.sol);
         if (balanceData.doge !== undefined && balanceData.doge !== null) appState.balances.DOGE = parseFloat(balanceData.doge);
+        // DB confirmed — clear optimistic cache
+        try { sessionStorage.removeItem('bond_optimistic_usd'); } catch (_) {}
       } else {
         // First-time user initialization in backend
         try {
@@ -1330,8 +1341,20 @@
   };
 
   window.confirmDepositCash = function () {
-    const amt = parseFloat(document.getElementById('deposit-amount-input')?.value || 5000);
+    const rawVal = document.getElementById('deposit-amount-input')?.value;
+    const amt = parseFloat(rawVal);
+    if (!rawVal || isNaN(amt) || !isFinite(amt) || amt <= 0) {
+      showToast('Invalid Amount', 'Please enter a valid deposit amount greater than $0.', '⚠️');
+      return;
+    }
+
+    // 1. Optimistic UI update — show new balance instantly, no waiting for network
     appState.balances.USD += amt;
+
+    // Cache optimistic balance so other pages load it instantly before Supabase responds
+    try { sessionStorage.setItem('bond_optimistic_usd', String(appState.balances.USD)); } catch (_) {}
+
+    // 2. Build transaction record
     const newTx = {
       id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
       type: 'Deposit',
@@ -1343,11 +1366,15 @@
       status: 'Completed'
     };
     appState.transactions.unshift(newTx);
+
+    // 3. Close modal and refresh UI immediately — before any network call
+    closeActiveModal();
+    updateAllUI();
+    showToast('Funds Deposited!', `Added ${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD to wallet.`, '💰');
+
+    // 4. Persist to Supabase in the background (non-blocking)
     syncToSupabase('transaction', newTx);
     saveState();
-    updateAllUI();
-    closeActiveModal();
-    showToast('Funds Deposited!', `Added $${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD to wallet.`, 'ðŸ’°');
   };
 
   window.openWithdrawCashModal = function () {
