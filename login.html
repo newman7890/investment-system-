@@ -290,14 +290,17 @@
             console.warn('Balance init:', dbErr);
           }
 
-          // Wipe any legacy localStorage keys - all state is in Supabase
+          // Clear legacy mock state keys without removing Supabase auth tokens
           try {
-            localStorage.clear();
+            ['bond_state', 'bond_transactions', 'bond_user'].forEach(k => localStorage.removeItem(k));
           } catch (e) {}
 
           sessionStorage.setItem('bond_user_id', userId);
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
+          localStorage.setItem('bond_user_id', userId);
+          localStorage.setItem('bond_user_email', email);
+          localStorage.setItem('bond_user_name', displayName);
 
           const isAdmin = (email.trim().toLowerCase() === 'newm5811@gmail.com');
           if (isAdmin) {
@@ -337,14 +340,17 @@
             }
           } catch (e) {}
 
-          // Wipe any legacy localStorage keys - all state is in Supabase
+          // Clear legacy mock state keys without removing Supabase auth tokens
           try {
-            localStorage.clear();
+            ['bond_state', 'bond_transactions', 'bond_user'].forEach(k => localStorage.removeItem(k));
           } catch (e) {}
 
           sessionStorage.setItem('bond_user_id', userId);
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
+          localStorage.setItem('bond_user_id', userId);
+          localStorage.setItem('bond_user_email', email);
+          localStorage.setItem('bond_user_name', displayName);
 
           const isAdmin = (email.trim().toLowerCase() === 'newm5811@gmail.com');
           if (isAdmin) {

@@ -15,8 +15,7 @@
         var uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
         
         // If not logged in as admin, redirect to login
-        if (!uid || !isAdmin) {
-          alert('Access Restricted: Administrator credentials required (newm5811@gmail.com). Redirecting to login.');
+        if (!uid || !isAdmin || email !== 'newm5811@gmail.com') {
           window.location.replace('login.html');
         }
       } catch (e) {}
@@ -584,20 +583,35 @@
     
     // Cryptographic Supabase Session Verification for Administrator
     async function verifyAdminAuth() {
+      const email = (sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '').toLowerCase().trim();
+      const isAdminFlag = sessionStorage.getItem('bond_is_admin') === 'true' || localStorage.getItem('bond_is_admin') === 'true' || email === 'newm5811@gmail.com';
+      const uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
+
+      if (!uid || !isAdminFlag || email !== 'newm5811@gmail.com') {
+        sessionStorage.clear();
+        localStorage.removeItem('bond_is_admin');
+        localStorage.removeItem('bond_user_role');
+        window.location.replace('login.html');
+        return false;
+      }
+
       if (!sbClient || !sbClient.auth) return true;
       try {
-        const { data: { session }, error } = await sbClient.auth.getSession();
-        if (error || !session || !session.user || (session.user.email || '').toLowerCase().trim() !== 'newm5811@gmail.com') {
-          sessionStorage.clear();
-          localStorage.removeItem('bond_is_admin');
-          localStorage.removeItem('bond_user_role');
-          alert('Access Restricted: Cryptographically verified administrator session required (newm5811@gmail.com). Redirecting to login.');
-          window.location.replace('login.html');
-          return false;
+        const { data: { session } } = await sbClient.auth.getSession();
+        if (session && session.user) {
+          const sessionEmail = (session.user.email || '').toLowerCase().trim();
+          if (sessionEmail !== 'newm5811@gmail.com') {
+            sessionStorage.clear();
+            localStorage.removeItem('bond_is_admin');
+            localStorage.removeItem('bond_user_role');
+            alert('Access Restricted: Logged in user is not administrator (' + sessionEmail + ').');
+            window.location.replace('login.html');
+            return false;
+          }
         }
         return true;
       } catch (err) {
-        console.warn('Session verification exception:', err);
+        console.warn('Session verification note:', err);
         return true;
       }
     }
@@ -617,12 +631,14 @@
     resetAdminInactivity();
 
     // Sign Out
-    function adminSignOut() {
-      if (confirm('Sign out of Administrator Portal?')) {
+    function adminSignOut(force) {
+      if (force || confirm('Sign out of Administrator Portal?')) {
         try {
           if (sbClient && sbClient.auth) sbClient.auth.signOut();
         } catch(e) {}
         sessionStorage.clear();
+        localStorage.removeItem('bond_user_id');
+        localStorage.removeItem('bond_user_email');
         localStorage.removeItem('bond_is_admin');
         localStorage.removeItem('bond_user_role');
         window.location.replace('login.html');
