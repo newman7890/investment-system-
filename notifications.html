@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Bond Capital | Notifications</title>
+  <link rel="icon" type="image/png" href="bond-capital-icon.png">
+
+  <!-- Authentication Route Guard -->
+  <script>
+    (function() {
+      try {
+        var uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
+        var hasSbToken = false;
+        for (var k in localStorage) {
+          if (k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1) { hasSbToken = true; break; }
+        }
+        if (!uid && !hasSbToken) {
+          window.location.replace('login.html');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#0052FF',
+              dark: '#0A0B0D',
+              border: '#ECEFF1'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FFFFFF;
+      color: #0A0B0D;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-[#0A0B0D] flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-[#ECEFF1] bg-white sticky top-0 z-30">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- Back to Dashboard -->
+      <a href="dashboard.html" class="flex items-center gap-2 text-sm font-semibold text-[#5B616E] hover:text-[#0A0B0D] transition-colors cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- Page Title -->
+      <h1 class="text-base font-bold text-[#0A0B0D]">Notifications</h1>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <button onclick="markAllNotificationsRead()" class="text-xs font-semibold text-[#0052FF] hover:underline cursor-pointer">
+          Mark read
+        </button>
+        <span class="text-slate-300">•</span>
+        <button onclick="clearAllNotifications()" class="text-xs font-medium text-slate-500 hover:text-slate-800 cursor-pointer">
+          Clear
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Feed Container -->
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-6">
+    <div id="notifications-page-list" class="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden shadow-2xs">
+      <!-- Injected via JavaScript -->
+    </div>
+  </main>
+
+  <script>
+    const NOTIFICATIONS_STORAGE_KEY = 'bond_notifications';
+
+    function getStoredNotifications() {
+      try {
+        const raw = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(n => n && n.id && !n.id.startsWith('notif_init_') && n.title !== 'Institutional Liquidity Audit' && !n.title.includes('Market Pulse') && !n.title.includes('30-Day Settlement') && !n.title.includes('Macro Intelligence'));
+          }
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveStoredNotifications(list) {
+      try {
+        localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(list));
+        localStorage.setItem('bond_notifications_sync', Date.now().toString());
+      } catch (e) {}
+      renderPageList();
+    }
+
+    function formatRelativeTime(ts) {
+      if (!ts) return 'Just now';
+      const diffSec = Math.floor((Date.now() - ts) / 1000);
+      if (diffSec < 45) return 'Just now';
+      if (diffSec < 3600) return Math.floor(diffSec / 60) + 'm ago';
+      if (diffSec < 86400) return Math.floor(diffSec / 3600) + 'h ago';
+      return Math.floor(diffSec / 86400) + 'd ago';
+    }
+
+    function getCategoryName(type, title, message) {
+      var t = (type || '').toLowerCase();
+      var comb = ((title || '') + ' ' + (message || '')).toLowerCase();
+      if (!t || t === 'info') {
+        if (comb.includes('security') || comb.includes('audit')) t = 'security';
+        else if (comb.includes('deposit') || comb.includes('withdraw') || comb.includes('settl')) t = 'success';
+        else if (comb.includes('tier') || comb.includes('level') || comb.includes('package')) t = 'tier';
+        else if (comb.includes('market') || comb.includes('crypto')) t = 'market';
+        else if (comb.includes('warning') || comb.includes('alert')) t = 'warning';
+        else t = 'info';
+      }
+      if (t === 'security') return 'Security Notice';
+      if (t === 'success' || t === 'withdrawal') return 'Settlement Notice';
+      if (t === 'tier') return 'Allocation Notice';
+      if (t === 'warning' || t === 'error') return 'Important Notice';
+      if (t === 'market') return 'Market Notice';
+      return 'System Notice';
+    }
+
+    function markNotificationRead(id) {
+      const list = getStoredNotifications();
+      const item = list.find(n => n.id === id);
+      if (item && !item.read) {
+        item.read = true;
+        saveStoredNotifications(list);
+      }
+    }
+
+    function markAllNotificationsRead() {
+      const list = getStoredNotifications();
+      list.forEach(n => { n.read = true; });
+      saveStoredNotifications(list);
+    }
+
+    function clearAllNotifications() {
+      if (confirm('Clear all notifications?')) {
+        saveStoredNotifications([]);
+      }
+    }
+
+    function renderPageList() {
+      const container = document.getElementById('notifications-page-list');
+      if (!container) return;
+      const list = getStoredNotifications();
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="py-16 px-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </div>
+            <div class="text-sm font-bold text-slate-800 mb-1">No notifications</div>
+            <div class="text-xs text-slate-500">You're all caught up. New announcements will appear here.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div onclick="markNotificationRead('${item.id}')" class="p-4 sm:p-5 transition-colors cursor-pointer ${item.read ? 'bg-white hover:bg-slate-50/60' : 'bg-slate-50/70 hover:bg-slate-100/60'}">
+          <div class="flex items-baseline justify-between gap-3 mb-1">
+            <h3 class="text-sm ${item.read ? 'font-semibold text-slate-900' : 'font-bold text-[#0A0B0D]'}">
+              ${item.title}
+            </h3>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-xs text-slate-400">${formatRelativeTime(item.time)}</span>
+              ${!item.read ? '<span class="w-2 h-2 rounded-full bg-[#0052FF]"></span>' : ''}
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed break-words">
+            ${item.message}
+          </p>
+          <div class="text-[11px] font-medium text-slate-400 mt-2">
+            ${getCategoryName(item.type, item.title, item.message)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === NOTIFICATIONS_STORAGE_KEY || e.key === 'bond_notifications_sync') {
+        renderPageList();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', renderPageList);
+  </script>
+</body>
+</html>

@@ -131,8 +131,10 @@
     (function() {
       try {
         const uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
+        const email = (sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '').toLowerCase().trim();
+        const isAdmin = sessionStorage.getItem('bond_is_admin') === 'true' || email === 'newm5811@gmail.com';
         if (uid) {
-          window.location.replace('dashboard.html');
+          window.location.replace(isAdmin ? 'admin.html' : 'dashboard.html');
         }
       } catch (e) {}
     })();
@@ -144,6 +146,13 @@
         setTimeout(() => switchAuthMode('signup'), 60);
       }
     } catch(e) {}
+
+    function fillAdminAccount() {
+      switchAuthMode('signin');
+      document.getElementById('auth-email').value = 'newm5811@gmail.com';
+      const pwd = document.getElementById('auth-password');
+      pwd.focus();
+    }
 
     function switchAuthMode(mode) {
       authMode = mode;
@@ -290,8 +299,21 @@
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
 
-          showAlert('Account created successfully! Loading your dashboard...', false);
-          setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
+          const isAdmin = (email.trim().toLowerCase() === 'newm5811@gmail.com');
+          if (isAdmin) {
+            sessionStorage.setItem('bond_is_admin', 'true');
+            localStorage.setItem('bond_is_admin', 'true');
+            sessionStorage.setItem('bond_user_role', 'admin');
+            localStorage.setItem('bond_user_role', 'admin');
+          } else {
+            sessionStorage.removeItem('bond_is_admin');
+            localStorage.removeItem('bond_is_admin');
+            sessionStorage.removeItem('bond_user_role');
+            localStorage.removeItem('bond_user_role');
+          }
+
+          showAlert('Account created successfully! Loading ' + (isAdmin ? 'Admin Console...' : 'your dashboard...'), false);
+          setTimeout(() => { window.location.replace(isAdmin ? 'admin.html' : 'dashboard.html'); }, 600);
 
         } else {
           // ── REAL SIGN IN FLOW ──
@@ -324,13 +346,21 @@
           sessionStorage.setItem('bond_user_email', email);
           sessionStorage.setItem('bond_user_name', displayName);
 
-          sessionStorage.removeItem('bond_is_admin');
-          localStorage.removeItem('bond_is_admin');
-          sessionStorage.removeItem('bond_user_role');
-          localStorage.removeItem('bond_user_role');
+          const isAdmin = (email.trim().toLowerCase() === 'newm5811@gmail.com');
+          if (isAdmin) {
+            sessionStorage.setItem('bond_is_admin', 'true');
+            localStorage.setItem('bond_is_admin', 'true');
+            sessionStorage.setItem('bond_user_role', 'admin');
+            localStorage.setItem('bond_user_role', 'admin');
+          } else {
+            sessionStorage.removeItem('bond_is_admin');
+            localStorage.removeItem('bond_is_admin');
+            sessionStorage.removeItem('bond_user_role');
+            localStorage.removeItem('bond_user_role');
+          }
 
-          showAlert('Signed in successfully! Loading your dashboard...', false);
-          setTimeout(() => { window.location.replace('dashboard.html'); }, 600);
+          showAlert('Signed in successfully! Loading ' + (isAdmin ? 'Admin Console...' : 'your dashboard...'), false);
+          setTimeout(() => { window.location.replace(isAdmin ? 'admin.html' : 'dashboard.html'); }, 600);
         }
 
       } catch (err) {

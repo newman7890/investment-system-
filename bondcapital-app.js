@@ -3,7 +3,17 @@
 (function () {
   'use strict';
 
-  // --- Storage Key ---
+  // --- Storage Key & Mock Notification Purge ---
+  try {
+    const rawNotifs = localStorage.getItem('bond_notifications');
+    if (rawNotifs) {
+      const parsed = JSON.parse(rawNotifs);
+      if (Array.isArray(parsed)) {
+        const cleaned = parsed.filter(n => n && n.id && !n.id.startsWith('notif_init_') && n.title !== 'Institutional Liquidity Audit' && !n.title.includes('Market Pulse') && !n.title.includes('30-Day Settlement') && !n.title.includes('Macro Intelligence'));
+        localStorage.setItem('bond_notifications', JSON.stringify(cleaned));
+      }
+    }
+  } catch(e) {}
   try {
     ['bond_cash_balance','bond_allocated_balance','bond_active_level','bond_monthly_limit','bond_purchase_cost','bond_tier_name','bond_tier_state','bond_transactions'].forEach(function(k){
       try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch(e){}
@@ -88,6 +98,12 @@
             sessionStorage.setItem('bond_user_email', session.user.email || '');
             localStorage.setItem('bond_user_id', userId);
             localStorage.setItem('bond_user_email', session.user.email || '');
+            if ((session.user.email || '').toLowerCase().trim() === 'newm5811@gmail.com') {
+              sessionStorage.setItem('bond_is_admin', 'true');
+              localStorage.setItem('bond_is_admin', 'true');
+              sessionStorage.setItem('bond_user_role', 'admin');
+              localStorage.setItem('bond_user_role', 'admin');
+            }
           } catch (e) {}
         }
       } catch (e) {}
@@ -101,7 +117,9 @@
 
     // Authenticated user on login page
     if (isLoginPage && userId) {
-      window.location.replace('dashboard.html');
+      const email = (sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '').toLowerCase().trim();
+      const isAdmin = sessionStorage.getItem('bond_is_admin') === 'true' || email === 'newm5811@gmail.com';
+      window.location.replace(isAdmin ? 'admin.html' : 'dashboard.html');
       return;
     }
 
@@ -571,13 +589,24 @@
     const tLower = (String(title) + ' ' + String(message) + ' ' + String(typeOrIcon)).toLowerCase();
 
     if (
+      typeOrIcon === 'security' ||
+      tLower.includes('security') ||
+      tLower.includes('audit') ||
+      tLower.includes('advisory')
+    ) {
+      type = 'security';
+      pillText = 'SECURITY ADVISORY';
+      iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>`;
+    } else if (
+      typeOrIcon === 'tier' ||
       tLower.includes('tier') ||
       tLower.includes('package') ||
       tLower.includes('unlocked') ||
       tLower.includes('level') ||
       tLower.includes('allocated') ||
-      tLower.includes('allocation') ||
-      typeOrIcon === 'tier'
+      tLower.includes('allocation')
     ) {
       type = 'tier';
       pillText = 'PORTFOLIO ALLOCATION';
@@ -585,6 +614,9 @@
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#0052FF" fill-opacity="0.16"/>
       </svg>`;
     } else if (
+      typeOrIcon === 'success' ||
+      typeOrIcon === 'withdrawal' ||
+      typeOrIcon === 'check' ||
       tLower.includes('success') ||
       tLower.includes('confirm') ||
       tLower.includes('deposit') ||
@@ -593,33 +625,37 @@
       tLower.includes('sent') ||
       tLower.includes('transferred') ||
       tLower.includes('paid') ||
-      tLower.includes('verified') ||
-      typeOrIcon === 'success' ||
-      typeOrIcon === 'success' || typeOrIcon === 'check'
+      tLower.includes('verified')
     ) {
       type = 'success';
-      pillText = 'SETTLED & CONFIRMED';
+      pillText = 'SETTLEMENT SUCCESS';
       iconSvg = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M16.667 5L7.5 14.167 3.333 10"/>
       </svg>`;
     } else if (
+      typeOrIcon === 'warning' ||
+      typeOrIcon === 'error' ||
       tLower.includes('insufficient') ||
       tLower.includes('invalid') ||
       tLower.includes('error') ||
       tLower.includes('failed') ||
       tLower.includes('zero') ||
-      tLower.includes('depleted') ||
-      typeOrIcon === 'warning' ||
-      typeOrIcon === 'error'
+      tLower.includes('depleted')
     ) {
       type = 'warning';
       pillText = 'ATTENTION REQUIRED';
       iconSvg = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M10 6.667V10m0 3.333h.008M10 18.333a8.333 8.333 0 100-16.666 8.333 8.333 0 000 16.666z"/>
       </svg>`;
+    } else if (typeOrIcon === 'market' || tLower.includes('market') || tLower.includes('pulse')) {
+      type = 'market';
+      pillText = 'MARKET INTELLIGENCE';
+      iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>`;
     } else {
       type = 'info';
-      pillText = 'SYSTEM ADVISORY';
+      pillText = 'SYSTEM INFO';
       iconSvg = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M10 13.333V10m0-3.333h.008M10 18.333a8.333 8.333 0 100-16.666 8.333 8.333 0 000 16.666z"/>
       </svg>`;
@@ -1364,6 +1400,10 @@
     updateAllUI();
     closeActiveModal();
     showToast('Withdrawal Processed', `$${amt.toFixed(2)} USD transferred.`, 'success');
+    if (typeof window.addLivePayoutTickerItem === 'function') {
+      const uName = (sessionStorage.getItem('bond_user_name') || localStorage.getItem('bond_user_name') || 'You').trim().replace(/\s+/g, '_').toLowerCase();
+      window.addLivePayoutTickerItem('@' + uName, amt, 'FAST Bank Wire');
+    }
   };
 
   window.openAssetSelectorModal = function () {
@@ -1949,41 +1989,13 @@
       const raw = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          // Exclude any legacy mock notifications
+          return parsed.filter(n => n && n.id && !n.id.startsWith('notif_init_') && n.title !== 'Institutional Liquidity Audit' && !n.title.includes('Market Pulse') && !n.title.includes('30-Day Settlement') && !n.title.includes('Macro Intelligence'));
+        }
       }
     } catch (e) {}
-
-    // Initial realistic notification seed for verified account
-    const initial = [
-      {
-        id: 'notif_init_1',
-        title: 'Encrypted Vault Custody Active',
-        message: 'Multi-sig cold storage vault security verified for your portfolio allocation.',
-        type: 'security',
-        time: Date.now() - 1000 * 60 * 12,
-        read: false
-      },
-      {
-        id: 'notif_init_2',
-        title: '300% (3×) Multiplier Provisioned',
-        message: 'Your active package tier credit multiplier has been locked and provisioned.',
-        type: 'tier',
-        time: Date.now() - 1000 * 60 * 35,
-        read: false
-      },
-      {
-        id: 'notif_init_3',
-        title: 'Welcome to Bond Capital',
-        message: 'Account verified. Scheduled 30-day liquidity cashflow cycle initialized.',
-        type: 'info',
-        time: Date.now() - 1000 * 60 * 120,
-        read: true
-      }
-    ];
-    try {
-      localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(initial));
-    } catch (e) {}
-    return initial;
+    return [];
   }
 
   function saveStoredNotifications(notifs) {
@@ -2003,6 +2015,26 @@
     return Math.floor(diffSec / 86400) + 'd ago';
   }
 
+  function getNotificationCategoryName(type, title, message) {
+    var t = (type || '').toLowerCase();
+    var comb = ((title || '') + ' ' + (message || '')).toLowerCase();
+    
+    if (!t || t === 'info') {
+      if (comb.includes('security') || comb.includes('audit') || comb.includes('guard')) t = 'security';
+      else if (comb.includes('deposit') || comb.includes('withdraw') || comb.includes('settl') || comb.includes('payout')) t = 'success';
+      else if (comb.includes('tier') || comb.includes('level') || comb.includes('package') || comb.includes('allocat')) t = 'tier';
+      else if (comb.includes('market') || comb.includes('bitcoin') || comb.includes('crypto')) t = 'market';
+      else if (comb.includes('warning') || comb.includes('alert') || comb.includes('error')) t = 'warning';
+      else t = 'info';
+    }
+
+    if (t === 'security') return 'Security';
+    if (t === 'success' || t === 'withdrawal') return 'Settlement';
+    if (t === 'tier') return 'Allocation';
+    if (t === 'warning' || t === 'error') return 'Notice';
+    if (t === 'market') return 'Market';
+    return 'System';
+  }
   function getNotificationIcon(type) {
     if (type === 'tier') {
       return `<div style="width:36px; height:36px; border-radius:10px; background:#EEF3FF; color:#0052FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
@@ -2015,7 +2047,7 @@
       </div>`;
     }
     if (type === 'security') {
-      return `<div style="width:36px; height:36px; border-radius:10px; background:#F0FDF4; color:#16A34A; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      return `<div style="width:36px; height:36px; border-radius:10px; background:#FEF2F2; color:#DC2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>`;
     }
@@ -2033,7 +2065,6 @@
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="8"/><line x1="10" y1="14" x2="10" y2="10"/><line x1="10" y1="6" x2="10.01" y2="6"/></svg>
     </div>`;
   }
-
   window.addNotification = function (title, message = '', type = 'info', opts = {}) {
     const list = getStoredNotifications();
     const newNotif = {
@@ -2110,88 +2141,59 @@
 
   function renderNotificationsModalList() {
     const container = document.getElementById('notifications-modal-items');
-    const badgeEl = document.getElementById('notifications-modal-unread-badge');
     if (!container) return;
 
     const list = getStoredNotifications();
-    const unread = list.filter(n => !n.read).length;
-
-    if (badgeEl) {
-      if (unread > 0) {
-        badgeEl.textContent = `${unread} New`;
-        badgeEl.style.display = 'inline-block';
-      } else {
-        badgeEl.textContent = 'All caught up';
-        badgeEl.style.background = '#ECFDF5';
-        badgeEl.style.color = '#059669';
-        badgeEl.style.display = 'inline-block';
-      }
-    }
 
     if (list.length === 0) {
       container.innerHTML = `
-        <div style="padding:40px 20px; text-align:center; color:#64748B;">
-          <div style="width:48px; height:48px; border-radius:50%; background:#F1F5F9; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; color:#94A3B8;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <div style="padding:44px 20px; text-align:center; color:#94A3B8;">
+          <div style="width:44px; height:44px; border-radius:50%; background:#F8FAFC; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; color:#94A3B8;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
           </div>
-          <div style="font-size:14px; font-weight:700; color:#0A0B0D; margin-bottom:4px;">No Notifications</div>
-          <div style="font-size:12px;">You're completely up to date. Alerts will appear here in real time.</div>
+          <div style="font-size:13px; font-weight:700; color:#0A0B0D; margin-bottom:2px;">No notifications</div>
+          <div style="font-size:12px;">You're all caught up.</div>
         </div>
       `;
       return;
     }
 
     container.innerHTML = list.map(item => `
-      <div onclick="markNotificationRead('${item.id}')" style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:14px; background:${item.read ? 'transparent' : '#F4F7FF'}; border:1px solid ${item.read ? '#ECEFF1' : '#DCE7FE'}; cursor:pointer; transition:all 0.15s; margin-bottom:8px;">
-        ${getNotificationIcon(item.type)}
-        <div style="flex:1; min-width:0;">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
-            <div style="font-size:13px; font-weight:700; color:#0A0B0D; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
-            <span style="font-size:10px; font-weight:600; color:#94A3B8; flex-shrink:0;">${formatRelativeTime(item.time)}</span>
+      <div onclick="markNotificationRead('${item.id}')" style="padding:13px 18px; border-bottom:1px solid #F1F5F9; background:${item.read ? '#FFFFFF' : '#F8FAFC'}; cursor:pointer; transition:background 0.15s;">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:3px;">
+          <div style="font-size:13px; font-weight:${item.read ? '600' : '700'}; color:#0A0B0D;">${item.title}</div>
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <span style="font-size:11px; color:#94A3B8;">${formatRelativeTime(item.time)}</span>
+            ${!item.read ? '<span style="width:6px; height:6px; border-radius:50%; background:#0052FF;"></span>' : ''}
           </div>
-          <div style="font-size:12px; color:#5B616E; margin-top:3px; line-height:1.4;">${item.message}</div>
         </div>
-        ${!item.read ? '<span style="width:7px; height:7px; border-radius:50%; background:#0052FF; flex-shrink:0; margin-top:6px;"></span>' : ''}
+        <div style="font-size:12px; color:#5B616E; line-height:1.45; word-break:break-word;">${item.message}</div>
+        <div style="font-size:11px; color:#94A3B8; margin-top:4px;">${getNotificationCategoryName(item.type, item.title, item.message)} Notice</div>
       </div>
     `).join('');
   }
-
   window.openNotificationsModal = function () {
-    const list = getStoredNotifications();
-    const unread = list.filter(n => !n.read).length;
-
     openModal(`
-      <div id="notifications-modal-container" style="padding: 22px 20px;">
+      <div id="notifications-modal-container" style="max-width:440px; margin:0 auto; background:#FFFFFF; border-radius:18px; overflow:hidden;">
         <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0;">Notifications</h2>
-            <span id="notifications-modal-unread-badge" style="font-size:11px; font-weight:700; background:#EFF6FF; color:#0052FF; padding:2px 8px; border-radius:9999px;">
-              ${unread > 0 ? `${unread} New` : 'All caught up'}
-            </span>
-          </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#5B616E;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-        </div>
-
-        <!-- Action bar -->
-        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid #ECEFF1; font-size:11px;">
-          <span style="color:#64748B; font-weight:600;">Real-Time Activity Feed</span>
-          <div style="display:flex; gap:12px;">
-            <button onclick="markAllNotificationsRead()" style="border:none; background:transparent; color:#0052FF; font-weight:700; cursor:pointer; padding:0;">Mark all read</button>
-            <span style="color:#CBD5E1;">•</span>
-            <button onclick="clearAllNotifications()" style="border:none; background:transparent; color:#94A3B8; font-weight:600; cursor:pointer; padding:0;">Clear all</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 18px 12px; border-bottom:1px solid #ECEFF1;">
+          <h2 style="font-size:16px; font-weight:700; color:#0A0B0D; margin:0;">Notifications</h2>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <a href="notifications.html" style="font-size:12px; font-weight:600; color:#0052FF; text-decoration:none;">Full page ↗</a>
+            <button onclick="markAllNotificationsRead()" style="border:none; background:transparent; font-size:12px; font-weight:500; color:#5B616E; cursor:pointer; padding:0;">Mark read</button>
+            <button onclick="clearAllNotifications()" style="border:none; background:transparent; font-size:12px; font-weight:500; color:#94A3B8; cursor:pointer; padding:0;">Clear</button>
+            <button onclick="closeActiveModal()" style="border:none; background:transparent; font-size:18px; color:#5B616E; cursor:pointer; padding:0 2px; line-height:1;">✕</button>
           </div>
         </div>
 
-        <!-- Scrollable Notifications List -->
-        <div id="notifications-modal-items" style="max-height:360px; overflow-y:auto; padding-right:2px;" class="scrollbar-thin">
+        <!-- Clean Flat Notifications List -->
+        <div id="notifications-modal-items" style="max-height:380px; overflow-y:auto;" class="scrollbar-thin">
         </div>
       </div>
     `);
 
     renderNotificationsModalList();
   };
-
   // Cross-tab sync for notifications
   window.addEventListener('storage', (e) => {
     if (e.key === NOTIFICATIONS_STORAGE_KEY || e.key === 'bond_notifications_sync') {
@@ -2202,8 +2204,8 @@
 
   // Real-time market & institutional updates generator (fires periodically while browsing)
   function startRealtimeNotificationTicker() {
-    if (window.__bondNotifTickerStarted) return;
-    window.__bondNotifTickerStarted = true;
+    // Disabled: prevents unexpected/confusing automated background alerts
+    return;
 
     const periodicAlerts = [
       {
@@ -2977,7 +2979,7 @@
             b.className = 'flex-1 py-1.5 px-4 bg-[#0A0B0D] text-white text-sm font-semibold rounded-full shadow-sm text-center';
             appState.order.type = b.textContent.trim();
             updateAllUI();
-            showToast(`${appState.order.type} Mode Selected`, '', 'success');
+            // Mode switch
           };
         });
       }
@@ -3004,7 +3006,7 @@
             else display.textContent = appState.balances.USD.toFixed(0);
           }
           updateAllUI();
-          showToast('Max balance selected', `$${appState.balances.USD.toFixed(2)} USD`, 'ðŸ’°');
+          // Max balance
         };
       }
     });
@@ -3031,7 +3033,7 @@
         btn.classList.add('cb-clickable');
         btn.onclick = () => {
           appState.order.mode = appState.order.mode === 'USD' ? 'CRYPTO' : 'USD';
-          showToast('Currency unit switched', `Inputting in ${appState.order.mode}`, 'â‡…');
+          // Currency switch
         };
       }
     });
@@ -3106,10 +3108,10 @@
             <div style="padding:20px;">
               <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Watchlist Filter</h3>
               <div style="display:flex; flex-direction:column; gap:8px; font-size:14px; font-weight:600;">
-                <div onclick="closeActiveModal(); showToast('Viewing Watchlist', '', 'â˜…');" style="padding:10px 14px; border-radius:12px; background:#EEF2F6; cursor:pointer;">â˜… Starred Assets</div>
-                <div onclick="closeActiveModal(); showToast('Viewing All Assets', '', 'ðŸ“‹');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸŒ All Assets</div>
-                <div onclick="closeActiveModal(); showToast('Viewing Top Gainers', '', 'ðŸ“ˆ');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸ“ˆ Top Gainers</div>
-                <div onclick="closeActiveModal(); showToast('Viewing Top Losers', '', 'ðŸ“‰');" style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸ“‰ Top Losers</div>
+                <div onclick="closeActiveModal(); " style="padding:10px 14px; border-radius:12px; background:#EEF2F6; cursor:pointer;">â˜… Starred Assets</div>
+                <div onclick="closeActiveModal(); " style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸŒ All Assets</div>
+                <div onclick="closeActiveModal(); " style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸ“ˆ Top Gainers</div>
+                <div onclick="closeActiveModal(); " style="padding:10px 14px; border-radius:12px; cursor:pointer;">ðŸ“‰ Top Losers</div>
               </div>
             </div>
           `);
@@ -3128,7 +3130,7 @@
             b.className = 'px-3 py-1.5 text-xs font-semibold rounded-full text-gray-600 hover:text-gray-900 cursor-pointer';
           });
           btn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-full bg-gray-100 text-gray-900 cursor-pointer';
-          showToast(`Timeframe: ${text}`, 'Updated chart period and return stats', 'ðŸ“ˆ');
+          // Timeframe changed
         };
       }
     });
@@ -3183,7 +3185,7 @@
         if (c) {
           const isNext = btn.querySelector('polyline[points*="9 18 15 12"]');
           c.scrollBy({ left: isNext ? 240 : -240, behavior: 'smooth' });
-          showToast('Browsing cards', '', 'â†”');
+          // Carousel scroll
         }
       };
     });
@@ -3198,7 +3200,7 @@
           card.style.opacity = '0';
           card.style.transform = 'scale(0.9)';
           setTimeout(() => card.remove(), 300);
-          showToast('Card dismissed', '', 'info');
+          // Card dismissed
         }
       };
     });

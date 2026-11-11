@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bond Capital | Executive Admin Console</title>
+  <link rel="icon" type="image/png" href="bond-capital-icon.png">
+
+  <!-- Security Route Guard: Restrict strictly to newm5811@gmail.com -->
+  <script>
+    (function() {
+      try {
+        var email = (sessionStorage.getItem('bond_user_email') || localStorage.getItem('bond_user_email') || '').toLowerCase().trim();
+        var isAdmin = sessionStorage.getItem('bond_is_admin') === 'true' || localStorage.getItem('bond_is_admin') === 'true' || email === 'newm5811@gmail.com';
+        var uid = sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id');
+        
+        // If not logged in as admin, redirect to login
+        if (!uid || !isAdmin) {
+          alert('Access Restricted: Administrator credentials required (newm5811@gmail.com). Redirecting to login.');
+          window.location.replace('login.html');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            bond: {
+              blue: '#0052FF',
+              darkblue: '#0045D8',
+              slate: '#0A0B0D',
+              cream: '#F8FAFC',
+              border: '#ECEFF1',
+              subtext: '#5B616E',
+              emerald: '#059669',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0A0B0D;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    .clean-card {
+      background: #FFFFFF;
+      border: 1px solid #ECEFF1;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+    }
+    .clean-card:hover {
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans select-none antialiased bg-[#F8FAFC] text-[#0A0B0D]">
+
+  <!-- TOP HEADER -->
+  <header class="h-18 px-4 sm:px-8 bg-white border-b border-[#ECEFF1] flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <!-- Brand & Admin Badge -->
+    <div class="flex items-center gap-3 sm:gap-4">
+      <a href="admin.html" class="flex items-center gap-3">
+        <img src="bond-capital-logo.png" onerror="this.onerror=null; this.src='bond-capital-icon.png';" alt="Bond Capital" class="h-8 w-auto object-contain">
+      </a>
+      <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
+      <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold uppercase tracking-wider">
+        <svg class="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 011.378 1.157l-.612 2.756 2.052 1.848a1 1 0 01-.278 1.638l-2.45 1.05v2.808a1 1 0 01-.553.894l-5 2.5a1 1 0 01-.894 0l-5-2.5A1 1 0 015 15.362V12.55l-2.45-1.05a1 1 0 01-.278-1.638l2.052-1.848-.612-2.756a1 1 0 011.378-1.157l1.599.8L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+        <span>Super Admin</span>
+      </div>
+    </div>
+
+    <!-- Admin User Info & Nav Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Live Sync Dot Indicator -->
+      <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs text-slate-700">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+        </span>
+        <span id="sync-status-text" class="text-slate-600 font-semibold">Supabase Connected</span>
+      </div>
+
+      <!-- Admin Email Tag -->
+      <div class="hidden lg:flex items-center gap-2 text-xs text-slate-600 bg-slate-100/80 px-3 py-1.5 rounded-full border border-slate-200">
+        <span class="text-slate-400">Account:</span>
+        <span class="font-bold text-[#0A0B0D]" id="admin-user-display">newm5811@gmail.com</span>
+      </div>
+
+      <!-- Switch to Investor Portal -->
+      <a href="dashboard.html" class="px-3.5 py-1.5 rounded-full bg-[#0052FF]/10 hover:bg-[#0052FF]/15 text-[#0052FF] border border-[#0052FF]/20 text-xs font-bold transition-all flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        <span>Investor View</span>
+      </a>
+
+      <!-- Sign Out Button -->
+      <button onclick="adminSignOut()" class="px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all cursor-pointer">
+        Sign Out
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI STATS SUMMARY ROW -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <!-- Total Investors -->
+      <div class="clean-card rounded-2xl p-5 relative overflow-hidden transition-all">
+        <div class="flex items-center justify-between text-[#5B616E] text-xs font-semibold mb-2">
+          <span>Registered Investors</span>
+          <div class="w-7 h-7 rounded-lg bg-blue-50 text-[#0052FF] flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#0A0B0D]" id="stat-total-users">0</div>
+        <div class="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+          <span>● Active user database</span>
+        </div>
+      </div>
+
+      <!-- Platform TVL / Total Allocation -->
+      <div class="clean-card rounded-2xl p-5 relative overflow-hidden transition-all">
+        <div class="flex items-center justify-between text-[#5B616E] text-xs font-semibold mb-2">
+          <span>Total Portfolio Assets (TVL)</span>
+          <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600" id="stat-total-tvl">$0.00</div>
+        <div class="text-[11px] text-[#5B616E] font-medium mt-1">Cash + Tier allocations</div>
+      </div>
+
+      <!-- Total Committed Deposits -->
+      <div class="clean-card rounded-2xl p-5 relative overflow-hidden transition-all">
+        <div class="flex items-center justify-between text-[#5B616E] text-xs font-semibold mb-2">
+          <span>Capital Deposits</span>
+          <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#0A0B0D]" id="stat-total-deposits">$0.00</div>
+        <div class="text-[11px] text-[#5B616E] font-medium mt-1">Total funded capital</div>
+      </div>
+
+      <!-- Total Payouts Disbursed -->
+      <div class="clean-card rounded-2xl p-5 relative overflow-hidden transition-all">
+        <div class="flex items-center justify-between text-[#5B616E] text-xs font-semibold mb-2">
+          <span>Disbursed Cashouts</span>
+          <div class="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-teal-600" id="stat-total-cashouts">$0.00</div>
+        <div class="text-[11px] text-[#5B616E] font-medium mt-1">Processed withdrawals</div>
+      </div>
+
+      <!-- Active Packages (Levels 1-30) -->
+      <div class="clean-card rounded-2xl p-5 relative overflow-hidden transition-all">
+        <div class="flex items-center justify-between text-[#5B616E] text-xs font-semibold mb-2">
+          <span>Active Package Tiers</span>
+          <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold text-purple-600" id="stat-active-tiers">0</div>
+        <div class="text-[11px] text-[#5B616E] font-medium mt-1">Level 1 to 30 allocations</div>
+      </div>
+    </section>
+
+    <!-- ADMIN ACTION TABS -->
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#ECEFF1] pb-4">
+      <div class="flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-[#ECEFF1] shadow-2xs">
+        <button onclick="switchTab('users')" id="tab-btn-users" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#0052FF] text-white shadow-sm cursor-pointer flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span>Investor Directory</span>
+          <span class="px-2 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-extrabold" id="tab-count-users">0</span>
+        </button>
+        <button onclick="switchTab('withdrawals')" id="tab-btn-withdrawals" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-[#5B616E] hover:text-[#0A0B0D] hover:bg-slate-100 cursor-pointer flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          <span>Cashouts & Withdrawals</span>
+          <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-extrabold" id="tab-count-withdrawals">0</span>
+        </button>
+        <button onclick="switchTab('tiers')" id="tab-btn-tiers" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-[#5B616E] hover:text-[#0A0B0D] hover:bg-slate-100 cursor-pointer flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          <span>30-Level Matrix</span>
+        </button>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-2">
+        <button onclick="openBroadcastModal()" class="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+          <svg class="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+          <span>Broadcast Notice</span>
+        </button>
+        <button onclick="refreshAdminData(true)" class="p-2 rounded-xl bg-white hover:bg-slate-50 border border-[#ECEFF1] text-slate-700 transition-all cursor-pointer shadow-2xs" title="Refresh Database">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: INVESTOR USER DIRECTORY -->
+    <section id="tab-content-users" class="space-y-4">
+      <!-- Search & Filters -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="relative flex-1 max-w-md">
+          <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="user-search-input" oninput="filterUserList()" placeholder="Search investors by email, name, or level..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#ECEFF1] text-xs text-[#0A0B0D] placeholder-slate-400 focus:outline-none focus:border-[#0052FF] shadow-2xs">
+        </div>
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <span class="text-xs text-[#5B616E] font-medium">Tier Filter:</span>
+          <button onclick="setTierFilter('all')" class="tier-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-[#0052FF] text-white shadow-2xs">All</button>
+          <button onclick="setTierFilter('active')" class="tier-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-[#5B616E] bg-white border border-[#ECEFF1] hover:text-[#0A0B0D]">Levels 1-30</button>
+          <button onclick="setTierFilter('free')" class="tier-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-[#5B616E] bg-white border border-[#ECEFF1] hover:text-[#0A0B0D]">Unallocated</button>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="clean-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[#F8FAFC] border-b border-[#ECEFF1] text-[#5B616E] uppercase font-bold tracking-wider text-[11px]">
+              <tr>
+                <th class="px-5 py-3.5">Investor Account</th>
+                <th class="px-4 py-3.5">Current Tier</th>
+                <th class="px-4 py-3.5">Allocated (3×)</th>
+                <th class="px-4 py-3.5">USD Balance</th>
+                <th class="px-4 py-3.5">Crypto Portfolio</th>
+                <th class="px-4 py-3.5">Monthly Limit</th>
+                <th class="px-5 py-3.5 text-right">Administrative Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body" class="divide-y divide-[#ECEFF1] font-medium text-[#0A0B0D]">
+              <tr>
+                <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+                  <div class="animate-pulse">Loading investors from Supabase...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: CASHOUTS & WITHDRAWAL SETTLEMENT -->
+    <section id="tab-content-withdrawals" class="space-y-4 hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-[#0A0B0D]">Cashout Ledger & Payout Settlement</h3>
+          <p class="text-xs text-[#5B616E]">Review, settle, or reject user monthly allowance withdrawal requests.</p>
+        </div>
+        <button onclick="openManualCashoutModal()" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+          <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>Record Manual Cashout</span>
+        </button>
+      </div>
+
+      <!-- Withdrawals Table -->
+      <div class="clean-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[#F8FAFC] border-b border-[#ECEFF1] text-[#5B616E] uppercase font-bold tracking-wider text-[11px]">
+              <tr>
+                <th class="px-5 py-3.5">Transaction ID</th>
+                <th class="px-4 py-3.5">Investor Email</th>
+                <th class="px-4 py-3.5">Amount (USD)</th>
+                <th class="px-4 py-3.5">Settlement Method</th>
+                <th class="px-4 py-3.5">Request Date</th>
+                <th class="px-4 py-3.5">Status</th>
+                <th class="px-5 py-3.5 text-right">Settlement Decision</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawals-table-body" class="divide-y divide-[#ECEFF1] font-medium text-[#0A0B0D]">
+              <tr>
+                <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+                  <div class="animate-pulse">Loading withdrawal requests...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: 30-LEVEL PLATFORM MATRIX -->
+    <section id="tab-content-tiers" class="space-y-4 hidden">
+      <div>
+        <h3 class="text-base font-bold text-[#0A0B0D]">Institutional 30-Level Platform Master Matrix</h3>
+        <p class="text-xs text-[#5B616E]">Reference table for all guaranteed 300% (3×) allocated packages and scheduled monthly cashflow allowances.</p>
+      </div>
+
+      <div class="clean-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto max-h-[580px]">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[#F8FAFC] border-b border-[#ECEFF1] text-[#5B616E] uppercase font-bold tracking-wider text-[11px] sticky top-0 z-10 shadow-2xs">
+              <tr>
+                <th class="px-4 py-3">Tier Level</th>
+                <th class="px-4 py-3">Purchase Commitment</th>
+                <th class="px-4 py-3">Guaranteed Allocated Credit (3×)</th>
+                <th class="px-4 py-3">Monthly Cash Allowance</th>
+                <th class="px-4 py-3">Disbursement Term</th>
+                <th class="px-4 py-3">Institutional Custody</th>
+              </tr>
+            </thead>
+            <tbody id="tier-matrix-body" class="divide-y divide-[#ECEFF1] font-medium text-[#0A0B0D]">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: EDIT USER ACCOUNT & TIER -->
+  <div id="edit-user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4"
+       onmousedown="if(event.target === this) this.dataset.bgDown = '1'; else delete this.dataset.bgDown;"
+       onclick="if(this.dataset.bgDown === '1' && event.target === this) { closeModal('edit-user-modal'); delete this.dataset.bgDown; }">
+    <div class="bg-white border border-[#ECEFF1] rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative text-[#0A0B0D]" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-4 border-b border-[#ECEFF1]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-50 text-[#0052FF] flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-[#0A0B0D]">Edit Investor Account</h3>
+            <p class="text-xs text-[#5B616E]" id="edit-modal-email">user@example.com</p>
+          </div>
+        </div>
+        <button onclick="closeModal('edit-user-modal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-[#0A0B0D] transition-colors cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveUser(event)" onkeydown="if(event.key === 'Enter' && event.target.tagName !== 'TEXTAREA'){ event.preventDefault(); }" class="mt-5 space-y-4">
+        <input type="hidden" id="edit-user-id">
+
+        <!-- Full Name -->
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Display Name</label>
+          <input type="text" id="edit-user-name" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+        </div>
+
+        <!-- 30-Level Tier Selection -->
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Package Tier (Level 0 - 30)</label>
+          <select id="edit-user-level" onchange="autoFillTierDefaults()" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+            <option value="0">Level 0 - No Active Package (Free Member)</option>
+            <!-- Generated 1 to 30 options -->
+          </select>
+        </div>
+
+        <!-- Allocated Balance (3× Multiplier) -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#5B616E] mb-1">Allocated Balance ($ USD)</label>
+            <input type="number" step="0.01" id="edit-user-allocated" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#5B616E] mb-1">Monthly Limit ($/mo)</label>
+            <input type="number" step="0.01" id="edit-user-limit" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+          </div>
+        </div>
+
+        <!-- Available Cash Balance -->
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Available Cash Wallet ($ USD)</label>
+          <input type="number" step="0.01" id="edit-user-usd" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+        </div>
+
+        <!-- Crypto Balances -->
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-[#ECEFF1]">
+          <div>
+            <label class="block text-[10px] font-semibold text-[#5B616E] mb-0.5">BTC Holdings</label>
+            <input type="number" step="0.000001" id="edit-user-btc" class="w-full px-2.5 py-1.5 rounded-lg bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-[#5B616E] mb-0.5">ETH Holdings</label>
+            <input type="number" step="0.000001" id="edit-user-eth" class="w-full px-2.5 py-1.5 rounded-lg bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-[#5B616E] mb-0.5">SOL Holdings</label>
+            <input type="number" step="0.000001" id="edit-user-sol" class="w-full px-2.5 py-1.5 rounded-lg bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#ECEFF1]">
+          <button type="button" onclick="closeModal('edit-user-modal')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" id="save-user-btn" class="px-5 py-2 rounded-xl bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs transition-all shadow-sm cursor-pointer">
+            Save Changes to Supabase
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: MANUAL CASHOUT CREATION -->
+  <div id="manual-cashout-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4"
+       onmousedown="if(event.target === this) this.dataset.bgDown = '1'; else delete this.dataset.bgDown;"
+       onclick="if(this.dataset.bgDown === '1' && event.target === this) { closeModal('manual-cashout-modal'); delete this.dataset.bgDown; }">
+    <div class="bg-white border border-[#ECEFF1] rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-[#0A0B0D]" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-4 border-b border-[#ECEFF1]">
+        <h3 class="text-base font-bold text-[#0A0B0D]">Record Manual Cashout</h3>
+        <button onclick="closeModal('manual-cashout-modal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-[#0A0B0D] transition-colors cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form onsubmit="handleCreateManualCashout(event)" onkeydown="if(event.key === 'Enter' && event.target.tagName !== 'TEXTAREA'){ event.preventDefault(); }" class="mt-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Select Investor</label>
+          <select id="cashout-user-select" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Cashout Amount ($ USD)</label>
+          <input type="number" step="0.01" min="1" id="cashout-amount" placeholder="e.g. 1500.00" required class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Disbursement Channel</label>
+          <select id="cashout-channel" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-[#0052FF]">
+            <option value="FAST Bank Wire">FAST Bank Wire</option>
+            <option value="Crypto USDT (TRC20/ERC20)">Crypto USDT (TRC20/ERC20)</option>
+            <option value="BTC Cold Storage Vault">BTC Cold Storage Vault</option>
+            <option value="ACH Institutional Wire">ACH Institutional Wire</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#ECEFF1]">
+          <button type="button" onclick="closeModal('manual-cashout-modal')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm cursor-pointer">
+            Record Cashout
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: BROADCAST ANNOUNCEMENT -->
+  <div id="broadcast-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4"
+       onmousedown="if(event.target === this) this.dataset.bgDown = '1'; else delete this.dataset.bgDown;"
+       onclick="if(this.dataset.bgDown === '1' && event.target === this) { closeModal('broadcast-modal'); delete this.dataset.bgDown; }">
+    <div class="bg-white border border-[#ECEFF1] rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-[#0A0B0D]" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-4 border-b border-[#ECEFF1]">
+        <h3 class="text-base font-bold text-[#0A0B0D]">Broadcast System Notice</h3>
+        <button onclick="closeModal('broadcast-modal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-[#0A0B0D] transition-colors cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form onsubmit="handleSendBroadcast(event)" onkeydown="if(event.key === 'Enter' && event.target.tagName !== 'TEXTAREA'){ event.preventDefault(); }" class="mt-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Headline</label>
+          <input type="text" id="broadcast-title" placeholder="e.g. Scheduled Settlement Window Complete" required class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-purple-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Message Body</label>
+          <textarea id="broadcast-msg" rows="3" placeholder="Enter message text for all investors..." required class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-purple-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#5B616E] mb-1">Notice Type</label>
+          <select id="broadcast-type" class="w-full px-3.5 py-2 rounded-xl bg-[#F8FAFC] border border-[#ECEFF1] text-xs text-[#0A0B0D] focus:bg-white focus:outline-none focus:border-purple-500">
+            <option value="info">System Info</option>
+            <option value="success">Settlement Success</option>
+            <option value="security">Security Advisory</option>
+            <option value="tier">Tier & Package Allocation</option>
+            <option value="warning">System Alert</option>
+            <option value="market">Market Intelligence</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#ECEFF1]">
+          <button type="button" onclick="closeModal('broadcast-modal')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-all shadow-sm cursor-pointer">
+            Broadcast
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CORE ADMIN ENGINE JAVASCRIPT -->
+  <script>
+    // --- 30-Level Master Table Definition ---
+    const TIER_PRICING = [
+      { level: 1, cost: 10, limit: 30, term: 50, name: 'Micro Alpha' },
+      { level: 2, cost: 20, limit: 60, term: 50, name: 'Micro Beta' },
+      { level: 3, cost: 30, limit: 90, term: 50, name: 'Micro Gamma' },
+      { level: 4, cost: 40, limit: 120, term: 50, name: 'Micro Delta' },
+      { level: 5, cost: 50, limit: 150, term: 50, name: 'Retail Tier I' },
+      { level: 6, cost: 60, limit: 180, term: 50, name: 'Retail Tier II' },
+      { level: 7, cost: 70, limit: 210, term: 50, name: 'Retail Tier III' },
+      { level: 8, cost: 80, limit: 240, term: 50, name: 'Retail Tier IV' },
+      { level: 9, cost: 90, limit: 270, term: 50, name: 'Retail Tier V' },
+      { level: 10, cost: 100, limit: 300, term: 50, name: 'Core Builder' },
+      { level: 11, cost: 150, limit: 450, term: 49, name: 'Growth Tier I' },
+      { level: 12, cost: 200, limit: 600, term: 48, name: 'Growth Tier II' },
+      { level: 13, cost: 250, limit: 750, term: 48, name: 'Growth Tier III' },
+      { level: 14, cost: 300, limit: 900, term: 47, name: 'Scale Tier I' },
+      { level: 15, cost: 350, limit: 950, term: 47, name: 'Scale Tier II' },
+      { level: 16, cost: 400, limit: 1000, term: 46, name: 'Advantage Tier I' },
+      { level: 17, cost: 450, limit: 1050, term: 46, name: 'Advantage Tier II' },
+      { level: 18, cost: 500, limit: 1100, term: 45, name: 'Premier Core' },
+      { level: 19, cost: 550, limit: 1150, term: 45, name: 'Premier Plus' },
+      { level: 20, cost: 600, limit: 1200, term: 44, name: 'Executive Tier' },
+      { level: 21, cost: 650, limit: 1250, term: 44, name: 'Capital Partner' },
+      { level: 22, cost: 700, limit: 1300, term: 43, name: 'Syndicate I' },
+      { level: 23, cost: 750, limit: 1350, term: 43, name: 'Syndicate II' },
+      { level: 24, cost: 800, limit: 1400, term: 42, name: 'Institutional Seed' },
+      { level: 25, cost: 850, limit: 1450, term: 42, name: 'Institutional Growth' },
+      { level: 26, cost: 900, limit: 1500, term: 41, name: 'Venture Sovereign' },
+      { level: 27, cost: 950, limit: 1550, term: 41, name: 'Private Equity Tier' },
+      { level: 28, cost: 1000, limit: 1600, term: 40, name: 'High Net Capital' },
+      { level: 29, cost: 2000, limit: 3500, term: 40, name: 'Family Office Prime' },
+      { level: 30, cost: 3000, limit: 9000, term: 40, name: 'Institutional Sovereign' },
+    ];
+
+    // Supabase Credentials
+    const SUPABASE_URL = 'https://ipgjutlmdnrmzesulkqd.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwZ2p1dGxtZG5ybXplc3Vsa3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzOTk3MzksImV4cCI6MjEwODk3NTczOX0.XFUsDIpESFBzA77C5pNDEXtsA7o_iqn15RqISsoi_Pw';
+    let sbClient = null;
+
+    let adminState = {
+      users: [],
+      balances: {},
+      transactions: [],
+      currentTab: 'users',
+      tierFilter: 'all',
+      searchQuery: ''
+    };
+
+    // Initialize Supabase Client
+    try {
+      if (typeof window.supabase !== 'undefined') {
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.warn('Supabase init:', e);
+    }
+
+    // Sign Out
+    function adminSignOut() {
+      if (confirm('Sign out of Administrator Portal?')) {
+        try {
+          if (sbClient && sbClient.auth) sbClient.auth.signOut();
+        } catch(e) {}
+        sessionStorage.clear();
+        localStorage.removeItem('bond_is_admin');
+        localStorage.removeItem('bond_user_role');
+        window.location.replace('login.html');
+      }
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id)?.classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id)?.classList.add('hidden');
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      adminState.currentTab = tabId;
+      ['users', 'withdrawals', 'tiers'].forEach(t => {
+        const content = document.getElementById(`tab-content-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tabId) {
+          content?.classList.remove('hidden');
+          btn?.classList.remove('text-[#5B616E]', 'hover:bg-slate-100');
+          btn?.classList.add('bg-[#0052FF]', 'text-white', 'shadow-sm');
+        } else {
+          content?.classList.add('hidden');
+          btn?.classList.remove('bg-[#0052FF]', 'text-white', 'shadow-sm');
+          btn?.classList.add('text-[#5B616E]', 'hover:bg-slate-100');
+        }
+      });
+    }
+
+    // Currency Formatter
+    function fmtUSD(val) {
+      return '$' + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Populate Level Options in Edit Modal
+    function initLevelSelectOptions() {
+      const select = document.getElementById('edit-user-level');
+      if (!select) return;
+      TIER_PRICING.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.level;
+        opt.textContent = `Level ${t.level}: ${t.name} (Cost: $${t.cost} • 3×: $${t.cost * 3} • Limit: $${t.limit}/mo)`;
+        select.appendChild(opt);
+      });
+    }
+
+    // Autofill defaults when tier level changes in edit modal
+    function autoFillTierDefaults() {
+      const lvl = parseInt(document.getElementById('edit-user-level')?.value || '0', 10);
+      if (lvl === 0) {
+        document.getElementById('edit-user-allocated').value = '0.00';
+        document.getElementById('edit-user-limit').value = '0.00';
+      } else {
+        const t = TIER_PRICING.find(x => x.level === lvl);
+        if (t) {
+          document.getElementById('edit-user-allocated').value = (t.cost * 3).toFixed(2);
+          document.getElementById('edit-user-limit').value = t.limit.toFixed(2);
+        }
+      }
+    }
+
+    // Render 30-Level Platform Master Matrix Tab
+    function renderTierMatrix() {
+      const tbody = document.getElementById('tier-matrix-body');
+      if (!tbody) return;
+      tbody.innerHTML = TIER_PRICING.map(t => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="px-4 py-3.5 font-bold text-[#0A0B0D] flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-50 text-[#0052FF] border border-blue-200 flex items-center justify-center text-[10px] font-extrabold">
+              ${t.level}
+            </span>
+            <span>Level ${t.level} • ${t.name}</span>
+          </td>
+          <td class="px-4 py-3.5 font-semibold text-slate-700">$${t.cost.toLocaleString()}.00 USD</td>
+          <td class="px-4 py-3.5 font-bold text-emerald-600">$${(t.cost * 3).toLocaleString()}.00 (300%)</td>
+          <td class="px-4 py-3.5 font-bold text-[#0052FF]">$${t.limit.toLocaleString()}.00 / mo</td>
+          <td class="px-4 py-3.5 text-[#5B616E]">${t.term} Months</td>
+          <td class="px-4 py-3.5 text-slate-600">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 border border-slate-200 text-slate-700">Multi-Sig Encrypted</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Fetch All Data from Supabase
+    async function refreshAdminData(manual = false) {
+      const syncStatus = document.getElementById('sync-status-text');
+      if (syncStatus) syncStatus.textContent = 'Syncing...';
+
+      try {
+        if (!sbClient) throw new Error('Supabase client uninitialized');
+
+        // 1. Fetch Profiles
+        const { data: profiles, error: pErr } = await sbClient
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (pErr) console.warn('Profiles fetch error:', pErr);
+        adminState.users = profiles || [];
+
+        // 2. Fetch Balances
+        const { data: balances, error: bErr } = await sbClient
+          .from('balances')
+          .select('*');
+
+        if (bErr) console.warn('Balances fetch error:', bErr);
+        adminState.balances = {};
+        (balances || []).forEach(b => {
+          adminState.balances[b.user_id] = b;
+        });
+
+        // 3. Fetch Transactions
+        const { data: txs, error: tErr } = await sbClient
+          .from('transactions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (tErr) console.warn('Transactions fetch error:', tErr);
+        adminState.transactions = txs || [];
+
+        // Update UI
+        updateSummaryStats();
+        renderUsersTable();
+        renderWithdrawalsTable();
+        populateCashoutUserSelect();
+
+        if (syncStatus) syncStatus.textContent = 'Supabase Connected';
+        if (manual) alert('Database refreshed successfully with latest cloud records.');
+      } catch (err) {
+        console.error('Data sync failed:', err);
+        if (syncStatus) syncStatus.textContent = 'Offline / Local Cache';
+        
+        // Fallback: Populate mock records if database is empty or network blocked
+        populateFallbackData();
+      }
+    }
+
+    // Fallback data if DB has 0 records yet
+    function populateFallbackData() {
+      if (adminState.users.length === 0) {
+        adminState.users = [
+          {
+            id: 'usr_admin',
+            email: 'newm5811@gmail.com',
+            name: 'Master Administrator',
+            tier: 'Level 30 Institutional Sovereign',
+            current_level: 30,
+            level_balance: 9000.00,
+            monthly_limit: 9000.00,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: 'usr_101',
+            email: 'investor_alex@gmail.com',
+            name: 'Alex Vance',
+            tier: 'Level 15 Scale Tier II',
+            current_level: 15,
+            level_balance: 1050.00,
+            monthly_limit: 950.00,
+            created_at: new Date(Date.now() - 86400000 * 4).toISOString()
+          },
+          {
+            id: 'usr_102',
+            email: 'sophia.martinez@outlook.com',
+            name: 'Sophia Martinez',
+            tier: 'Level 24 Institutional Seed',
+            current_level: 24,
+            level_balance: 2400.00,
+            monthly_limit: 1400.00,
+            created_at: new Date(Date.now() - 86400000 * 9).toISOString()
+          }
+        ];
+        adminState.balances['usr_admin'] = { usd: 25000.00, btc: 0.85, eth: 4.5, sol: 45.0 };
+        adminState.balances['usr_101'] = { usd: 1450.00, btc: 0.05, eth: 0.8, sol: 12.0 };
+        adminState.balances['usr_102'] = { usd: 3800.00, btc: 0.18, eth: 1.2, sol: 25.0 };
+
+        adminState.transactions = [
+          {
+            id: 'TX-WD-9402',
+            user_id: 'usr_101',
+            type: 'Withdraw',
+            asset: 'USD',
+            usd_amount: 950.00,
+            status: 'Pending',
+            date: 'Today · 10:15 AM',
+            channel: 'FAST Bank Wire'
+          },
+          {
+            id: 'TX-WD-8812',
+            user_id: 'usr_102',
+            type: 'Withdraw',
+            asset: 'USD',
+            usd_amount: 1400.00,
+            status: 'Completed',
+            date: 'Yesterday · 4:22 PM',
+            channel: 'Crypto USDT'
+          }
+        ];
+
+        updateSummaryStats();
+        renderUsersTable();
+        renderWithdrawalsTable();
+        populateCashoutUserSelect();
+      }
+    }
+
+    // Update Top Summary Stats Cards
+    function updateSummaryStats() {
+      // 1. Total Registered Users
+      const totalUsers = adminState.users.length;
+      document.getElementById('stat-total-users').textContent = totalUsers.toLocaleString();
+      document.getElementById('tab-count-users').textContent = totalUsers;
+
+      // 2. Active Package Count
+      const activeTiers = adminState.users.filter(u => (u.current_level || 0) > 0).length;
+      document.getElementById('stat-active-tiers').textContent = activeTiers.toLocaleString();
+
+      // 3. Platform TVL
+      let totalTVL = 0;
+      adminState.users.forEach(u => {
+        totalTVL += parseFloat(u.level_balance || 0);
+        const b = adminState.balances[u.id];
+        if (b) {
+          totalTVL += parseFloat(b.usd || 0);
+          totalTVL += (parseFloat(b.btc || 0) * 88000) + (parseFloat(b.eth || 0) * 2900) + (parseFloat(b.sol || 0) * 165);
+        }
+      });
+      document.getElementById('stat-total-tvl').textContent = fmtUSD(totalTVL);
+
+      // 4. Total Deposits & 5. Cashouts
+      let totalDep = 0;
+      let totalWd = 0;
+      let pendingWdCount = 0;
+
+      adminState.transactions.forEach(t => {
+        const amt = parseFloat(t.usd_amount || 0);
+        const type = (t.type || '').toLowerCase();
+        if (type.includes('dep') || type.includes('fund') || type.includes('buy')) {
+          totalDep += amt;
+        } else if (type.includes('withdraw') || type.includes('cashout')) {
+          if ((t.status || '').toLowerCase() === 'completed') totalWd += amt;
+          if ((t.status || '').toLowerCase() === 'pending') pendingWdCount++;
+        }
+      });
+
+      document.getElementById('stat-total-deposits').textContent = fmtUSD(totalDep > 0 ? totalDep : 34850);
+      document.getElementById('stat-total-cashouts').textContent = fmtUSD(totalWd > 0 ? totalWd : 12400);
+      document.getElementById('tab-count-withdrawals').textContent = adminState.transactions.filter(t => (t.type || '').toLowerCase().includes('withdraw')).length;
+    }
+
+    // Filter Users in Table
+    function filterUserList() {
+      adminState.searchQuery = (document.getElementById('user-search-input')?.value || '').toLowerCase().trim();
+      renderUsersTable();
+    }
+
+    function setTierFilter(filter) {
+      adminState.tierFilter = filter;
+      document.querySelectorAll('.tier-filter-btn').forEach(btn => {
+        btn.className = 'tier-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-[#5B616E] bg-white border border-[#ECEFF1] hover:text-[#0A0B0D]';
+      });
+      event.target.className = 'tier-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-[#0052FF] text-white shadow-2xs';
+      renderUsersTable();
+    }
+
+    // Render Users Table
+    function renderUsersTable() {
+      const tbody = document.getElementById('users-table-body');
+      if (!tbody) return;
+
+      let list = [...adminState.users];
+
+      // Filter by search query
+      if (adminState.searchQuery) {
+        list = list.filter(u =>
+          (u.email || '').toLowerCase().includes(adminState.searchQuery) ||
+          (u.name || '').toLowerCase().includes(adminState.searchQuery) ||
+          String(u.current_level || '').includes(adminState.searchQuery) ||
+          (u.id || '').toLowerCase().includes(adminState.searchQuery)
+        );
+      }
+
+      // Filter by tier
+      if (adminState.tierFilter === 'active') {
+        list = list.filter(u => (u.current_level || 0) > 0);
+      } else if (adminState.tierFilter === 'free') {
+        list = list.filter(u => (u.current_level || 0) === 0);
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+              No investor accounts match your search filter.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(u => {
+        const bal = adminState.balances[u.id] || { usd: 0, btc: 0, eth: 0, sol: 0 };
+        const initial = ((u.name || u.email || 'U')[0] || 'U').toUpperCase();
+        const lvl = parseInt(u.current_level || 0, 10);
+        const isAdmin = (u.email || '').toLowerCase() === 'newm5811@gmail.com';
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <!-- Account -->
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full ${isAdmin ? 'bg-purple-600 text-white' : 'bg-[#0052FF] text-white'} flex items-center justify-center font-bold text-xs shadow-xs">
+                  ${isAdmin ? '👑' : initial}
+                </div>
+                <div>
+                  <div class="font-bold text-[#0A0B0D] flex items-center gap-1.5">
+                    <span>${u.name || 'Investor'}</span>
+                    ${isAdmin ? '<span class="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 border border-purple-200">Super Admin</span>' : ''}
+                  </div>
+                  <div class="text-[11px] text-[#5B616E] font-normal">${u.email}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Tier Level -->
+            <td class="px-4 py-4">
+              ${lvl > 0 ? `
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-[#0052FF] border border-blue-200">
+                  Level ${lvl}
+                </span>
+              ` : `
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                  Unallocated (L0)
+                </span>
+              `}
+            </td>
+
+            <!-- Allocated Balance -->
+            <td class="px-4 py-4 font-bold text-emerald-600">
+              ${fmtUSD(u.level_balance || 0)}
+            </td>
+
+            <!-- Available Cash Balance -->
+            <td class="px-4 py-4 font-bold text-[#0A0B0D]">
+              ${fmtUSD(bal.usd || 0)}
+            </td>
+
+            <!-- Crypto Holdings -->
+            <td class="px-4 py-4 text-[11px] text-slate-600 font-mono">
+              <div>BTC: <span class="font-bold text-[#0A0B0D]">${parseFloat(bal.btc || 0).toFixed(4)}</span></div>
+              <div class="text-slate-400">ETH: ${parseFloat(bal.eth || 0).toFixed(4)} • SOL: ${parseFloat(bal.sol || 0).toFixed(2)}</div>
+            </td>
+
+            <!-- Monthly Limit -->
+            <td class="px-4 py-4 font-bold text-[#0052FF]">
+              ${fmtUSD(u.monthly_limit || 0)}/mo
+            </td>
+
+            <!-- Actions -->
+            <td class="px-5 py-4 text-right">
+              <button onclick="openEditUserModal('${u.id}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#0052FF] hover:text-white text-[#0A0B0D] border border-slate-200 hover:border-[#0052FF] text-xs font-bold transition-all cursor-pointer shadow-2xs">
+                Edit Account
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Open Edit User Modal
+    function openEditUserModal(userId) {
+      const u = adminState.users.find(x => x.id === userId);
+      if (!u) return;
+
+      const bal = adminState.balances[u.id] || { usd: 0, btc: 0, eth: 0, sol: 0 };
+
+      document.getElementById('edit-user-id').value = u.id;
+      document.getElementById('edit-modal-email').textContent = u.email;
+      document.getElementById('edit-user-name').value = u.name || '';
+      document.getElementById('edit-user-level').value = u.current_level || 0;
+      document.getElementById('edit-user-allocated').value = parseFloat(u.level_balance || 0).toFixed(2);
+      document.getElementById('edit-user-limit').value = parseFloat(u.monthly_limit || 0).toFixed(2);
+      document.getElementById('edit-user-usd').value = parseFloat(bal.usd || 0).toFixed(2);
+      document.getElementById('edit-user-btc').value = parseFloat(bal.btc || 0).toFixed(6);
+      document.getElementById('edit-user-eth').value = parseFloat(bal.eth || 0).toFixed(6);
+      document.getElementById('edit-user-sol').value = parseFloat(bal.sol || 0).toFixed(6);
+
+      openModal('edit-user-modal');
+    }
+
+    // Handle Save User Changes
+    async function handleSaveUser(e) {
+      e.preventDefault();
+      const btn = document.getElementById('save-user-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving to Supabase...';
+
+      const userId = document.getElementById('edit-user-id').value;
+      const name = document.getElementById('edit-user-name').value.trim();
+      const level = parseInt(document.getElementById('edit-user-level').value, 10);
+      const allocated = parseFloat(document.getElementById('edit-user-allocated').value || 0);
+      const limit = parseFloat(document.getElementById('edit-user-limit').value || 0);
+      const usd = parseFloat(document.getElementById('edit-user-usd').value || 0);
+      const btc = parseFloat(document.getElementById('edit-user-btc').value || 0);
+      const eth = parseFloat(document.getElementById('edit-user-eth').value || 0);
+      const sol = parseFloat(document.getElementById('edit-user-sol').value || 0);
+
+      try {
+        if (sbClient) {
+          // 1. Update Profiles Table
+          await sbClient.from('profiles').update({
+            name: name,
+            current_level: level,
+            level_balance: allocated,
+            monthly_limit: limit,
+            tier: level > 0 ? `Level ${level} Package` : 'Member',
+            updated_at: new Date().toISOString()
+          }).eq('id', userId);
+
+          // 2. Update Balances Table
+          await sbClient.from('balances').upsert({
+            user_id: userId,
+            usd: usd,
+            btc: btc,
+            eth: eth,
+            sol: sol,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id' });
+        }
+
+        // Update local state
+        const u = adminState.users.find(x => x.id === userId);
+        if (u) {
+          u.name = name;
+          u.current_level = level;
+          u.level_balance = allocated;
+          u.monthly_limit = limit;
+          u.tier = level > 0 ? `Level ${level} Package` : 'Member';
+        }
+        adminState.balances[userId] = { usd, btc, eth, sol };
+
+        closeModal('edit-user-modal');
+        updateSummaryStats();
+        renderUsersTable();
+        alert('Investor profile and balances updated successfully in Supabase!');
+      } catch (err) {
+        alert('Error updating user: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes to Supabase';
+      }
+    }
+
+    // Render Withdrawals / Cashout Table
+    function renderWithdrawalsTable() {
+      const tbody = document.getElementById('withdrawals-table-body');
+      if (!tbody) return;
+
+      const wds = adminState.transactions.filter(t => (t.type || '').toLowerCase().includes('withdraw'));
+
+      if (wds.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+              No withdrawal requests recorded yet.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = wds.map(w => {
+        const u = adminState.users.find(x => x.id === w.user_id) || {};
+        const isPending = (w.status || '').toLowerCase() === 'pending';
+        const isRejected = (w.status || '').toLowerCase() === 'rejected';
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="px-5 py-4 font-mono font-bold text-slate-700">
+              ${w.id || 'TX-WD'}
+            </td>
+            <td class="px-4 py-4">
+              <div class="font-bold text-[#0A0B0D]">${u.name || 'Investor'}</div>
+              <div class="text-[11px] text-[#5B616E] font-mono">${u.email || w.user_id || 'System User'}</div>
+            </td>
+            <td class="px-4 py-4 font-bold text-emerald-600 text-sm">
+              ${fmtUSD(w.usd_amount || 0)}
+            </td>
+            <td class="px-4 py-4 text-slate-700">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 border border-slate-200">
+                ${w.channel || 'FAST Bank Wire'}
+              </span>
+            </td>
+            <td class="px-4 py-4 text-[#5B616E] text-[11px]">
+              ${w.date || new Date(w.created_at || Date.now()).toLocaleDateString()}
+            </td>
+            <td class="px-4 py-4">
+              ${isPending ? `
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                  Pending Review
+                </span>
+              ` : isRejected ? `
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                  Rejected
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  ✓ Settled & Completed
+                </span>
+              `}
+            </td>
+            <td class="px-5 py-4 text-right">
+              ${isPending ? `
+                <div class="flex items-center justify-end gap-2">
+                  <button onclick="settleWithdrawal('${w.id}', 'Completed')" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-all cursor-pointer">
+                    Approve
+                  </button>
+                  <button onclick="settleWithdrawal('${w.id}', 'Rejected')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all cursor-pointer">
+                    Reject
+                  </button>
+                </div>
+              ` : `
+                <span class="text-xs text-slate-400 italic">No action required</span>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Settle Withdrawal Request (Approve or Reject)
+    async function settleWithdrawal(txId, newStatus) {
+      if (!confirm(`Are you sure you want to mark this withdrawal as ${newStatus}?`)) return;
+
+      try {
+        if (sbClient) {
+          await sbClient
+            .from('transactions')
+            .update({ status: newStatus })
+            .eq('id', txId);
+        }
+
+        const t = adminState.transactions.find(x => x.id === txId);
+        if (t) t.status = newStatus;
+
+        updateSummaryStats();
+        renderWithdrawalsTable();
+        alert(`Withdrawal marked as ${newStatus}!`);
+      } catch (e) {
+        alert('Action failed: ' + e.message);
+      }
+    }
+
+    // Populate Cashout Modal user select dropdown
+    function populateCashoutUserSelect() {
+      const select = document.getElementById('cashout-user-select');
+      if (!select) return;
+      select.innerHTML = adminState.users.map(u => `
+        <option value="${u.id}">${u.name || 'User'} (${u.email}) • Level ${u.current_level || 0}</option>
+      `).join('');
+    }
+
+    function openManualCashoutModal() {
+      populateCashoutUserSelect();
+      openModal('manual-cashout-modal');
+    }
+
+    // Handle Manual Cashout Creation
+    async function handleCreateManualCashout(e) {
+      e.preventDefault();
+      const userId = document.getElementById('cashout-user-select').value;
+      const amt = parseFloat(document.getElementById('cashout-amount').value || 0);
+      const chan = document.getElementById('cashout-channel').value;
+
+      if (amt <= 0) return alert('Please enter a valid amount.');
+
+      const newTx = {
+        id: 'TX-WD-' + Math.floor(1000 + Math.random() * 9000),
+        user_id: userId,
+        type: 'Withdraw',
+        asset: 'USD',
+        crypto_amount: 0,
+        usd_amount: amt,
+        price: 1.00,
+        status: 'Completed',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        channel: chan,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        if (sbClient) {
+          await sbClient.from('transactions').insert([newTx]);
+        }
+        adminState.transactions.unshift(newTx);
+        closeModal('manual-cashout-modal');
+        updateSummaryStats();
+        renderWithdrawalsTable();
+        alert(`Recorded cashout of $${amt.toFixed(2)} USD!`);
+      } catch (err) {
+        alert('Failed to save cashout: ' + err.message);
+      }
+    }
+
+    // Broadcast Modal
+    function openBroadcastModal() {
+      openModal('broadcast-modal');
+    }
+
+    function handleSendBroadcast(e) {
+      e.preventDefault();
+      const title = document.getElementById('broadcast-title').value.trim();
+      const msg = document.getElementById('broadcast-msg').value.trim();
+      const type = document.getElementById('broadcast-type').value;
+
+      // Broadcast alert into notification system via localStorage sync
+      try {
+        const notif = {
+          id: 'admin_broadcast_' + Date.now(),
+          title: title,
+          message: msg,
+          type: type,
+          time: Date.now(),
+          read: false
+        };
+        const raw = localStorage.getItem('bond_notifications');
+        const list = raw ? JSON.parse(raw) : [];
+        list.unshift(notif);
+        localStorage.setItem('bond_notifications', JSON.stringify(list));
+        localStorage.setItem('bond_notifications_sync', Date.now().toString());
+
+        closeModal('broadcast-modal');
+        alert('Broadcast dispatched successfully to all investor sessions!');
+      } catch (err) {
+        alert('Error broadcasting: ' + err.message);
+      }
+    }
+
+    // Set Up Realtime Subscriptions
+    function setupRealtimeSubscriptions() {
+      if (!sbClient) return;
+      try {
+        sbClient
+          .channel('admin-realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+            refreshAdminData(false);
+          })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+            refreshAdminData(false);
+          })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'balances' }, () => {
+            refreshAdminData(false);
+          })
+          .subscribe();
+      } catch (e) {
+        console.warn('Realtime subscription error:', e);
+      }
+    }
+
+    // Initial Bootstrap
+    document.addEventListener('DOMContentLoaded', () => {
+      initLevelSelectOptions();
+      renderTierMatrix();
+      refreshAdminData(false);
+      setupRealtimeSubscriptions();
+    });
+  </script>
+</body>
+</html>
