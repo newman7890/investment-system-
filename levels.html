@@ -193,10 +193,12 @@
               <span id="active-tier-badge" class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold">Level 1 Package</span>
             </div>
             <div class="text-3xl font-extrabold tracking-tight mb-1" id="active-level-title">Level 1 Active</div>
-            <p class="text-blue-100 text-xs mb-4">Purchase Price: <b id="active-purchase-cost">$500.00 USD</b></p>
+            <p class="text-blue-100 text-xs mb-2">Purchase Price: <b id="active-purchase-cost">$500.00 USD</b></p>
+            <div class="text-[11px] text-blue-200/90 font-mono mb-3" id="levels-active-contract">Contract: BOND-PKG-L1-84920</div>
           </div>
           <div class="pt-4 border-t border-white/20 flex justify-between items-center text-xs">
-            <span class="text-blue-100">Package Status</span>
+            <span class="text-blue-100">Next Scheduled Payout:</span>
+            <span class="font-mono font-bold text-amber-300 package-countdown-clock" id="levels-card-countdown">Calculating...</span>
           </div>
         </div>
 
@@ -227,8 +229,9 @@
             <p class="text-xs text-[#5B616E]">Maximum withdrawable cash per 30-day payout window.</p>
           </div>
           <div class="pt-4 border-t border-[#ECEFF1]">
-            <button onclick="requestTierWithdrawal()" class="w-full py-2.5 bg-[#0052FF] hover:bg-[#0045D8] active:scale-[0.99] text-white font-bold text-xs rounded-full transition-all shadow-sm">
-              Request Monthly Withdrawal
+            <button onclick="requestTierWithdrawal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs rounded-full transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Claim Monthly Allowance</span>
             </button>
           </div>
         </div>
@@ -273,7 +276,7 @@
 
 <!-- Modal Framework & SDKs -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js"></script>
+<script src="bondcapital-app.js?v=package_realtime_v3"></script>
 
 <script>
   // Complete 30-Level Specification Matrix
@@ -364,19 +367,41 @@
     openPackageAllocationModal(item);
   }
 
+    let selectedPaymentMethod = 'card';
+
+  function switchPackagePaymentMethod(method) {
+    selectedPaymentMethod = method;
+    const tabCash = document.getElementById('pkg-paytab-cash');
+    const tabCard = document.getElementById('pkg-paytab-card');
+    const paneCash = document.getElementById('pkg-paypane-cash');
+    const paneCard = document.getElementById('pkg-paypane-card');
+
+    if (method === 'cash') {
+      if (tabCash) { tabCash.className = 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer'; }
+      if (tabCard) { tabCard.className = 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'; }
+      if (paneCash) paneCash.style.display = 'block';
+      if (paneCard) paneCard.style.display = 'none';
+    } else {
+      if (tabCard) { tabCard.className = 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer'; }
+      if (tabCash) { tabCash.className = 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'; }
+      if (paneCard) paneCard.style.display = 'block';
+      if (paneCash) paneCash.style.display = 'none';
+    }
+  }
+
   function openPackageAllocationModal(item) {
     const existing = document.getElementById('package-allocation-modal');
     if (existing) existing.remove();
 
     const cash = (typeof window.getAvailableCashBalance === 'function') ? window.getAvailableCashBalance() : 0;
-    const hasEnough = cash >= item.purchase;
-    const diff = item.purchase - cash;
+    const hasEnoughCash = cash >= item.purchase;
+    selectedPaymentMethod = hasEnoughCash ? 'cash' : 'card';
 
     const modal = document.createElement('div');
     modal.id = 'package-allocation-modal';
-    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200 overflow-y-auto';
     modal.innerHTML = `
-      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative transform transition-all scale-100 animate-in fade-in zoom-in-95 duration-200">
+      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-6">
         <!-- Close Button -->
         <button onclick="closePackageAllocationModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer">
           <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -385,7 +410,7 @@
         </button>
 
         <!-- Header -->
-        <div class="flex items-center gap-3.5 mb-6">
+        <div class="flex items-center gap-3.5 mb-5">
           <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0052FF] shrink-0 shadow-2xs">
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -394,74 +419,93 @@
           </div>
           <div>
             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0052FF] font-bold text-[10px] tracking-wider uppercase mb-1">
-              Tier Capital Allocation
+              Institutional Tier Activation
             </div>
-            <h3 class="text-xl font-bold text-slate-900">Authorize Package Allocation</h3>
+            <h3 class="text-xl font-bold text-slate-900">Authorize Level ${item.level} Contract</h3>
           </div>
         </div>
 
-        <!-- Package Details Grid -->
-        <div class="bg-slate-50/80 rounded-2xl p-5 border border-slate-200/80 mb-5 space-y-3.5 text-sm">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200/60">
+        <!-- Contract Details Card -->
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-5 space-y-2.5 text-xs">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
             <span class="text-slate-500 font-medium">Selected Tier</span>
-            <div class="text-right">
-              <span class="font-bold text-slate-900">Level ${item.level} Package</span>
-              <span class="ml-2 px-2 py-0.5 rounded-md bg-blue-100 text-[#0052FF] font-bold text-xs">Tier ${item.level} of 30</span>
+            <span class="font-bold text-slate-900">Level ${item.level} Package (Tier ${item.level} of 30)</span>
+          </div>
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
+            <span class="text-slate-500 font-medium">Purchase Price</span>
+            <span class="font-extrabold text-slate-900 text-sm">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+          </div>
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500 font-medium">Allocated Credit</span>
+              <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">300% Multiplier Match</span>
             </div>
-          </div>
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200/60">
-            <span class="text-slate-500 font-medium">Package Cost</span>
-            <span class="font-extrabold text-slate-900 text-base">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
-          </div>
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200/60">
-            <div>
-              <span class="text-slate-500 font-medium block">Allocated Dashboard Credit</span>
-              <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded inline-block">300% (3×) Capital Match</span>
-            </div>
-            <span class="font-extrabold text-[#0052FF] text-lg">$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
-          </div>
-          <div class="flex items-center justify-between pb-3 border-b border-slate-200/60">
-            <span class="text-slate-500 font-medium">Monthly Cash Allowance</span>
-            <span class="font-bold text-emerald-600">$${item.limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / mo</span>
+            <span class="font-extrabold text-[#0052FF] text-sm">$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-slate-500 font-medium">Your Available Cash Balance</span>
-            <span class="font-bold font-mono ${hasEnough ? 'text-emerald-600' : 'text-amber-600'}">$${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+            <span class="text-slate-500 font-medium">30-Day Scheduled Cashflow</span>
+            <span class="font-bold text-emerald-600">$${item.limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / month</span>
           </div>
         </div>
 
-        ${!hasEnough ? `
-        <!-- Insufficient Balance Stripe Callout -->
-        <div class="p-4 rounded-2xl bg-blue-50 border border-blue-100 flex items-start gap-3 mb-6 text-xs text-blue-900">
-          <div class="w-8 h-8 rounded-lg bg-[#0052FF] text-white flex items-center justify-center shrink-0 mt-0.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <!-- Payment Method Tabs (CARD & CASH ONLY - ZERO CRYPTO) -->
+        <div class="mb-4">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Select Payment Method</label>
+          <div class="flex gap-2.5 mb-3">
+            <button id="pkg-paytab-card" type="button" onclick="switchPackagePaymentMethod('card')" class="${selectedPaymentMethod === 'card' ? 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer' : 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <span>Instant Card (Stripe)</span>
+            </button>
+            <button id="pkg-paytab-cash" type="button" onclick="switchPackagePaymentMethod('cash')" class="${selectedPaymentMethod === 'cash' ? 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer' : 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              <span>Cash Wallet ($${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
+            </button>
           </div>
-          <div>
-            <div class="font-bold text-sm text-[#0A0B0D]">Deposit Required via Stripe</div>
-            <div class="text-slate-600 mt-0.5 leading-relaxed">You need $${diff.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD more in your available cash balance to purchase this tier. Deposit securely via Stripe to activate.</div>
+
+          <!-- CARD PAYMENT FORM -->
+          <div id="pkg-paypane-card" style="display:${selectedPaymentMethod === 'card' ? 'block' : 'none'};">
+            <div class="border border-slate-200 rounded-2xl p-4 bg-white space-y-3 mb-3">
+              <div class="flex justify-between items-center text-[11px]">
+                <span class="font-bold text-slate-600 uppercase">Card Information</span>
+                <span class="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">VISA &middot; MC &middot; AMEX</span>
+              </div>
+              <input id="pkg-card-number" type="text" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
+              <div class="flex gap-2">
+                <input id="pkg-card-exp" type="text" placeholder="12/28" value="12/28" class="w-1/2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
+                <input id="pkg-card-cvc" type="text" placeholder="342" value="342" class="w-1/2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
+              </div>
+              <input id="pkg-card-name" type="text" placeholder="Cardholder Name" value="Institutional Investor" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
+              <div class="flex items-center gap-1.5 text-[10px] text-slate-500">
+                <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1a4.002 4.002 0 00-3.874 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1.126A4.002 4.002 0 0010 1zm2 5V5a2 2 0 10-4 0v1h4zm-2 5a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                <span>256-bit SSL Protected &middot; Certified Stripe PCI-DSS Level 1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CASH WALLET FORM -->
+          <div id="pkg-paypane-cash" style="display:${selectedPaymentMethod === 'cash' ? 'block' : 'none'};">
+            ${hasEnoughCash ? `
+            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-2.5 mb-3 text-xs text-emerald-800 font-medium">
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD will be deducted instantly from your Available Cash Balance.</span>
+            </div>
+            ` : `
+            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-100 text-xs text-amber-900 mb-3">
+              <div class="font-bold">Insufficient Cash Balance</div>
+              <div class="text-[11px] text-amber-800 mt-0.5">Your cash balance is $${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD. Please switch to the <b>Instant Card</b> tab above to pay with card.</div>
+            </div>
+            `}
           </div>
         </div>
-        ` : `
-        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-2.5 mb-6 text-xs text-emerald-800 font-medium">
-          <svg class="w-4 h-4 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-          <span>Sufficient cash balance available. $${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD will be deducted upon confirmation.</span>
-        </div>
-        `}
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-3">
           <button onclick="closePackageAllocationModal()" type="button" class="py-3 px-5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm cursor-pointer">
             Cancel
           </button>
-          ${hasEnough ? `
           <button id="btn-confirm-provision" onclick="confirmPackageProvision(${item.level})" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-sm flex items-center justify-center cursor-pointer">
-            <span>Pay $${item.purchase.toLocaleString()} & Activate</span>
+            <span>Authorize &middot; Pay $${item.purchase.toLocaleString()} & Activate</span>
           </button>
-          ` : `
-          <button onclick="closePackageAllocationModal(); openStripeDepositModal(${diff > 0 ? Math.ceil(diff) : item.purchase}, () => openPackageAllocationModal(LEVEL_SCHEDULE.find(x => x.level === ${item.level})))" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-sm flex items-center justify-center cursor-pointer">
-            <span>Deposit $${diff.toLocaleString()} to Activate</span>
-          </button>
-          `}
         </div>
       </div>
     `;
@@ -480,82 +524,38 @@
 
     const btn = document.getElementById('btn-confirm-provision');
     if (btn) {
-      btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Provisioning...`;
+      btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Provisioning Contract...`;
       btn.disabled = true;
     }
 
-    // Deduct purchase cost from Available Cash Balance
-    const cash = (typeof window.getAvailableCashBalance === 'function') ? window.getAvailableCashBalance() : 0;
-    if (cash >= item.purchase && typeof window.setAvailableCashBalance === 'function') {
-      window.setAvailableCashBalance(cash - item.purchase);
-    }
-
-    currentTierState = {
-      level: item.level,
-      allocatedBalance: item.balance,
-      monthlyLimit: item.limit,
-      purchaseCost: item.purchase
+    const cardDetails = {
+      number: document.getElementById('pkg-card-number')?.value || '4242 4242 4242 4242',
+      exp: document.getElementById('pkg-card-exp')?.value || '12/28',
+      cvc: document.getElementById('pkg-card-cvc')?.value || '342',
+      name: document.getElementById('pkg-card-name')?.value || 'Institutional Investor'
     };
 
-    updateActiveDisplay();
-    renderLevelsTable(LEVEL_SCHEDULE);
+    let result = { success: true };
+    if (typeof window.provisionPackageContract === 'function') {
+      result = await window.provisionPackageContract(lvl, selectedPaymentMethod, cardDetails);
+    }
 
-
-
-    // Persist directly to Supabase cloud
-    if (window.__supabase) {
-      try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
-        await window.__supabase.from('profiles').upsert([{
-          id: user_id,
-          tier: `Level ${item.level} Verified`,
-          current_level: item.level,
-          level_balance: item.balance,
-          monthly_limit: item.limit,
-          updated_at: new Date().toISOString()
-        }]);
-        
-        await window.__supabase.from('transactions').insert([{
-          id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
-          user_id: user_id,
-          type: 'Package Purchase',
-          asset: 'USD',
-          usd_amount: item.purchase,
-          crypto_amount: 0,
-          price: 1.00,
-          status: 'Completed',
-          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-        }]);
-      } catch (e) {
-        console.warn('Supabase tier sync:', e);
+    if (result && result.success) {
+      currentTierState = {
+        level: item.level,
+        allocatedBalance: item.balance,
+        monthlyLimit: item.limit,
+        purchaseCost: item.purchase,
+        contractId: result.contractId || ('BOND-PKG-L' + item.level + '-' + (10482 + item.level * 137))
+      };
+      updateActiveDisplay();
+      renderLevelsTable(LEVEL_SCHEDULE);
+      closePackageAllocationModal();
+    } else {
+      if (btn) {
+        btn.innerHTML = `<span>Authorize &middot; Pay $${item.purchase.toLocaleString()} & Activate</span>`;
+        btn.disabled = false;
       }
-    }
-
-    closePackageAllocationModal();
-
-    showToast(
-      `Level ${item.level} Package Activated`,
-      `$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD credit provisioned with 300% (3×) multiplier match.`,
-      'tier'
-    );
-    if (typeof window.addNotification === 'function') {
-      window.addNotification(
-        `Level ${item.level} Package Activated`,
-        `$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD provisioned with 3× credit match. Monthly limit: $${item.limit.toLocaleString()}/mo.`,
-        'tier',
-        { silent: true }
-      );
-    }
-    if (typeof window.addTransaction === 'function') {
-      window.addTransaction({
-        type: `Level ${item.level} Package Activated`,
-        category: 'package',
-        asset: 'USD',
-        usdAmount: item.balance,
-        status: 'Completed',
-        direction: 'credit',
-        note: '3× Capital Credit Allocation'
-      });
     }
   }
 
@@ -719,6 +719,8 @@
       document.getElementById('active-tier-badge').textContent = `Level ${currentTierState.level} Package`;
       document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
       document.getElementById('active-purchase-cost').textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+      const contractEl = document.getElementById('levels-active-contract');
+      if (contractEl) contractEl.textContent = 'Contract: ' + (currentTierState.contractId || ('BOND-PKG-L' + currentTierState.level + '-84920'));
       document.getElementById('allocated-credit-balance').textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
       document.getElementById('monthly-limit-display').innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
     }

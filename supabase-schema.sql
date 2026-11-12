@@ -1,4 +1,4 @@
--- ==========================================================
+﻿-- ==========================================================
 -- BONDCAPITAL PRODUCTION HARDENED SCHEMA (SUPABASE POSTGRESQL)
 -- ==========================================================
 -- Run this in your Supabase Dashboard:
@@ -17,6 +17,14 @@ AS $$
 $$;
 
 -- 2. Profiles Table (User details, settings, tier, 30-level platform)
+
+-- Safe idempotent migrations for package contract lifecycle
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS purchase_cost NUMERIC(18, 2) DEFAULT 0.00;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS contract_id TEXT DEFAULT '';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS package_started_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS next_payout_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '30 days');
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS total_claimed NUMERIC(18, 2) DEFAULT 0.00;
+
 CREATE TABLE IF NOT EXISTS public.profiles (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -27,6 +35,11 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   current_level INT DEFAULT 0,
   level_balance NUMERIC(18, 2) DEFAULT 0.00,
   monthly_limit NUMERIC(18, 2) DEFAULT 0.00,
+  purchase_cost NUMERIC(18, 2) DEFAULT 0.00,
+  contract_id TEXT DEFAULT '',
+  package_started_at TIMESTAMPTZ DEFAULT NOW(),
+  next_payout_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '30 days'),
+  total_claimed NUMERIC(18, 2) DEFAULT 0.00,
   api_provider TEXT DEFAULT 'bondcapital',
   api_key TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
