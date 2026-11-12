@@ -654,7 +654,6 @@
   window.claimScheduledAllowance = async function (destType = 'cash') {
     const tier = getActiveTierInfo();
     if (!tier.level || tier.level <= 0 || tier.balance <= 0) {
-      showToast('No Available Allocation', 'You do not have any active package allocation remaining to claim.', 'warning');
       return;
     }
 

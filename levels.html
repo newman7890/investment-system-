@@ -229,9 +229,8 @@
             <p class="text-xs text-[#5B616E]">Maximum withdrawable cash per 30-day payout window.</p>
           </div>
           <div class="pt-4 border-t border-[#ECEFF1]">
-            <button onclick="requestTierWithdrawal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs rounded-full transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>Claim Monthly Allowance</span>
+            <button id="btn-request-allowance" onclick="requestTierWithdrawal()" class="w-full py-2.5 bg-slate-100 text-slate-400 font-bold text-xs rounded-full cursor-not-allowed flex items-center justify-center gap-2" disabled="disabled">
+              <span>No Active Package</span>
             </button>
           </div>
         </div>
@@ -276,7 +275,7 @@
 
 <!-- Modal Framework & SDKs -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js?v=package_strict_v5"></script>
+<script src="bondcapital-app.js?v=package_strict_v6"></script>
 
 <script>
   // Complete 30-Level Specification Matrix
@@ -546,7 +545,6 @@
 
   async function requestTierWithdrawal() {
     if (currentTierState.allocatedBalance <= 0 || !currentTierState.level || currentTierState.level === 0) {
-      showToast('Allocation Depleted', 'No active package allocation remaining to withdraw.', 'warning');
       return;
     }
 
@@ -694,6 +692,7 @@
   }
 
   function updateActiveDisplay() {
+    const btnAllowance = document.getElementById('btn-request-allowance');
     if (!currentTierState.level || currentTierState.level === 0) {
       const badge = document.getElementById('active-tier-badge');
       if (badge) badge.textContent = 'No Active Package';
@@ -709,14 +708,31 @@
       if (allocated) allocated.textContent = '$0.00';
       const limit = document.getElementById('monthly-limit-display');
       if (limit) limit.innerHTML = '$0.00 <span class="text-xs text-gray-500 font-normal">/ month</span>';
+
+      if (btnAllowance) {
+        btnAllowance.disabled = true;
+        btnAllowance.className = 'w-full py-2.5 bg-slate-100 text-slate-400 font-bold text-xs rounded-full cursor-not-allowed flex items-center justify-center gap-2';
+        btnAllowance.innerHTML = '<span>No Active Package</span>';
+      }
     } else {
-      document.getElementById('active-tier-badge').textContent = `Level ${currentTierState.level} Package`;
-      document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
-      document.getElementById('active-purchase-cost').textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+      const badge = document.getElementById('active-tier-badge');
+      if (badge) badge.textContent = `Level ${currentTierState.level} Package`;
+      const title = document.getElementById('active-level-title');
+      if (title) title.textContent = `Level ${currentTierState.level} Active`;
+      const cost = document.getElementById('active-purchase-cost');
+      if (cost) cost.textContent = `$${currentTierState.purchaseCost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
       const contractEl = document.getElementById('levels-active-contract');
       if (contractEl) contractEl.textContent = 'Contract: ' + (currentTierState.contractId || ('BOND-PKG-L' + currentTierState.level + '-84920'));
-      document.getElementById('allocated-credit-balance').textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-      document.getElementById('monthly-limit-display').innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
+      const allocated = document.getElementById('allocated-credit-balance');
+      if (allocated) allocated.textContent = `$${currentTierState.allocatedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      const limit = document.getElementById('monthly-limit-display');
+      if (limit) limit.innerHTML = `$${currentTierState.monthlyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span class="text-xs text-gray-500 font-normal">/ month</span>`;
+
+      if (btnAllowance) {
+        btnAllowance.disabled = false;
+        btnAllowance.className = 'w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs rounded-full transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer';
+        btnAllowance.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Claim Monthly Allowance</span>';
+      }
     }
     const cashEl = document.getElementById('levels-available-cash');
     if (cashEl && typeof window.getAvailableCashBalance === 'function') {

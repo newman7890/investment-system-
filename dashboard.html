@@ -443,7 +443,7 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js?v=package_strict_v5"></script>
+<script src="bondcapital-app.js?v=package_strict_v6"></script>
 
 <!-- Interactive Digital Product Viewer Modal -->
 <div id="product-viewer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -589,29 +589,8 @@
     // Initial render
     buildMarqueeDOM();
 
-    // Auto-feed fresh activity periodically (every 22 seconds)
-    setInterval(function() {
-      const pick = randomFeedPool[Math.floor(Math.random() * randomFeedPool.length)];
-      const amt = pick.amounts[Math.floor(Math.random() * pick.amounts.length)];
-      const chan = pick.channels[Math.floor(Math.random() * pick.channels.length)];
-      
-      // Shift timestamps
-      payoutQueue.forEach(function(p, idx) {
-        if (idx === 0) p.timeAgo = '1m ago';
-        else if (idx < 3) p.timeAgo = (idx + 1) + 'm ago';
-        else p.timeAgo = (idx * 2 + 3) + 'm ago';
-      });
-
-      payoutQueue.unshift({
-        user: pick.user,
-        amount: amt,
-        channel: chan,
-        timeAgo: 'Just now',
-        color: pick.color || 'from-blue-600 to-indigo-600'
-      });
-      if (payoutQueue.length > 16) payoutQueue.pop();
-      buildMarqueeDOM();
-    }, 22000);
+    // Auto-feed disabled: prototype automated feed stopped
+    // Real activity will appear when user completes transactions
   })();
 </script>
 
