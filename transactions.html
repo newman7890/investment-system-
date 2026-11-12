@@ -239,11 +239,11 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <p class="text-sm text-[#5B616E] font-medium mb-1">Total Portfolio Balance</p>
-        <h2 id="tx-portfolio-total" class="text-4xl font-bold tracking-tight text-[#0A0B0D]">$1,500.00</h2>
+        <h2 id="tx-portfolio-total" class="text-4xl font-bold tracking-tight text-[#0A0B0D]">$0.00</h2>
         <div class="flex items-center gap-2 mt-2">
-          <span id="tx-active-tag" class="inline-flex items-center gap-1 text-sm font-semibold text-[#0052FF]">
-            <span class="w-2 h-2 rounded-full bg-[#0052FF] animate-pulse"></span>
-            Level 1 Package Active
+          <span id="tx-active-tag" class="inline-flex items-center gap-1 text-sm font-semibold text-slate-500">
+            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+            No Active Package
           </span>
           <span class="text-xs text-[#5B616E] font-medium">• 3× Capital Credit</span>
         </div>
@@ -563,7 +563,7 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js"></script>
+<script src="bondcapital-app.js?v=package_strict_v5"></script>
 <script>
   // Dynamic sync with active package tier and real-time ledger
   function syncTierTransactions() {

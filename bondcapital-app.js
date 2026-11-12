@@ -232,12 +232,16 @@
         } catch (bEx) { console.warn('Balance init:', bEx); }
       }
 
-      // 3. Fetch Full Transaction History from public.transactions
-      const { data: txList } = await supabase
+      // 3. Fetch Full Transaction History from public.transactions (filtered by active user)
+      let txQuery = supabase
         .from('transactions')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
+      if (userId) {
+        txQuery = txQuery.eq('user_id', userId);
+      }
+      const { data: txList } = await txQuery;
 
       if (txList && txList.length > 0) {
         const liveFetched = txList.map(t => ({
@@ -744,7 +748,18 @@
     countdownTimerStarted = true;
     setInterval(function () {
       const tier = getActiveTierInfo();
-      if (!tier.level || tier.level <= 0) return;
+      if (!tier.level || tier.level <= 0) {
+        document.querySelectorAll('.package-countdown-clock, #home-card-countdown, #levels-card-countdown').forEach(function(el) {
+          el.textContent = 'No Active Schedule';
+        });
+        document.querySelectorAll('.package-maturity-progress-bar').forEach(function(el) {
+          el.style.width = '0%';
+        });
+        document.querySelectorAll('.package-maturity-pct').forEach(function(el) {
+          el.textContent = '0%';
+        });
+        return;
+      }
 
       let targetTime = null;
       if (tier.nextPayoutAt) {
@@ -2459,12 +2474,18 @@
   const TRANSACTIONS_STORAGE_KEY = 'bond_transactions';
 
   function getSeedTransactions() {
-    let lvl = 1;
+    let lvl = 0;
     try {
-      const stored = localStorage.getItem('bond_active_level');
-      if (stored) lvl = parseInt(stored, 10) || 1;
+      if (typeof getActiveTierInfo === 'function') {
+        lvl = getActiveTierInfo().level || 0;
+      } else {
+        const stored = localStorage.getItem('bond_active_level');
+        if (stored) lvl = parseInt(stored, 10) || 0;
+      }
     } catch (e) {}
-    const info = (window.BOND_LEVEL_MAP && window.BOND_LEVEL_MAP[lvl]) || { purchase: 500, balance: 1500, limit: 30 };
+    if (lvl <= 0) return [];
+    const info = (window.BOND_LEVEL_MAP && window.BOND_LEVEL_MAP[lvl]) || { purchase: 0, balance: 0, limit: 0 };
+    if (!info.balance) return [];
 
     return [
       {
@@ -3483,17 +3504,19 @@
       }
     }
 
-    const r1Title = document.getElementById('tx-row1-title');
-    if (r1Title) r1Title.textContent = `Level ${lvl} Package Activated`;
+    if (lvl > 0) {
+      const r1Title = document.getElementById('tx-row1-title');
+      if (r1Title) r1Title.textContent = `Level ${lvl} Package Activated`;
 
-    const r1Amt = document.getElementById('tx-row1-amount');
-    if (r1Amt) r1Amt.textContent = '+$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const r1Amt = document.getElementById('tx-row1-amount');
+      if (r1Amt) r1Amt.textContent = '+$' + bal.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-    const r4Title = document.getElementById('tx-row4-title');
-    if (r4Title) r4Title.textContent = `Level ${lvl} Package Funding Deposit`;
+      const r4Title = document.getElementById('tx-row4-title');
+      if (r4Title) r4Title.textContent = `Level ${lvl} Package Funding Deposit`;
 
-    const r4Amt = document.getElementById('tx-row4-amount');
-    if (r4Amt) r4Amt.textContent = '-$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const r4Amt = document.getElementById('tx-row4-amount');
+      if (r4Amt) r4Amt.textContent = '-$' + cost.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    }
   }
   window.syncHomePackageCard = syncHomePackageCard;
 

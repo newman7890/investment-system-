@@ -190,11 +190,11 @@
           <div>
             <div class="flex justify-between items-center mb-3">
               <span class="text-xs font-bold uppercase tracking-wider text-blue-200">Current Package</span>
-              <span id="active-tier-badge" class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold">Level 1 Package</span>
+              <span id="active-tier-badge" class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold">No Active Package</span>
             </div>
-            <div class="text-3xl font-extrabold tracking-tight mb-1" id="active-level-title">Level 1 Active</div>
-            <p class="text-blue-100 text-xs mb-2">Purchase Price: <b id="active-purchase-cost">$500.00 USD</b></p>
-            <div class="text-[11px] text-blue-200/90 font-mono mb-3" id="levels-active-contract">Contract: BOND-PKG-L1-84920</div>
+            <div class="text-3xl font-extrabold tracking-tight mb-1" id="active-level-title">No Active Package</div>
+            <p class="text-blue-100 text-xs mb-2">Purchase Price: <b id="active-purchase-cost">$0.00 USD</b></p>
+            <div class="text-[11px] text-blue-200/90 font-mono mb-3" id="levels-active-contract">Contract: None</div>
           </div>
           <div class="pt-4 border-t border-white/20 flex justify-between items-center text-xs">
             <span class="text-blue-100">Next Scheduled Payout:</span>
@@ -209,7 +209,7 @@
               <span class="text-xs font-bold uppercase tracking-wider text-[#5B616E]">Allocated Credit Balance</span>
               <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">3× Ratio</span>
             </div>
-            <div class="text-3xl font-extrabold text-[#0A0B0D] mb-1" id="allocated-credit-balance">$1,500.00</div>
+            <div class="text-3xl font-extrabold text-[#0A0B0D] mb-1" id="allocated-credit-balance">$0.00</div>
             <p class="text-xs text-[#5B616E]">Available balance eligible for scheduled monthly drawdown.</p>
           </div>
           <div class="pt-4 border-t border-[#ECEFF1] text-xs text-[#5B616E] flex justify-between">
@@ -225,7 +225,7 @@
               <span class="text-xs font-bold uppercase tracking-wider text-[#5B616E]">Monthly Withdrawal Limit</span>
               <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">Capped</span>
             </div>
-            <div class="text-3xl font-extrabold text-[#098551] mb-1" id="monthly-limit-display">$30.00 <span class="text-xs text-gray-500 font-normal">/ month</span></div>
+            <div class="text-3xl font-extrabold text-[#098551] mb-1" id="monthly-limit-display">$0.00 <span class="text-xs text-gray-500 font-normal">/ month</span></div>
             <p class="text-xs text-[#5B616E]">Maximum withdrawable cash per 30-day payout window.</p>
           </div>
           <div class="pt-4 border-t border-[#ECEFF1]">
@@ -276,7 +276,7 @@
 
 <!-- Modal Framework & SDKs -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js?v=package_strict_balance_v4"></script>
+<script src="bondcapital-app.js?v=package_strict_v5"></script>
 
 <script>
   // Complete 30-Level Specification Matrix
@@ -314,10 +314,11 @@
   ];
 
   let currentTierState = {
-    level: 1,
-    allocatedBalance: 1500,
-    monthlyLimit: 30,
-    purchaseCost: 500
+    level: 0,
+    allocatedBalance: 0,
+    monthlyLimit: 0,
+    purchaseCost: 0,
+    contractId: ''
   };
 
   // Render Table
@@ -694,11 +695,20 @@
 
   function updateActiveDisplay() {
     if (!currentTierState.level || currentTierState.level === 0) {
-      document.getElementById('active-tier-badge').textContent = 'No Active Package';
-      document.getElementById('active-level-title').textContent = 'No Active Package';
-      document.getElementById('active-purchase-cost').textContent = '$0.00 USD';
-      document.getElementById('allocated-credit-balance').textContent = '$0.00';
-      document.getElementById('monthly-limit-display').innerHTML = '$0.00 <span class="text-xs text-gray-500 font-normal">/ month</span>';
+      const badge = document.getElementById('active-tier-badge');
+      if (badge) badge.textContent = 'No Active Package';
+      const title = document.getElementById('active-level-title');
+      if (title) title.textContent = 'No Active Package';
+      const cost = document.getElementById('active-purchase-cost');
+      if (cost) cost.textContent = '$0.00 USD';
+      const contract = document.getElementById('levels-active-contract');
+      if (contract) contract.textContent = 'Contract: None';
+      const countdown = document.getElementById('levels-card-countdown');
+      if (countdown) countdown.textContent = 'No Active Schedule';
+      const allocated = document.getElementById('allocated-credit-balance');
+      if (allocated) allocated.textContent = '$0.00';
+      const limit = document.getElementById('monthly-limit-display');
+      if (limit) limit.innerHTML = '$0.00 <span class="text-xs text-gray-500 font-normal">/ month</span>';
     } else {
       document.getElementById('active-tier-badge').textContent = `Level ${currentTierState.level} Package`;
       document.getElementById('active-level-title').textContent = `Level ${currentTierState.level} Active`;
@@ -721,16 +731,26 @@
         const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || '');
         if (user_id) {
           const { data } = await window.__supabase.from('profiles').select('*').eq('id', user_id).maybeSingle();
-          if (data && data.current_level) {
-            const item = LEVEL_SCHEDULE.find(x => x.level === data.current_level);
+          if (data && data.current_level && parseInt(data.current_level, 10) > 0) {
+            const lvlNum = parseInt(data.current_level, 10);
+            const item = LEVEL_SCHEDULE.find(x => x.level === lvlNum);
             if (item) {
               currentTierState = {
                 level: item.level,
                 allocatedBalance: data.level_balance !== undefined ? parseFloat(data.level_balance) : item.balance,
                 monthlyLimit: item.limit,
-                purchaseCost: item.purchase
+                purchaseCost: item.purchase,
+                contractId: data.contract_id || ('BOND-PKG-L' + item.level + '-84920')
               };
             }
+          } else {
+            currentTierState = {
+              level: 0,
+              allocatedBalance: 0,
+              monthlyLimit: 0,
+              purchaseCost: 0,
+              contractId: ''
+            };
           }
         }
       } catch (e) {}

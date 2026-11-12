@@ -221,7 +221,7 @@
       <div class="flex items-center gap-2 mt-2">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#098551] text-xs font-bold border border-emerald-200">
           <span class="w-2 h-2 rounded-full bg-[#098551] animate-pulse"></span>
-          <span id="asset-tier-badge">Level 1 Package Active</span>
+          <span id="asset-tier-badge">No Active Package</span>
         </span>
         <span class="text-xs text-[#5B616E] font-medium">• 3× Capital Credit Ratio</span>
       </div>
@@ -236,8 +236,8 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
   <div class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] p-5 rounded-2xl border border-[#ECEFF1]">
     <div class="text-[11px] font-bold text-[#5B616E] uppercase tracking-wide">Active Package Tier</div>
-    <div class="text-xl font-extrabold text-[#0A0B0D] mt-1" id="asset-card-level">Level 1</div>
-    <div class="text-xs text-[#0052FF] font-semibold mt-1">Tier 1 of 30</div>
+    <div class="text-xl font-extrabold text-[#0A0B0D] mt-1" id="asset-card-level">None</div>
+    <div class="text-xs text-slate-400 font-semibold mt-1">Tier 0 of 30</div>
   </div>
 
   <div class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] p-5 rounded-2xl border border-[#ECEFF1]">
@@ -419,7 +419,7 @@
 </div>
 
 <script>
-  // Dynamic sync with active package tier from localStorage / bondcapital-app.js
+  // Dynamic sync with active package tier from localStorage / bondcapital-app.js?v=package_strict_v5
   function syncTierAssetPage() {
     if (typeof window.syncHomePackageCard === 'function') {
       window.syncHomePackageCard();
@@ -538,7 +538,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js"></script>
+<script src="bondcapital-app.js?v=package_strict_v5"></script>
 
 <script>
   /* Avatar early-init: set initial letter before main JS loads to prevent flicker */
