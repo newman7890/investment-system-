@@ -385,108 +385,82 @@
     modal.id = 'package-allocation-modal';
     modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-200 overflow-y-auto';
     modal.innerHTML = `
-      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-6">
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-auto animate-in fade-in zoom-in-95 duration-200">
         <!-- Close Button -->
-        <button onclick="closePackageAllocationModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer">
+        <button onclick="closePackageAllocationModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer">
           <svg class="w-4 h-4" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 1l12 12M13 1L1 13"/>
           </svg>
         </button>
 
         <!-- Header -->
-        <div class="flex items-center gap-3.5 mb-5">
-          <div class="w-12 h-12 rounded-2xl ${hasEnoughCash ? 'bg-blue-50 border-blue-100 text-[#0052FF]' : 'bg-amber-50 border-amber-200 text-amber-600'} border flex items-center justify-center shrink-0 shadow-2xs">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="M9 12l2 2 4-4"/>
-            </svg>
+        <div class="flex items-center gap-3.5 mb-5 pr-8">
+          <div class="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0052FF] font-black shrink-0 text-base shadow-2xs">
+            ${item.level}
           </div>
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${hasEnoughCash ? 'bg-blue-50 text-[#0052FF]' : 'bg-amber-50 text-amber-700'} font-bold text-[10px] tracking-wider uppercase mb-1">
-              ${hasEnoughCash ? 'Institutional Tier Activation' : 'Deposit Required to Activate'}
-            </div>
-            <h3 class="text-xl font-bold text-slate-900">Authorize Level ${item.level} Contract</h3>
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tier Package ${item.level} of 30</div>
+            <h3 class="text-lg font-extrabold text-slate-900 leading-tight">Authorize Level ${item.level} Contract</h3>
           </div>
         </div>
 
-        <!-- Contract Details Card -->
-        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-5 space-y-2.5 text-xs">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
-            <span class="text-slate-500 font-medium">Selected Tier</span>
-            <span class="font-bold text-slate-900">Level ${item.level} Package (Tier ${item.level} of 30)</span>
-          </div>
-          <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
-            <span class="text-slate-500 font-medium">Package Cost</span>
-            <span class="font-extrabold text-slate-900 text-sm">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
-          </div>
-          <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
-            <div class="flex items-center gap-1.5">
-              <span class="text-slate-500 font-medium">Allocated Credit</span>
-              <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">300% Multiplier Match</span>
-            </div>
-            <span class="font-extrabold text-[#0052FF] text-sm">$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
-          </div>
+        <!-- Tier Terms Summary Grid -->
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 mb-4 space-y-2.5 text-xs">
           <div class="flex items-center justify-between">
+            <span class="text-slate-500 font-medium">Package Cost</span>
+            <span class="font-extrabold text-slate-900 text-sm font-mono">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+          </div>
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+            <span class="text-slate-500 font-medium">Credit Allocation</span>
+            <span class="font-extrabold text-[#0052FF] text-sm font-mono">$${item.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 ml-1">300% Match</span></span>
+          </div>
+          <div class="flex items-center justify-between pt-0.5">
             <span class="text-slate-500 font-medium">30-Day Scheduled Cashflow</span>
-            <span class="font-bold text-emerald-600">$${item.limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / month</span>
+            <span class="font-bold text-emerald-600 font-mono">$${item.limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / month</span>
           </div>
         </div>
 
-        <!-- Account Balance Status -->
+        <!-- Account Balance & Payment Status Card -->
         <div class="mb-5">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Account Balance Verification</label>
-          <div class="p-4 rounded-2xl border ${hasEnoughCash ? 'border-emerald-200 bg-emerald-50/60' : 'border-amber-200 bg-amber-50/70'} space-y-3">
-            <div class="flex items-center justify-between text-xs">
+          <div class="rounded-2xl p-4 border ${hasEnoughCash ? 'border-emerald-200 bg-emerald-50/50' : 'border-blue-100 bg-blue-50/40'} text-xs space-y-2">
+            <div class="flex items-center justify-between">
               <span class="text-slate-600 font-medium">Your Account Balance:</span>
-              <span class="font-extrabold font-mono text-sm ${hasEnoughCash ? 'text-emerald-700' : 'text-amber-800'}">$${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
-            </div>
-            <div class="flex items-center justify-between text-xs pb-2 border-b ${hasEnoughCash ? 'border-emerald-200/60' : 'border-amber-200/60'}">
-              <span class="text-slate-600 font-medium">Required Package Cost:</span>
-              <span class="font-bold font-mono text-slate-900">-$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+              <span class="font-extrabold font-mono text-slate-900">$${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
             </div>
             ${hasEnoughCash ? `
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center justify-between pb-1 border-b border-emerald-200/60">
               <span class="text-slate-600 font-medium">Balance After Purchase:</span>
-              <span class="font-bold font-mono text-slate-900">$${(cash - item.purchase).toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+              <span class="font-bold font-mono text-emerald-700">$${(cash - item.purchase).toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
             </div>
-            <div class="flex items-center gap-2 text-[11px] text-emerald-800 font-medium pt-1">
+            <div class="text-[11px] text-emerald-800 font-medium pt-1 flex items-center gap-1.5">
               <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-              <span>Funds available. Purchase will be deducted directly from your account balance.</span>
+              <span>Funds available. Purchase will be deducted from your account balance.</span>
             </div>
             ` : `
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-amber-900 font-bold">Shortfall / Needed:</span>
-              <span class="font-extrabold font-mono text-rose-600">-$${deficit.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+            <div class="flex items-center justify-between pb-1 border-b border-blue-200/60">
+              <span class="text-slate-600 font-medium">Additional Deposit Required:</span>
+              <span class="font-extrabold font-mono text-[#0052FF]">+$${deficit.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
             </div>
-            <div class="bg-white/80 rounded-xl p-3 border border-amber-200 text-xs text-amber-900 space-y-2">
-              <div class="flex items-start gap-2">
-                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                <div>
-                  <span class="font-bold">Insufficient Account Balance.</span>
-                  <div class="text-[11px] text-slate-600 mt-0.5">You cannot purchase this package because you do not have enough funds in your account. Deposit funds using your Card or Bank Transfer to proceed.</div>
-                </div>
-              </div>
-              <button onclick="closePackageAllocationModal(); if (typeof window.openDepositCashModal === 'function') { window.openDepositCashModal(${deficit}, function() { purchaseLevel(${item.level}); }); } else { window.location.href='dashboard.html'; }" type="button" class="w-full py-2.5 px-3 rounded-xl bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                <span>Deposit $${deficit.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD with Card</span>
-              </button>
+            <div class="text-[11px] text-slate-600 font-medium pt-1">
+              Deposit the remaining <b class="text-slate-900">$${deficit.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</b> using your Card to activate this package.
             </div>
             `}
           </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Single Action Buttons Row -->
         <div class="flex items-center gap-3">
-          <button onclick="closePackageAllocationModal()" type="button" class="py-3 px-5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm cursor-pointer">
+          <button onclick="closePackageAllocationModal()" type="button" class="py-3 px-5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-xs cursor-pointer">
             Cancel
           </button>
           ${hasEnoughCash ? `
-          <button id="btn-confirm-provision" onclick="confirmPackageProvision(${item.level})" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-sm flex items-center justify-center cursor-pointer">
-            <span>Authorize &middot; Pay $${item.purchase.toLocaleString()} from Balance & Activate</span>
+          <button id="btn-confirm-provision" onclick="confirmPackageProvision(${item.level})" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-xs flex items-center justify-center gap-2 cursor-pointer">
+            <span>Pay $${item.purchase.toLocaleString()} from Balance & Activate</span>
           </button>
           ` : `
-          <button id="btn-confirm-provision" disabled="disabled" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-slate-400 bg-slate-200 cursor-not-allowed opacity-70 text-sm flex items-center justify-center">
-            <span>Insufficient Funds ($${cash.toLocaleString()} / $${item.purchase.toLocaleString()})</span>
+          <button onclick="closePackageAllocationModal(); if (typeof window.openDepositCashModal === 'function') { window.openDepositCashModal(${deficit}, function() { purchaseLevel(${item.level}); }); } else { window.location.href='dashboard.html'; }" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-xs flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span>Deposit $${deficit.toLocaleString()} with Card & Activate</span>
           </button>
           `}
         </div>
