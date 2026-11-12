@@ -508,40 +508,44 @@
   }
   window.getActiveTierInfo = getActiveTierInfo;
 
-  // Real-Time Package Provisioning Engine (Card & Cash Balance Only - Zero Crypto)
-  window.provisionPackageContract = async function (lvl, paymentMethod = 'card', cardDetails = null) {
+  // Real-Time Package Provisioning Engine: STRICT ACCOUNT BALANCE ENFORCEMENT
+  // A user who does not have money in their account CANNOT buy any package
+  window.provisionPackageContract = async function (lvl) {
     const lvlNum = parseInt(lvl, 10);
     const info = LEVEL_MAP[lvlNum];
     if (!info) {
       showToast('Invalid Tier', 'Selected package level does not exist.', 'error');
-      return { success: false };
+      return { success: false, reason: 'invalid_level' };
     }
 
     const userId = getActiveUserId();
     const currentCash = (appState.balances && appState.balances.USD !== undefined) ? parseFloat(appState.balances.USD) : 0;
 
-    if (paymentMethod === 'cash') {
-      if (currentCash < info.purchase) {
-        showToast('Insufficient Cash Balance', 'You need $' + (info.purchase - currentCash).toLocaleString() + ' USD more in your cash wallet, or pay directly with Card.', 'warning');
-        return { success: false, reason: 'insufficient_cash' };
-      }
-      appState.balances.USD = Math.max(0, currentCash - info.purchase);
-    } else {
-      // Direct Card Payment (Certified Stripe PCI-DSS)
-      const rawCard = (cardDetails && cardDetails.number) ? String(cardDetails.number).replace(/\s+/g, '') : '4242';
-      const last4 = rawCard.slice(-4) || '4242';
-      appState.transactions.unshift({
-        id: 'TX-STRIPE-' + Math.floor(100000 + Math.random() * 900000),
-        type: 'Package Purchase (Card •••• ' + last4 + ')',
-        asset: 'USD',
-        cryptoAmount: 0,
-        usdAmount: info.purchase,
-        price: 1.00,
-        date: 'Just now',
-        status: 'Completed',
-        channel: 'Stripe Direct Card (' + last4 + ')'
-      });
+    // Strict Enforcement: Cannot buy any package without sufficient account balance
+    if (currentCash < info.purchase) {
+      showToast(
+        'Purchase Blocked: Insufficient Balance',
+        'You cannot buy this package without funds in your account. Your account balance is $' + currentCash.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD, but Level ' + lvlNum + ' requires $' + info.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD. Please deposit funds first.',
+        'error',
+        6500
+      );
+      return { success: false, reason: 'insufficient_funds' };
     }
+
+    // Deduct purchase price strictly from available account balance
+    appState.balances.USD = Math.max(0, currentCash - info.purchase);
+
+    appState.transactions.unshift({
+      id: 'TX-PKG-' + Math.floor(100000 + Math.random() * 900000),
+      type: 'Package Purchase (Level ' + lvlNum + ')',
+      asset: 'USD',
+      cryptoAmount: 0,
+      usdAmount: info.purchase,
+      price: 1.00,
+      date: 'Just now',
+      status: 'Completed',
+      channel: 'Account Cash Balance'
+    });
 
     const contractId = 'BOND-PKG-L' + lvlNum + '-' + Math.floor(10000 + Math.random() * 90000);
     const nowIso = new Date().toISOString();
@@ -586,25 +590,23 @@
           updated_at: nowIso
         }]);
 
-        if (paymentMethod === 'cash') {
-          await supabase.from('balances').upsert([{
-            user_id: userId,
-            usd: appState.balances.USD,
-            updated_at: nowIso
-          }], { onConflict: 'user_id' });
-        }
+        await supabase.from('balances').upsert([{
+          user_id: userId,
+          usd: appState.balances.USD,
+          updated_at: nowIso
+        }], { onConflict: 'user_id' });
 
         await supabase.from('transactions').insert([
           {
             id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
             user_id: userId,
-            type: 'Package Purchase (' + (paymentMethod === 'card' ? 'Stripe Card' : 'Cash Wallet') + ')',
+            type: 'Package Purchase (Level ' + lvlNum + ')',
             asset: 'USD',
             usd_amount: info.purchase,
             crypto_amount: 0,
             price: 1.00,
             status: 'Completed',
-            channel: paymentMethod === 'card' ? 'Stripe PCI-DSS Card' : 'Internal USD Balance',
+            channel: 'Internal Account USD Balance',
             date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
           },
           {
@@ -634,7 +636,7 @@
     if (typeof window.addNotification === 'function') {
       window.addNotification(
         'Level ' + lvlNum + ' Package Activated',
-        '$' + info.balance.toLocaleString() + ' USD credit allocated via ' + (paymentMethod === 'card' ? 'Card' : 'Cash') + '. Contract: ' + contractId + '. Monthly limit: $' + info.limit.toLocaleString() + '/mo.',
+        '$' + info.balance.toLocaleString() + ' USD credit allocated from Account Balance. Contract: ' + contractId + '. Monthly limit: $' + info.limit.toLocaleString() + '/mo.',
         'tier',
         { silent: true }
       );

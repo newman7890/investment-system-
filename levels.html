@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="icon" type="image/png" href="bond-capital-icon.png"/>
@@ -276,7 +276,7 @@
 
 <!-- Modal Framework & SDKs -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js?v=package_realtime_v3"></script>
+<script src="bondcapital-app.js?v=package_strict_balance_v4"></script>
 
 <script>
   // Complete 30-Level Specification Matrix
@@ -323,11 +323,15 @@
   // Render Table
   function renderLevelsTable(data) {
     const tbody = document.getElementById('levels-table-body');
+    if (!tbody) return;
     tbody.innerHTML = '';
+
+    const currentCash = (typeof window.getAvailableCashBalance === 'function') ? window.getAvailableCashBalance() : 0;
 
     data.forEach(item => {
       const isSelected = item.level === currentTierState.level;
       const months = Math.ceil(item.balance / item.limit);
+      const hasEnough = currentCash >= item.purchase;
 
       const tr = document.createElement('tr');
       tr.className = `hover:bg-[#F8FAFC] transition-colors ${isSelected ? 'bg-blue-50/50' : ''}`;
@@ -343,7 +347,9 @@
         <td class="py-4 px-6 text-right">
           ${isSelected 
             ? '<span class="px-3.5 py-1.5 rounded-full bg-blue-100 text-[#0052FF] font-bold text-xs inline-block">Active Tier</span>'
-            : `<button onclick="purchaseLevel(${item.level})" class="px-4 py-1.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs transition-all shadow-2xs">Upgrade</button>`
+            : hasEnough
+              ? `<button onclick="purchaseLevel(${item.level})" class="px-4 py-1.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs transition-all shadow-2xs cursor-pointer">Activate</button>`
+              : `<button onclick="purchaseLevel(${item.level})" class="px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold text-xs transition-all shadow-2xs cursor-pointer">Deposit Needed</button>`
           }
         </td>
       `;
@@ -361,32 +367,10 @@
     renderLevelsTable(filtered);
   }
 
-    function purchaseLevel(lvl) {
+  function purchaseLevel(lvl) {
     const item = LEVEL_SCHEDULE.find(x => x.level === lvl);
     if (!item) return;
     openPackageAllocationModal(item);
-  }
-
-    let selectedPaymentMethod = 'card';
-
-  function switchPackagePaymentMethod(method) {
-    selectedPaymentMethod = method;
-    const tabCash = document.getElementById('pkg-paytab-cash');
-    const tabCard = document.getElementById('pkg-paytab-card');
-    const paneCash = document.getElementById('pkg-paypane-cash');
-    const paneCard = document.getElementById('pkg-paypane-card');
-
-    if (method === 'cash') {
-      if (tabCash) { tabCash.className = 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer'; }
-      if (tabCard) { tabCard.className = 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'; }
-      if (paneCash) paneCash.style.display = 'block';
-      if (paneCard) paneCard.style.display = 'none';
-    } else {
-      if (tabCard) { tabCard.className = 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer'; }
-      if (tabCash) { tabCash.className = 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'; }
-      if (paneCard) paneCard.style.display = 'block';
-      if (paneCash) paneCash.style.display = 'none';
-    }
   }
 
   function openPackageAllocationModal(item) {
@@ -395,7 +379,7 @@
 
     const cash = (typeof window.getAvailableCashBalance === 'function') ? window.getAvailableCashBalance() : 0;
     const hasEnoughCash = cash >= item.purchase;
-    selectedPaymentMethod = hasEnoughCash ? 'cash' : 'card';
+    const deficit = Math.max(0, item.purchase - cash);
 
     const modal = document.createElement('div');
     modal.id = 'package-allocation-modal';
@@ -411,15 +395,15 @@
 
         <!-- Header -->
         <div class="flex items-center gap-3.5 mb-5">
-          <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0052FF] shrink-0 shadow-2xs">
+          <div class="w-12 h-12 rounded-2xl ${hasEnoughCash ? 'bg-blue-50 border-blue-100 text-[#0052FF]' : 'bg-amber-50 border-amber-200 text-amber-600'} border flex items-center justify-center shrink-0 shadow-2xs">
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               <path d="M9 12l2 2 4-4"/>
             </svg>
           </div>
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0052FF] font-bold text-[10px] tracking-wider uppercase mb-1">
-              Institutional Tier Activation
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${hasEnoughCash ? 'bg-blue-50 text-[#0052FF]' : 'bg-amber-50 text-amber-700'} font-bold text-[10px] tracking-wider uppercase mb-1">
+              ${hasEnoughCash ? 'Institutional Tier Activation' : 'Deposit Required to Activate'}
             </div>
             <h3 class="text-xl font-bold text-slate-900">Authorize Level ${item.level} Contract</h3>
           </div>
@@ -432,7 +416,7 @@
             <span class="font-bold text-slate-900">Level ${item.level} Package (Tier ${item.level} of 30)</span>
           </div>
           <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
-            <span class="text-slate-500 font-medium">Purchase Price</span>
+            <span class="text-slate-500 font-medium">Package Cost</span>
             <span class="font-extrabold text-slate-900 text-sm">$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
           </div>
           <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
@@ -448,51 +432,44 @@
           </div>
         </div>
 
-        <!-- Payment Method Tabs (CARD & CASH ONLY - ZERO CRYPTO) -->
-        <div class="mb-4">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Select Payment Method</label>
-          <div class="flex gap-2.5 mb-3">
-            <button id="pkg-paytab-card" type="button" onclick="switchPackagePaymentMethod('card')" class="${selectedPaymentMethod === 'card' ? 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer' : 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'}">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-              <span>Instant Card (Stripe)</span>
-            </button>
-            <button id="pkg-paytab-cash" type="button" onclick="switchPackagePaymentMethod('cash')" class="${selectedPaymentMethod === 'cash' ? 'flex-1 py-2.5 px-3 rounded-xl border-2 border-[#0052FF] bg-blue-50/50 text-[#0052FF] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer' : 'flex-1 py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer'}">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-              <span>Cash Wallet ($${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })})</span>
-            </button>
-          </div>
-
-          <!-- CARD PAYMENT FORM -->
-          <div id="pkg-paypane-card" style="display:${selectedPaymentMethod === 'card' ? 'block' : 'none'};">
-            <div class="border border-slate-200 rounded-2xl p-4 bg-white space-y-3 mb-3">
-              <div class="flex justify-between items-center text-[11px]">
-                <span class="font-bold text-slate-600 uppercase">Card Information</span>
-                <span class="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">VISA &middot; MC &middot; AMEX</span>
-              </div>
-              <input id="pkg-card-number" type="text" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
-              <div class="flex gap-2">
-                <input id="pkg-card-exp" type="text" placeholder="12/28" value="12/28" class="w-1/2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
-                <input id="pkg-card-cvc" type="text" placeholder="342" value="342" class="w-1/2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
-              </div>
-              <input id="pkg-card-name" type="text" placeholder="Cardholder Name" value="Institutional Investor" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052FF]" />
-              <div class="flex items-center gap-1.5 text-[10px] text-slate-500">
-                <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1a4.002 4.002 0 00-3.874 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1.126A4.002 4.002 0 0010 1zm2 5V5a2 2 0 10-4 0v1h4zm-2 5a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-                <span>256-bit SSL Protected &middot; Certified Stripe PCI-DSS Level 1</span>
-              </div>
+        <!-- Account Balance Status -->
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Account Balance Verification</label>
+          <div class="p-4 rounded-2xl border ${hasEnoughCash ? 'border-emerald-200 bg-emerald-50/60' : 'border-amber-200 bg-amber-50/70'} space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-600 font-medium">Your Account Balance:</span>
+              <span class="font-extrabold font-mono text-sm ${hasEnoughCash ? 'text-emerald-700' : 'text-amber-800'}">$${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
             </div>
-          </div>
-
-          <!-- CASH WALLET FORM -->
-          <div id="pkg-paypane-cash" style="display:${selectedPaymentMethod === 'cash' ? 'block' : 'none'};">
+            <div class="flex items-center justify-between text-xs pb-2 border-b ${hasEnoughCash ? 'border-emerald-200/60' : 'border-amber-200/60'}">
+              <span class="text-slate-600 font-medium">Required Package Cost:</span>
+              <span class="font-bold font-mono text-slate-900">-$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+            </div>
             ${hasEnoughCash ? `
-            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-2.5 mb-3 text-xs text-emerald-800 font-medium">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-              <span>$${item.purchase.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD will be deducted instantly from your Available Cash Balance.</span>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-600 font-medium">Balance After Purchase:</span>
+              <span class="font-bold font-mono text-slate-900">$${(cash - item.purchase).toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-emerald-800 font-medium pt-1">
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>Funds available. Purchase will be deducted directly from your account balance.</span>
             </div>
             ` : `
-            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-100 text-xs text-amber-900 mb-3">
-              <div class="font-bold">Insufficient Cash Balance</div>
-              <div class="text-[11px] text-amber-800 mt-0.5">Your cash balance is $${cash.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD. Please switch to the <b>Instant Card</b> tab above to pay with card.</div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-amber-900 font-bold">Shortfall / Needed:</span>
+              <span class="font-extrabold font-mono text-rose-600">-$${deficit.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+            </div>
+            <div class="bg-white/80 rounded-xl p-3 border border-amber-200 text-xs text-amber-900 space-y-2">
+              <div class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>
+                  <span class="font-bold">Insufficient Account Balance.</span>
+                  <div class="text-[11px] text-slate-600 mt-0.5">You cannot purchase this package because you do not have enough funds in your account. Deposit funds using your Card or Bank Transfer to proceed.</div>
+                </div>
+              </div>
+              <button onclick="closePackageAllocationModal(); if (typeof window.openDepositCashModal === 'function') { window.openDepositCashModal(); } else { window.location.href='dashboard.html'; }" type="button" class="w-full py-2.5 px-3 rounded-xl bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <span>Deposit $${deficit.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD with Card</span>
+              </button>
             </div>
             `}
           </div>
@@ -503,9 +480,15 @@
           <button onclick="closePackageAllocationModal()" type="button" class="py-3 px-5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm cursor-pointer">
             Cancel
           </button>
+          ${hasEnoughCash ? `
           <button id="btn-confirm-provision" onclick="confirmPackageProvision(${item.level})" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-[#0052FF] hover:bg-[#0045D8] transition-all shadow-md shadow-blue-500/20 text-sm flex items-center justify-center cursor-pointer">
-            <span>Authorize &middot; Pay $${item.purchase.toLocaleString()} & Activate</span>
+            <span>Authorize &middot; Pay $${item.purchase.toLocaleString()} from Balance & Activate</span>
           </button>
+          ` : `
+          <button id="btn-confirm-provision" disabled="disabled" type="button" class="flex-1 py-3 px-4 rounded-xl font-bold text-slate-400 bg-slate-200 cursor-not-allowed opacity-70 text-sm flex items-center justify-center">
+            <span>Insufficient Funds ($${cash.toLocaleString()} / $${item.purchase.toLocaleString()})</span>
+          </button>
+          `}
         </div>
       </div>
     `;
@@ -522,22 +505,23 @@
     const item = LEVEL_SCHEDULE.find(x => x.level === lvl);
     if (!item) return;
 
+    const cash = (typeof window.getAvailableCashBalance === 'function') ? window.getAvailableCashBalance() : 0;
+    if (cash < item.purchase) {
+      if (typeof window.showToast === 'function') {
+        window.showToast('Insufficient Balance', 'You do not have enough funds in your account to purchase this package. Please deposit funds first.', 'error');
+      }
+      return;
+    }
+
     const btn = document.getElementById('btn-confirm-provision');
     if (btn) {
       btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Provisioning Contract...`;
       btn.disabled = true;
     }
 
-    const cardDetails = {
-      number: document.getElementById('pkg-card-number')?.value || '4242 4242 4242 4242',
-      exp: document.getElementById('pkg-card-exp')?.value || '12/28',
-      cvc: document.getElementById('pkg-card-cvc')?.value || '342',
-      name: document.getElementById('pkg-card-name')?.value || 'Institutional Investor'
-    };
-
-    let result = { success: true };
+    let result = { success: false };
     if (typeof window.provisionPackageContract === 'function') {
-      result = await window.provisionPackageContract(lvl, selectedPaymentMethod, cardDetails);
+      result = await window.provisionPackageContract(lvl);
     }
 
     if (result && result.success) {
@@ -553,7 +537,7 @@
       closePackageAllocationModal();
     } else {
       if (btn) {
-        btn.innerHTML = `<span>Authorize &middot; Pay $${item.purchase.toLocaleString()} & Activate</span>`;
+        btn.innerHTML = `<span>Authorize &middot; Pay $${item.purchase.toLocaleString()} from Balance & Activate</span>`;
         btn.disabled = false;
       }
     }
@@ -618,8 +602,8 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
               </div>
               <div>
-                <div class="text-xs font-bold text-[#0A0B0D]">Direct Wire / Crypto Cashout</div>
-                <div class="text-[11px] text-[#5B616E]">Disburse directly to external bank or crypto address</div>
+                <div class="text-xs font-bold text-[#0A0B0D]">Direct Wire / Bank ACH Transfer</div>
+                <div class="text-[11px] text-[#5B616E]">Disburse directly to external bank account</div>
               </div>
             </div>
             <span class="text-xs font-bold text-gray-400">&rarr;</span>
