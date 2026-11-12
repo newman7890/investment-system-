@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="en"><head>
   <link rel="icon" type="image/png" href="bond-capital-icon.png"/>
@@ -208,21 +208,6 @@
 <main class="flex-1 flex overflow-y-auto" data-purpose="main-layout-columns">
 <!-- Left / Primary Column (Feed, Chart, Prices) -->
 <div class="flex-1 px-4 sm:px-6 lg:px-8 pb-12 pt-2 overflow-x-hidden min-w-0">
-<!-- BEGIN: PortfolioBalanceChart -->
-<section class="mb-10" data-purpose="portfolio-balance-section">
-<div class="flex items-center justify-between h-[80px]">
-<div>
-<div>
-  <div class="flex items-baseline gap-3">
-    <h2 class="portfolio-total text-4xl font-semibold tracking-tight text-[#0A0B0D]">$1,500.00</h2>
-  </div>
-  <div class="text-xs text-[#5B616E] font-medium mt-1 flex items-center gap-1.5"><span>Allocated Package Balance</span><span class="text-gray-300">•</span><span id="home-active-tier-tag" class="text-[#0052FF] font-semibold">Level 1 Package</span></div>
-</div>
-</div>
-
-</div></section>
-<!-- END: PortfolioBalanceChart -->
-
 <!-- BEGIN: ActivePackageShowcase -->
 <section class="mb-8" id="home-package-card-section" data-purpose="active-package-section">
   <div class="bg-gradient-to-r from-[#0052FF] via-[#0045D8] to-[#002E8A] rounded-3xl p-6 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
@@ -456,7 +441,7 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js"></script>
+<script src="bondcapital-app.js?v=clean_ui"></script>
 
 <!-- Interactive Digital Product Viewer Modal -->
 <div id="product-viewer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">

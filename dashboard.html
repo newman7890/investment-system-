@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="en"><head>
   <link rel="icon" type="image/png" href="bond-capital-icon.png"/>
@@ -246,27 +246,11 @@
 <main class="flex-1 flex overflow-y-auto" data-purpose="main-layout-columns">
 <!-- Left / Primary Column (Feed, Chart, Prices) -->
 <div class="flex-1 px-4 sm:px-6 lg:px-8 pb-12 pt-2 overflow-x-hidden min-w-0">
-<!-- BEGIN: PortfolioBalanceChart -->
-<section class="mb-8" data-purpose="portfolio-balance-section">
-  <div class="flex items-center justify-between h-[80px]">
-    <div>
-      <div>
-        <div class="flex items-baseline gap-3">
-          <h2 class="portfolio-total text-4xl font-semibold tracking-tight text-[#0A0B0D]">$0.00</h2>
-        </div>
-        <div class="text-xs text-[#5B616E] font-medium mt-1 flex items-center gap-1.5"><span id="home-balance-label">Total Portfolio Balance</span><span class="text-gray-300">•</span><span id="home-active-tier-tag" class="text-[#0052FF] font-semibold">No Active Package</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- END: PortfolioBalanceChart -->
-
 <!-- BEGIN: ActivePackageShowcase -->
 <section class="mb-8" id="home-package-card-section" data-purpose="active-package-section">
   <div class="bg-gradient-to-r from-[#0052FF] via-[#0045D8] to-[#002E8A] rounded-3xl p-6 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
     <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
     <div class="relative z-10 flex-1">
-      
       <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="home-card-title">No Active Package</h3>
       <div class="text-xs text-blue-100 mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 gap-x-4">
         <div>Available Cash: <b class="text-emerald-300 font-bold available-cash-display" id="home-card-cash">$0.00 USD</b></div>
@@ -275,7 +259,6 @@
         <div>Monthly Limit: <b class="text-emerald-300 font-bold" id="home-card-limit">$0.00 / month</b></div>
       </div>
     </div>
-    
   </div>
 </section>
 <!-- END: ActivePackageShowcase -->
@@ -451,16 +434,16 @@
 
   // Hook Top up button
   document.querySelectorAll('button').forEach(btn => {
-    if (btn.textContent.trim() === 'Top up USD wallet') {
+    if (btn.textContent.trim().toLowerCase().includes('top up') || btn.textContent.trim().toLowerCase().includes('deposit')) {
       btn.addEventListener('click', () => {
-        document.getElementById('deposit-modal').classList.remove('hidden');
+        if (typeof openDepositCashModal === 'function') openDepositCashModal();
       });
     }
   });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="bondcapital-app.js"></script>
+<script src="bondcapital-app.js?v=clean_ui"></script>
 
 <!-- Interactive Digital Product Viewer Modal -->
 <div id="product-viewer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">

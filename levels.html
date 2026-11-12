@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="icon" type="image/png" href="bond-capital-icon.png"/>
@@ -170,9 +170,16 @@
             <div class="text-2xl font-extrabold text-slate-900 font-mono available-cash-display" id="levels-available-cash">$0.00 USD</div>
           </div>
         </div>
-        <button onclick="openStripeDepositModal(500)" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer self-start sm:self-auto">
-          <span>Add Funds</span>
-        </button>
+        <div class="flex items-center gap-2.5 flex-wrap self-start sm:self-auto">
+          <button onclick="openDepositCashModal(500)" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#0052FF] hover:bg-[#0045D8] text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Add Funds</span>
+          </button>
+          <button onclick="openWithdrawCashModal()" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#EEF0F3] hover:bg-[#E2E5E9] text-[#0A0B0D] font-bold text-xs transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            <span>Withdraw Cash</span>
+          </button>
+        </div>
       </div>
 
       <!-- Active Tier Status & Withdrawal Card -->
@@ -553,62 +560,151 @@
   }
 
   async function requestTierWithdrawal() {
-    if (currentTierState.allocatedBalance <= 0) {
-      showToast('Allocation Depleted', 'No allocated credit remaining on active package.', 'warning');
+    if (currentTierState.allocatedBalance <= 0 || !currentTierState.level || currentTierState.level === 0) {
+      showToast('Allocation Depleted', 'No active package allocation remaining to withdraw.', 'warning');
       return;
     }
 
     const withdrawAmt = Math.min(currentTierState.monthlyLimit, currentTierState.allocatedBalance);
-    currentTierState.allocatedBalance -= withdrawAmt;
+
+    // Open Allowance Settlement Dialog
+    const modal = document.createElement('div');
+    modal.id = 'allowance-settlement-modal';
+    modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200';
+    modal.innerHTML = `
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative border border-[#ECEFF1]">
+        <button onclick="document.getElementById('allowance-settlement-modal').remove()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-extrabold text-[#0A0B0D]">Claim Monthly Allowance</h3>
+            <p class="text-xs text-[#5B616E]">Level ${currentTierState.level} 30-Day Scheduled Settlement</p>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 mb-4 text-xs">
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-slate-600 font-medium">Eligible Allowance Amount:</span>
+            <span class="font-extrabold text-base text-emerald-700 font-mono">+${withdrawAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500">Remaining Package Credit:</span>
+            <span class="font-bold text-slate-800 font-mono">${(currentTierState.allocatedBalance - withdrawAmt).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
+        </div>
+
+        <div class="space-y-2.5 mb-6">
+          <button id="btn-allowance-cash" onclick="executeAllowanceDrawdown('cash', ${withdrawAmt})" class="w-full p-4 rounded-2xl border-2 border-[#0052FF] bg-blue-50/50 hover:bg-blue-50 text-left transition-all cursor-pointer flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-[#0052FF] text-white flex items-center justify-center font-bold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-[#0A0B0D]">Credit to Cash Wallet (Instant)</div>
+                <div class="text-[11px] text-[#5B616E]">Immediate funds to withdraw, trade, or buy next level</div>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-[#0052FF]">&rarr;</span>
+          </button>
+
+          <button id="btn-allowance-external" onclick="executeAllowanceDrawdown('external', ${withdrawAmt})" class="w-full p-4 rounded-2xl border border-[#ECEFF1] hover:border-gray-300 bg-white hover:bg-gray-50 text-left transition-all cursor-pointer flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center font-bold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-[#0A0B0D]">Direct Wire / Crypto Cashout</div>
+                <div class="text-[11px] text-[#5B616E]">Disburse directly to external bank or crypto address</div>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-gray-400">&rarr;</span>
+          </button>
+        </div>
+
+        <button onclick="document.getElementById('allowance-settlement-modal').remove()" class="w-full py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">
+          Cancel
+        </button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  async function executeAllowanceDrawdown(destType, withdrawAmt) {
+    const modal = document.getElementById('allowance-settlement-modal');
+    if (modal) modal.remove();
+
+    currentTierState.allocatedBalance = Math.max(0, currentTierState.allocatedBalance - withdrawAmt);
     updateActiveDisplay();
 
+    const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
 
+    // If destination is cash wallet, credit available cash immediately
+    if (destType === 'cash') {
+      const currentCash = (typeof window.getAvailableCashBalance === 'function') ? window.getAvailableCashBalance() : 0;
+      const updatedCash = currentCash + withdrawAmt;
+      if (typeof window.setAvailableCashBalance === 'function') {
+        window.setAvailableCashBalance(updatedCash);
+      }
+    }
 
-    // Persist withdrawal deduction to Supabase
-    if (window.__supabase) {
+    // Persist to Supabase
+    if (window.__supabase && user_id) {
       try {
-        const user_id = (typeof window.getActiveUserId === 'function') ? window.getActiveUserId() : (sessionStorage.getItem('bond_user_id') || localStorage.getItem('bond_user_id') || '');
         await window.__supabase.from('profiles').upsert([{
           id: user_id,
           level_balance: currentTierState.allocatedBalance,
           updated_at: new Date().toISOString()
         }]);
 
+        const txType = destType === 'cash' ? 'Monthly Tier Allowance (Credited to Cash)' : 'Monthly Tier Withdrawal';
         await window.__supabase.from('transactions').insert([{
           id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
           user_id: user_id,
-          type: 'Monthly Tier Withdrawal',
+          type: txType,
           asset: 'USD',
           usd_amount: withdrawAmt,
           crypto_amount: 0,
           price: 1.00,
           status: 'Completed',
+          channel: destType === 'cash' ? 'Internal Cash Balance Credit' : 'FAST Bank Wire Disbursement',
           date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
         }]);
       } catch (e) {
-        console.warn('Withdrawal sync notice:', e);
+        console.warn('Allowance sync notice:', e);
       }
     }
 
-    showToast('Withdrawal Processed', `$${withdrawAmt.toLocaleString()} deducted from dashboard credit.`, 'success');
+    const note = destType === 'cash' ? 'Credited to Available Cash Wallet' : 'FAST Bank Wire Settlement';
+    showToast('Allowance Disbursed', `+${withdrawAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD ${destType === 'cash' ? 'credited to your cash wallet' : 'disbursed'}.`, 'success');
+
     if (typeof window.addNotification === 'function') {
       window.addNotification(
-        `Monthly Withdrawal Disbursed: $${withdrawAmt.toLocaleString()}`,
-        `Payout scheduled via FAST Bank / Direct Wire. Deducted from Level ${currentTierState.level} package balance.`,
-        'withdrawal',
-        { silent: true }
+        `Monthly Allowance Disbursed: ${withdrawAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+        `${destType === 'cash' ? 'Added directly to your cash wallet balance.' : 'Payout scheduled via FAST Bank / Direct Wire.'} Deducted from Level ${currentTierState.level} package balance.`,
+        'success'
       );
     }
     if (typeof window.addTransaction === 'function') {
       window.addTransaction({
-        type: 'Monthly Drawdown Withdrawal',
-        category: 'withdrawal',
+        type: destType === 'cash' ? 'Monthly Package Cashflow' : 'Monthly Drawdown Withdrawal',
+        category: destType === 'cash' ? 'return' : 'withdrawal',
         asset: 'USD',
         usdAmount: withdrawAmt,
         status: 'Completed',
-        direction: 'debit',
-        note: 'FAST Bank Transfer Settled'
+        direction: destType === 'cash' ? 'credit' : 'debit',
+        channel: destType === 'cash' ? 'Cash Balance Credit' : 'FAST Bank Wire',
+        note: note
       });
+    }
+
+    if (destType === 'external' && typeof window.openWithdrawCashModal === 'function') {
+      // Trigger payout channel capture
+      setTimeout(() => openWithdrawCashModal(withdrawAmt), 300);
     }
   }
 

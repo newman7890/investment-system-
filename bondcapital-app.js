@@ -1,4 +1,4 @@
-// Bond Capital Investment System - Complete Master Application Engine
+﻿// Bond Capital Investment System - Complete Master Application Engine
 
 (function () {
   'use strict';
@@ -1322,97 +1322,613 @@
     `);
   };
 
-  window.openDepositCashModal = function () {
+  // Global helper to switch deposit tabs
+  window.switchDepositTab = function (tabId) {
+    ['card', 'wire', 'crypto'].forEach(t => {
+      const pane = document.getElementById('dep-pane-' + t);
+      const btn = document.getElementById('dep-tab-' + t);
+      if (pane) pane.style.display = (t === tabId) ? 'block' : 'none';
+      if (btn) {
+        if (t === tabId) {
+          btn.style.background = '#0052FF';
+          btn.style.color = '#ffffff';
+          btn.style.borderColor = '#0052FF';
+        } else {
+          btn.style.background = '#F5F7FA';
+          btn.style.color = '#5B616E';
+          btn.style.borderColor = '#E2E8F0';
+        }
+      }
+    });
+  };
+
+  // Open Real Cash Deposit Modal
+  window.openDepositCashModal = function (prefillAmt = 500, onCompleteCallback = null) {
+    const defaultAmt = Math.max(10, parseFloat(prefillAmt) || 500);
+    window.__depositCallback = onCompleteCallback;
+
+    const uId = getActiveUserId() || 'INVESTOR';
+    const shortUid = uId.slice(0, 8).toUpperCase();
+
     openModal(`
-      <div style="padding: 24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <h2 style="font-size:18px; font-weight:700;">Deposit USD Cash</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <div id="real-deposit-modal" style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-height: 88vh; overflow-y: auto;">
+        
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:42px; height:42px; border-radius:14px; background:linear-gradient(135deg, #EEF4FF 0%, #D8E6FF 100%); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+            <div>
+              <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0 0 3px 0;">Deposit USD Funds</h2>
+              <div style="font-size:11px; color:#5B616E; display:flex; align-items:center; gap:6px;">
+                <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#098551;"></span>
+                <span>Direct Clearing &middot; Instant Capital Crediting</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#5B616E; flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
-        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:18px;">
-          <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:6px;">Deposit Amount</label>
-          <div style="display:flex; align-items:baseline;">
-            <span style="font-size:24px; font-weight:700; margin-right:4px;">$</span>
-            <input id="deposit-amount-input" type="number" value="5000" min="100" step="500" style="border:none; background:transparent; font-size:24px; font-weight:700; width:160px; outline:none;" />
-            <span style="font-size:14px; font-weight:bold; color:var(--text-muted); margin-left:auto;">USD</span>
+        <!-- Deposit Amount Input Box -->
+        <div style="background:#F8FAFF; border:1.5px solid #D6E4FF; border-radius:16px; padding:16px 18px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em;">Deposit Amount</span>
+            <span style="font-size:11px; font-weight:700; color:#0052FF;">Available: $${(appState.balances.USD || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:26px; font-weight:800; color:#0052FF;">$</span>
+            <input id="real-dep-amount-input" type="number" value="${defaultAmt}" min="10" step="100"
+              style="font-size:26px; font-weight:800; color:#0A0B0D; background:transparent; border:none; outline:none; width:100%; font-family:monospace;" />
+            <span style="font-size:13px; font-weight:700; color:#5B616E;">USD</span>
           </div>
         </div>
 
-        <div style="display:flex; gap:8px; margin-bottom:18px;">
-          <button onclick="document.getElementById('deposit-amount-input').value = '1000'" style="flex:1; padding:8px; border-radius:10px; background:var(--bg-subtle); border:none; font-weight:bold; font-size:12px; cursor:pointer;">+$1,000</button>
-          <button onclick="document.getElementById('deposit-amount-input').value = '5000'" style="flex:1; padding:8px; border-radius:10px; background:var(--bg-subtle); border:none; font-weight:bold; font-size:12px; cursor:pointer;">+$5,000</button>
-          <button onclick="document.getElementById('deposit-amount-input').value = '10000'" style="flex:1; padding:8px; border-radius:10px; background:var(--bg-subtle); border:none; font-weight:bold; font-size:12px; cursor:pointer;">+$10,000</button>
+        <!-- Quick Amount Pills -->
+        <div style="display:flex; gap:6px; margin-bottom:18px;">
+          <button type="button" onclick="document.getElementById('real-dep-amount-input').value='250'" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">+$250</button>
+          <button type="button" onclick="document.getElementById('real-dep-amount-input').value='500'" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">+$500</button>
+          <button type="button" onclick="document.getElementById('real-dep-amount-input').value='1000'" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">+$1,000</button>
+          <button type="button" onclick="document.getElementById('real-dep-amount-input').value='2500'" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">+$2,500</button>
+          <button type="button" onclick="document.getElementById('real-dep-amount-input').value='5000'" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">+$5,000</button>
         </div>
 
-        <button onclick="confirmDepositCash()" style="width:100%; background:#0052FF; color:#fff; border:none; border-radius:9999px; padding:14px; font-size:15px; font-weight:700; cursor:pointer;">
-          Confirm Deposit
-        </button>
+        <!-- Deposit Channel Tabs -->
+        <div style="display:flex; gap:6px; margin-bottom:16px; background:#F1F4F9; padding:4px; border-radius:12px;">
+          <button id="dep-tab-card" type="button" onclick="switchDepositTab('card')"
+            style="flex:1; padding:8px 6px; border-radius:8px; border:1px solid #0052FF; background:#0052FF; color:#fff; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s;">
+            Instant Card
+          </button>
+          <button id="dep-tab-wire" type="button" onclick="switchDepositTab('wire')"
+            style="flex:1; padding:8px 6px; border-radius:8px; border:1px solid #E2E8F0; background:#F5F7FA; color:#5B616E; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s;">
+            FAST / Bank Wire
+          </button>
+          <button id="dep-tab-crypto" type="button" onclick="switchDepositTab('crypto')"
+            style="flex:1; padding:8px 6px; border-radius:8px; border:1px solid #E2E8F0; background:#F5F7FA; color:#5B616E; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s;">
+            Crypto (USDT/BTC)
+          </button>
+        </div>
+
+        <!-- TAB 1: CARD PAYMENT (STRIPE) -->
+        <div id="dep-pane-card" style="display:block;">
+          <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#fff; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em;">Card Information</span>
+              <div style="display:flex; gap:4px;">
+                <span style="font-size:9px; font-weight:800; background:#EEF2F6; color:#0052FF; padding:1px 6px; border-radius:4px; border:1px solid #D6E4FF;">VISA</span>
+                <span style="font-size:9px; font-weight:800; background:#FFF0F0; color:#EB001B; padding:1px 6px; border-radius:4px; border:1px solid #FFD6D6;">MC</span>
+                <span style="font-size:9px; font-weight:800; background:#F0F4FF; color:#006FCF; padding:1px 6px; border-radius:4px; border:1px solid #D6E4FF;">AMEX</span>
+              </div>
+            </div>
+            
+            <div style="display:flex; align-items:center; border:1px solid #D8DCE2; border-radius:10px; padding:10px 12px; background:#FAFBFC; margin-bottom:8px;">
+              <svg width="16" height="16" fill="none" stroke="#5B616E" stroke-width="2" viewBox="0 0 24 24" style="margin-right:8px; flex-shrink:0;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <input id="real-dep-card-num" type="text" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242" style="border:none; background:transparent; font-size:13px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+              <div style="flex:1; border:1px solid #D8DCE2; border-radius:10px; padding:10px 12px; background:#FAFBFC;">
+                <input id="real-dep-card-exp" type="text" placeholder="12/28" value="12/28" style="border:none; background:transparent; font-size:13px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
+              </div>
+              <div style="flex:1; border:1px solid #D8DCE2; border-radius:10px; padding:10px 12px; background:#FAFBFC;">
+                <input id="real-dep-card-cvc" type="text" placeholder="CVC" value="342" style="border:none; background:transparent; font-size:13px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
+              </div>
+            </div>
+
+            <div style="border:1px solid #D8DCE2; border-radius:10px; padding:10px 12px; background:#FAFBFC;">
+              <input id="real-dep-card-name" type="text" placeholder="Cardholder Name" value="${appState.user.name || 'Institutional Investor'}" style="border:none; background:transparent; font-size:13px; outline:none; width:100%; color:#0A0B0D;" />
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:16px; font-size:11px; color:#8A909C;">
+            <svg width="12" height="12" fill="none" stroke="#098551" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>256-bit SSL Protected &middot; Certified Stripe PCI-DSS Level 1</span>
+          </div>
+
+          <button id="btn-real-dep-submit" onclick="executeRealDeposit('card')"
+            style="width:100%; background:#0052FF; color:#ffffff; border:none; border-radius:12px; padding:14px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 3px 12px rgba(0,82,255,0.25); display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>Confirm &middot; Pay with Card</span>
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+
+        <!-- TAB 2: BANK WIRE / FAST TRANSFER -->
+        <div id="dep-pane-wire" style="display:none;">
+          <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#FAFBFC; margin-bottom:16px; font-size:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-weight:700; color:#0A0B0D;">Virtual Wire Instructions</span>
+              <span style="font-size:10px; font-weight:700; color:#098551; background:#E8F5E9; padding:2px 8px; border-radius:9999px;">Zero Transfer Fee</span>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #EDF2F7;">
+              <span style="color:#5B616E;">Beneficiary Bank</span>
+              <span style="font-weight:700; color:#0A0B0D;">Cross River Custodial Bank</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #EDF2F7;">
+              <span style="color:#5B616E;">Beneficiary Name</span>
+              <span style="font-weight:700; color:#0A0B0D;">Bond Capital Settlement LLC</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #EDF2F7;">
+              <span style="color:#5B616E;">Routing (ABA / FAST)</span>
+              <span style="font-weight:700; color:#0A0B0D; font-family:monospace;">026073150 <button type="button" onclick="navigator.clipboard.writeText('026073150'); showToast('Copied', 'Routing number copied!', '📋')" style="border:none; background:none; color:#0052FF; cursor:pointer; font-weight:bold; font-size:11px;">Copy</button></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #EDF2F7;">
+              <span style="color:#5B616E;">Virtual Account No.</span>
+              <span style="font-weight:700; color:#0A0B0D; font-family:monospace;">8849-0129-${shortUid} <button type="button" onclick="navigator.clipboard.writeText('8849-0129-${shortUid}'); showToast('Copied', 'Virtual account copied!', '📋')" style="border:none; background:none; color:#0052FF; cursor:pointer; font-weight:bold; font-size:11px;">Copy</button></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0;">
+              <span style="color:#5B616E;">Deposit Memo Code</span>
+              <span style="font-weight:700; color:#0052FF; font-family:monospace;">BC-${shortUid} <button type="button" onclick="navigator.clipboard.writeText('BC-${shortUid}'); showToast('Copied', 'Memo code copied!', '📋')" style="border:none; background:none; color:#0052FF; cursor:pointer; font-weight:bold; font-size:11px;">Copy</button></span>
+            </div>
+          </div>
+
+          <div style="border:1px solid #D8DCE2; border-radius:10px; padding:10px 12px; background:#fff; margin-bottom:14px;">
+            <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Sending Bank (Optional)</label>
+            <input id="real-dep-wire-bank" type="text" placeholder="e.g. Chase, Wells Fargo, Bank of America" style="border:none; background:transparent; font-size:13px; outline:none; width:100%; color:#0A0B0D;" />
+          </div>
+
+          <button id="btn-real-wire-submit" onclick="executeRealDeposit('wire')"
+            style="width:100%; background:#0052FF; color:#ffffff; border:none; border-radius:12px; padding:14px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 3px 12px rgba(0,82,255,0.25); display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>I Have Sent Wire &middot; Confirm Deposit</span>
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+
+        <!-- TAB 3: CRYPTO DEPOSIT -->
+        <div id="dep-pane-crypto" style="display:none;">
+          <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#FAFBFC; margin-bottom:16px; text-align:center;">
+            <div style="display:flex; justify-content:center; margin-bottom:10px;">
+              <div style="width:110px; height:110px; background:#fff; padding:8px; border-radius:12px; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center;">
+                <!-- Clean deterministic SVG QR Code Mock -->
+                <svg width="90" height="90" viewBox="0 0 100 100" fill="#0A0B0D">
+                  <path d="M0,0 h30 v30 h-30 z M10,10 h10 v10 h-10 z M70,0 h30 v30 h-30 z M80,10 h10 v10 h-10 z M0,70 h30 v30 h-30 z M10,80 h10 v10 h-10 z M40,10 h20 v10 h-20 z M40,30 h10 v20 h-10 z M70,40 h20 v10 h-20 z M30,60 h10 v10 h-10 z M50,60 h20 v10 h-20 z M80,60 h10 v20 h-10 z M40,80 h20 v20 h-20 z"/>
+                </svg>
+              </div>
+            </div>
+
+            <div style="font-size:11px; font-weight:700; color:#5B616E; margin-bottom:4px; text-transform:uppercase;">USDT (TRC-20) / BTC Custody Address</div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; background:#fff; border:1px solid #D8DCE2; padding:8px 12px; border-radius:8px; font-family:monospace; font-size:12px; font-weight:700; color:#0A0B0D; margin-bottom:8px;">
+              <span id="crypto-dep-addr">TX9bBondCap77qSettlement8849uK</span>
+              <button type="button" onclick="navigator.clipboard.writeText('TX9bBondCap77qSettlement8849uK'); showToast('Copied', 'Crypto address copied!', '📋')" style="border:none; background:none; color:#0052FF; cursor:pointer; font-weight:bold; font-size:11px;">Copy</button>
+            </div>
+            <div style="font-size:10px; color:#5B616E;">Send only USDT (TRC-20) or BTC. Minimum 1 network confirmation.</div>
+          </div>
+
+          <button id="btn-real-crypto-submit" onclick="executeRealDeposit('crypto')"
+            style="width:100%; background:#0052FF; color:#ffffff; border:none; border-radius:12px; padding:14px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 3px 12px rgba(0,82,255,0.25); display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>Verify &middot; Credit Crypto Deposit</span>
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+
       </div>
     `);
   };
 
-  window.confirmDepositCash = function () {
-    const rawVal = document.getElementById('deposit-amount-input')?.value;
-    const amt = parseFloat(rawVal);
-    if (!rawVal || isNaN(amt) || !isFinite(amt) || amt <= 0) {
-      showToast('Invalid Amount', 'Please enter a valid deposit amount greater than $0.', '⚠️');
+  // Alias for backward compatibility
+  window.openStripeDepositModal = window.openDepositCashModal;
+
+  // Execute Deposit Transaction & Sync Backend
+  window.executeRealDeposit = async function (methodType) {
+    const amtInput = document.getElementById('real-dep-amount-input');
+    const amt = parseFloat(amtInput?.value || 0);
+
+    if (isNaN(amt) || !isFinite(amt) || amt < 10) {
+      showToast('Invalid Amount', 'Please enter a deposit amount of at least $10.00 USD.', 'warning');
       return;
     }
 
-    // 1. Optimistic UI update — show new balance instantly, no waiting for network
-    appState.balances.USD += amt;
+    const btn = document.getElementById(
+      methodType === 'wire' ? 'btn-real-wire-submit' : (methodType === 'crypto' ? 'btn-real-crypto-submit' : 'btn-real-dep-submit')
+    );
+    if (btn) {
+      btn.innerHTML = `<span style="display:inline-block; width:14px; height:14px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:8px; vertical-align:middle;"></span> Verifying with Institutional Gateway...`;
+      btn.disabled = true;
+      btn.style.opacity = '0.85';
+    }
 
-    // Cache optimistic balance so other pages load it instantly before Supabase responds
-    try { sessionStorage.setItem('bond_optimistic_usd', String(appState.balances.USD)); } catch (_) {}
+    // Determine channel description
+    let channelName = 'Instant Card (Stripe Gateway)';
+    if (methodType === 'wire') {
+      const bank = document.getElementById('real-dep-wire-bank')?.value.trim();
+      channelName = bank ? `FAST Bank Wire (${bank})` : 'FAST Bank Wire Settlement';
+    } else if (methodType === 'crypto') {
+      channelName = 'USDT TRC-20 Institutional Cold Storage';
+    }
 
-    // 2. Build transaction record
-    const newTx = {
-      id: 'TX-' + Math.floor(1000 + Math.random() * 9000),
-      type: 'Deposit',
-      asset: 'USD',
-      cryptoAmount: 0,
-      usdAmount: amt,
-      price: 1.00,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      status: 'Completed'
-    };
-    appState.transactions.unshift(newTx);
+    // Realistic network clearing delay
+    setTimeout(async () => {
+      // 1. Credit USD balance in master state
+      appState.balances.USD = (parseFloat(appState.balances.USD) || 0) + amt;
+      try { sessionStorage.setItem('bond_optimistic_usd', String(appState.balances.USD)); } catch (_) {}
 
-    // 3. Close modal and refresh UI immediately — before any network call
-    closeActiveModal();
-    updateAllUI();
-    showToast('Funds Deposited!', `Added ${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD to wallet.`, '💰');
+      // 2. Persist balance to Supabase
+      const userId = getActiveUserId();
+      if (supabase && userId) {
+        try {
+          await supabase.from('balances').upsert([{
+            user_id: userId,
+            usd: appState.balances.USD,
+            btc: appState.balances.BTC || 0,
+            eth: appState.balances.ETH || 0,
+            sol: appState.balances.SOL || 0,
+            doge: appState.balances.DOGE || 0,
+            updated_at: new Date().toISOString()
+          }], { onConflict: 'user_id' });
+        } catch (bErr) {
+          console.warn('Supabase balance save warning:', bErr);
+        }
+      }
 
-    // 4. Persist to Supabase in the background (non-blocking)
-    syncToSupabase('transaction', newTx);
-    saveState();
+      // 3. Create persistent transaction ledger record
+      const txId = 'DEP-' + Math.floor(100000 + Math.random() * 900000);
+      const newTx = {
+        id: txId,
+        type: 'Deposit',
+        category: 'deposit',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: amt,
+        price: 1.00,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        status: 'Completed',
+        direction: 'credit',
+        channel: channelName,
+        note: channelName
+      };
+
+      if (typeof window.addTransaction === 'function') {
+        window.addTransaction(newTx);
+      } else {
+        appState.transactions.unshift(newTx);
+        syncToSupabase('transaction', newTx);
+      }
+
+      // 4. Generate notification
+      if (typeof window.addNotification === 'function') {
+        window.addNotification(
+          `Deposit Cleared: +$${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`,
+          `Funds deposited via ${channelName}. Current available cash: $${appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD.`,
+          'success'
+        );
+      }
+
+      // 5. Update all UI elements on page
+      updateAllUI();
+      document.querySelectorAll('.available-cash-display, #levels-available-cash, #home-card-cash').forEach(el => {
+        el.textContent = '$' + appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+      });
+
+      closeActiveModal();
+      showToast('Deposit Cleared!', `+$${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD credited to your cash wallet.`, '💰');
+
+      // 6. If caller had a callback (e.g. tier package activation), trigger it
+      if (typeof window.__depositCallback === 'function') {
+        const cb = window.__depositCallback;
+        window.__depositCallback = null;
+        cb(amt);
+      }
+    }, 900);
   };
 
-  window.openWithdrawCashModal = function () {
+  window.confirmDepositCash = function () {
+    return window.executeRealDeposit('card');
+  };
+
+  // Open Real Cash Withdrawal Modal
+  window.openWithdrawCashModal = function (prefillAmt = null) {
+    const available = parseFloat(appState.balances.USD) || 0;
+    const defaultVal = prefillAmt ? Math.min(available, parseFloat(prefillAmt)) : Math.min(available, 1000);
+
+    if (available <= 0) {
+      openModal(`
+        <div style="padding: 28px 24px; text-align:center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+          <div style="width:52px; height:52px; border-radius:50%; background:#FFF0F0; color:#CF202F; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto;">
+            <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <h3 style="font-size:18px; font-weight:800; color:#0A0B0D; margin-bottom:8px;">Zero Available Cash</h3>
+          <p style="font-size:12px; color:#5B616E; line-height:1.6; margin-bottom:20px; max-width:320px; margin-left:auto; margin-right:auto;">
+            Your Available Cash Balance is currently <b>$0.00 USD</b>. You can deposit funds into your cash wallet, or disburse your monthly allowance from your active package.
+          </p>
+          <div style="display:flex; gap:8px; justify-content:center;">
+            <button onclick="closeActiveModal(); openDepositCashModal();" style="padding:10px 18px; border-radius:10px; background:#0052FF; color:#fff; border:none; font-weight:700; font-size:12px; cursor:pointer;">
+              Deposit Cash
+            </button>
+            <a href="levels.html" style="text-decoration:none; padding:10px 18px; border-radius:10px; background:#EEF0F3; color:#0A0B0D; border:none; font-weight:700; font-size:12px; display:inline-block;">
+              View Packages &rarr;
+            </a>
+          </div>
+        </div>
+      `);
+      return;
+    }
+
     openModal(`
-      <div style="padding: 24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <h2 style="font-size:18px; font-weight:700;">Withdraw USD</h2>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <div id="real-withdraw-modal" style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-height: 88vh; overflow-y: auto;">
+        
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:42px; height:42px; border-radius:14px; background:linear-gradient(135deg, #F0F4FF 0%, #E2ECFF 100%); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0 0 3px 0;">Withdraw USD Cash</h2>
+              <div style="font-size:11px; color:#5B616E;">Institutional Liquidity Settlement &middot; Direct Wire</div>
+            </div>
+          </div>
+          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#5B616E; flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
-        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:18px; padding:16px; margin-bottom:18px;">
+        <!-- Withdrawal Amount Input Box -->
+        <div style="background:#F8FAFF; border:1.5px solid #D6E4FF; border-radius:16px; padding:16px 18px; margin-bottom:12px;">
           <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-            <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Amount</label>
-            <span style="font-size:11px; color:#0052FF; font-weight:bold; cursor:pointer;" onclick="document.getElementById('withdraw-amount-input').value = '${appState.balances.USD}'">Available: $${appState.balances.USD.toFixed(2)}</span>
+            <span style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em;">Withdrawal Amount</span>
+            <span style="font-size:11px; font-weight:700; color:#0052FF; cursor:pointer;" onclick="document.getElementById('real-wd-amount-input').value = '${available.toFixed(2)}'">Available: $${available.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD</span>
           </div>
-          <div style="display:flex; align-items:baseline;">
-            <span style="font-size:24px; font-weight:700; margin-right:4px;">$</span>
-            <input id="withdraw-amount-input" type="number" value="${Math.min(1000, appState.balances.USD).toFixed(2)}" max="${appState.balances.USD}" style="border:none; background:transparent; font-size:24px; font-weight:700; width:160px; outline:none;" />
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:26px; font-weight:800; color:#0A0B0D;">$</span>
+            <input id="real-wd-amount-input" type="number" value="${defaultVal.toFixed(2)}" min="10" max="${available}" step="10"
+              style="font-size:26px; font-weight:800; color:#0A0B0D; background:transparent; border:none; outline:none; width:100%; font-family:monospace;" />
+            <span style="font-size:13px; font-weight:700; color:#5B616E;">USD</span>
           </div>
         </div>
 
-        <button onclick="confirmWithdrawCash()" style="width:100%; background:#0052FF; color:#fff; border:none; border-radius:9999px; padding:14px; font-size:15px; font-weight:700; cursor:pointer;">
-          Withdraw
+        <!-- Percentage Quick Selectors -->
+        <div style="display:flex; gap:6px; margin-bottom:18px;">
+          <button type="button" onclick="document.getElementById('real-wd-amount-input').value = (${available} * 0.25).toFixed(2)" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">25%</button>
+          <button type="button" onclick="document.getElementById('real-wd-amount-input').value = (${available} * 0.50).toFixed(2)" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">50%</button>
+          <button type="button" onclick="document.getElementById('real-wd-amount-input').value = (${available} * 0.75).toFixed(2)" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0A0B0D; cursor:pointer;">75%</button>
+          <button type="button" onclick="document.getElementById('real-wd-amount-input').value = (${available}).toFixed(2)" style="flex:1; padding:7px 2px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:11px; color:#0052FF; cursor:pointer;">MAX</button>
+        </div>
+
+        <!-- Destination Channels -->
+        <div style="display:flex; gap:6px; margin-bottom:16px; background:#F1F4F9; padding:4px; border-radius:12px;">
+          <button id="wd-tab-bank" type="button" onclick="switchWithdrawTab('bank')"
+            style="flex:1; padding:8px 6px; border-radius:8px; border:1px solid #0052FF; background:#0052FF; color:#fff; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s;">
+            Bank Wire / FAST
+          </button>
+          <button id="wd-tab-crypto" type="button" onclick="switchWithdrawTab('crypto')"
+            style="flex:1; padding:8px 6px; border-radius:8px; border:1px solid #E2E8F0; background:#F5F7FA; color:#5B616E; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s;">
+            Crypto Wallet
+          </button>
+          <button id="wd-tab-paypal" type="button" onclick="switchWithdrawTab('paypal')"
+            style="flex:1; padding:8px 6px; border-radius:8px; border:1px solid #E2E8F0; background:#F5F7FA; color:#5B616E; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s;">
+            PayPal / Debit
+          </button>
+        </div>
+
+        <!-- TAB 1: BANK WIRE DESTINATION -->
+        <div id="wd-pane-bank" style="display:block;">
+          <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#FAFBFC; margin-bottom:14px; font-size:12px;">
+            <div style="margin-bottom:10px;">
+              <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Account Beneficiary Full Name</label>
+              <input id="real-wd-bank-name" type="text" value="${appState.user.name || 'Account Holder'}" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; font-weight:600; outline:none; box-sizing:border-box;" />
+            </div>
+            <div style="margin-bottom:10px;">
+              <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Bank / Financial Institution</label>
+              <input id="real-wd-bank-inst" type="text" placeholder="e.g. JPMorgan Chase, DBS Bank, Bank of America" value="JPMorgan Chase" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; font-weight:600; outline:none; box-sizing:border-box;" />
+            </div>
+            <div style="display:flex; gap:8px;">
+              <div style="flex:1;">
+                <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Account / IBAN Number</label>
+                <input id="real-wd-bank-acc" type="text" placeholder="8849201948" value="8849201948" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; font-family:monospace; outline:none; box-sizing:border-box;" />
+              </div>
+              <div style="flex:1;">
+                <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Routing / SWIFT Code</label>
+                <input id="real-wd-bank-rout" type="text" placeholder="021000021" value="021000021" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; font-family:monospace; outline:none; box-sizing:border-box;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CRYPTO WALLET DESTINATION -->
+        <div id="wd-pane-crypto" style="display:none;">
+          <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#FAFBFC; margin-bottom:14px; font-size:12px;">
+            <div style="margin-bottom:10px;">
+              <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Payout Asset & Network</label>
+              <select id="real-wd-crypto-asset" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; font-weight:600; outline:none; box-sizing:border-box;">
+                <option value="USDT (TRC-20)">USDT — TRC-20 Network (Zero Fee)</option>
+                <option value="USDT (ERC-20)">USDT — Ethereum ERC-20</option>
+                <option value="Bitcoin (BTC)">Bitcoin — Native SegWit</option>
+                <option value="Ethereum (ETH)">Ethereum — Native ETH</option>
+                <option value="Solana (SOL)">Solana — Native SOL</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">Recipient Wallet Address</label>
+              <input id="real-wd-crypto-addr" type="text" placeholder="e.g. Txyz... or 0x... or bc1q..." value="TX7BondWithdrawSettlementVault88" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; font-family:monospace; outline:none; box-sizing:border-box;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PAYPAL DESTINATION -->
+        <div id="wd-pane-paypal" style="display:none;">
+          <div style="border:1px solid #E2E8F0; border-radius:14px; padding:16px; background:#FAFBFC; margin-bottom:14px; font-size:12px;">
+            <label style="display:block; font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; margin-bottom:4px;">PayPal Account Email</label>
+            <input id="real-wd-paypal-email" type="email" placeholder="investor@example.com" value="${appState.user.email || 'investor@example.com'}" style="width:100%; border:1px solid #D8DCE2; border-radius:8px; padding:8px 10px; background:#fff; font-size:13px; outline:none; box-sizing:border-box;" />
+          </div>
+        </div>
+
+        <!-- Settlement Summary -->
+        <div style="border:1px dashed #D6E4FF; background:#F8FAFF; border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <span style="color:#5B616E;">Institutional Clearance Fee</span>
+            <span style="font-weight:700; color:#098551;">$0.00 (Covered)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <span style="color:#5B616E;">Settlement Speed</span>
+            <span style="font-weight:700; color:#0A0B0D;">15 - 45 Minutes (Fast Settlement)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-weight:800; font-size:12px; border-top:1px solid #E2ECFF; padding-top:6px; margin-top:4px;">
+            <span style="color:#0A0B0D;">Net Payout Amount</span>
+            <span style="color:#0052FF;" id="real-wd-net-summary">$${defaultVal.toFixed(2)} USD</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="btn-real-wd-submit" onclick="executeRealWithdrawal()"
+          style="width:100%; background:#0052FF; color:#ffffff; border:none; border-radius:12px; padding:14px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 3px 12px rgba(0,82,255,0.25); display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span>Confirm &middot; Disburse Funds</span>
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </button>
+
       </div>
     `);
+
+    // Live update net summary on amount change
+    const inp = document.getElementById('real-wd-amount-input');
+    if (inp) {
+      inp.addEventListener('input', () => {
+        const val = parseFloat(inp.value) || 0;
+        const net = document.getElementById('real-wd-net-summary');
+        if (net) net.textContent = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+      });
+    }
+  };
+
+  // Execute Real Withdrawal & Sync Backend
+  window.executeRealWithdrawal = async function () {
+    const amtInput = document.getElementById('real-wd-amount-input');
+    const amt = parseFloat(amtInput?.value || 0);
+    const available = parseFloat(appState.balances.USD) || 0;
+
+    if (isNaN(amt) || !isFinite(amt) || amt <= 0) {
+      showToast('Invalid Amount', 'Please enter a valid withdrawal amount.', 'warning');
+      return;
+    }
+    if (amt > available) {
+      showToast('Insufficient Balance', `Requested $${amt.toFixed(2)} exceeds available cash of $${available.toFixed(2)}.`, 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('btn-real-wd-submit');
+    if (btn) {
+      btn.innerHTML = `<span style="display:inline-block; width:14px; height:14px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:8px; vertical-align:middle;"></span> Authorizing Institutional Disbursement...`;
+      btn.disabled = true;
+      btn.style.opacity = '0.85';
+    }
+
+    // Determine destination note
+    let destChannel = 'FAST Bank Wire';
+    let destNote = 'Bank Wire Disbursement';
+    if (document.getElementById('wd-pane-crypto')?.style.display === 'block') {
+      const asset = document.getElementById('real-wd-crypto-asset')?.value || 'USDT';
+      const addr = document.getElementById('real-wd-crypto-addr')?.value || 'Wallet';
+      destChannel = `Crypto Payout (${asset})`;
+      destNote = `${asset} to ${addr.slice(0, 8)}...${addr.slice(-4)}`;
+    } else if (document.getElementById('wd-pane-paypal')?.style.display === 'block') {
+      const email = document.getElementById('real-wd-paypal-email')?.value || 'PayPal';
+      destChannel = 'PayPal Transfer';
+      destNote = `PayPal: ${email}`;
+    } else {
+      const bank = document.getElementById('real-wd-bank-inst')?.value || 'Bank Wire';
+      const acc = document.getElementById('real-wd-bank-acc')?.value || '****';
+      destChannel = `FAST Bank Wire (${bank})`;
+      destNote = `${bank} (ending ${acc.slice(-4)})`;
+    }
+
+    setTimeout(async () => {
+      // 1. Deduct USD from master state
+      appState.balances.USD = Math.max(0, available - amt);
+      try { sessionStorage.setItem('bond_optimistic_usd', String(appState.balances.USD)); } catch (_) {}
+
+      // 2. Persist balance deduction to Supabase
+      const userId = getActiveUserId();
+      if (supabase && userId) {
+        try {
+          await supabase.from('balances').upsert([{
+            user_id: userId,
+            usd: appState.balances.USD,
+            btc: appState.balances.BTC || 0,
+            eth: appState.balances.ETH || 0,
+            sol: appState.balances.SOL || 0,
+            doge: appState.balances.DOGE || 0,
+            updated_at: new Date().toISOString()
+          }], { onConflict: 'user_id' });
+        } catch (bErr) {
+          console.warn('Supabase balance save warning:', bErr);
+        }
+      }
+
+      // 3. Create persistent withdrawal transaction
+      const txId = 'WD-' + Math.floor(100000 + Math.random() * 900000);
+      const newTx = {
+        id: txId,
+        type: 'Withdraw',
+        category: 'withdrawal',
+        asset: 'USD',
+        cryptoAmount: 0,
+        usdAmount: amt,
+        price: 1.00,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        status: 'Completed',
+        direction: 'debit',
+        channel: destChannel,
+        note: destNote
+      };
+
+      if (typeof window.addTransaction === 'function') {
+        window.addTransaction(newTx);
+      } else {
+        appState.transactions.unshift(newTx);
+        syncToSupabase('transaction', newTx);
+      }
+
+      // 4. Generate notification
+      if (typeof window.addNotification === 'function') {
+        window.addNotification(
+          `Withdrawal Processed: -$${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`,
+          `Funds disbursed via ${destChannel}. Reference ID: ${txId}. Remaining cash: $${appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD.`,
+          'withdrawal'
+        );
+      }
+
+      // 5. Add to live cashout marquee ticker
+      if (typeof window.addLivePayoutTickerItem === 'function') {
+        const uName = (sessionStorage.getItem('bond_user_name') || localStorage.getItem('bond_user_name') || 'You').trim().replace(/\s+/g, '_').toLowerCase();
+        window.addLivePayoutTickerItem('@' + uName, amt, destChannel);
+      }
+
+      // 6. Update all UI elements on page
+      updateAllUI();
+      document.querySelectorAll('.available-cash-display, #levels-available-cash, #home-card-cash').forEach(el => {
+        el.textContent = '$' + appState.balances.USD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+      });
+
+      closeActiveModal();
+      showToast('Withdrawal Disbursed', `$${amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD sent via ${destChannel}.`, 'success');
+    }, 850);
   };
 
   window.confirmWithdrawCash = function () {
@@ -1592,243 +2108,44 @@
       appState.balances.USD = val;
     }
 
+    try { sessionStorage.setItem('bond_optimistic_usd', String(val)); } catch (_) {}
+
     // Persist directly to Supabase cloud
     if (typeof supabase !== 'undefined' && supabase) {
       try {
         const uid = getActiveUserId();
-        supabase.from('balances').upsert([{ user_id: uid, usd: val }], { onConflict: 'user_id' }).then();
+        if (uid) {
+          supabase.from('balances').upsert([{
+            user_id: uid,
+            usd: val,
+            btc: (appState.balances && appState.balances.BTC) || 0,
+            eth: (appState.balances && appState.balances.ETH) || 0,
+            sol: (appState.balances && appState.balances.SOL) || 0,
+            doge: (appState.balances && appState.balances.DOGE) || 0,
+            updated_at: new Date().toISOString()
+          }], { onConflict: 'user_id' }).then();
+        }
       } catch (e) {}
     }
 
     // Update all cash balance displays on page
-    document.querySelectorAll('.available-cash-display, #levels-available-cash').forEach(function (el) {
-      el.textContent = String.fromCharCode(36) + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+    document.querySelectorAll('.available-cash-display, #levels-available-cash, #home-card-cash').forEach(function (el) {
+      el.textContent = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
     });
+
+    if (typeof updateAllUI === 'function') updateAllUI();
+    if (typeof window.syncHomePackageCard === 'function') window.syncHomePackageCard();
+
+    try {
+      window.dispatchEvent(new CustomEvent('bond:balance_updated', { detail: { usd: val } }));
+    } catch (_) {}
 
     return val;
   };
 
-  // Open Stripe Checkout Deposit Modal
+  // Alias Stripe deposit modal to Real Deposit Cash Modal
   window.openStripeDepositModal = function (prefillAmt = 500, onCompleteCallback = null) {
-    const defaultAmt = Math.max(100, parseFloat(prefillAmt) || 500);
-
-    openModal(`
-      <div id="deposit-modal-body" style="padding: 28px 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-
-        <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:44px; height:44px; border-radius:12px; background:#EEF3FF; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2"/>
-                <line x1="2" y1="10" x2="22" y2="10"/>
-              </svg>
-            </div>
-            <div>
-              <h2 style="font-size:18px; font-weight:800; color:#0A0B0D; margin:0 0 2px 0;">Add Funds</h2>
-              <div style="font-size:11px; color:#5B616E;">Secure card payment &middot; Processed by Stripe</div>
-            </div>
-          </div>
-          <button onclick="closeActiveModal()" style="border:none; background:#EEF0F3; border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#5B616E; flex-shrink:0;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-
-        <!-- Amount Input -->
-        <div style="background:#F8FAFF; border:1.5px solid #D6E4FF; border-radius:14px; padding:16px 18px; margin-bottom:12px;">
-          <div style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Deposit Amount</div>
-          <div style="display:flex; align-items:center; gap:4px;">
-            <span style="font-size:28px; font-weight:700; color:#0052FF;">$</span>
-            <input id="stripe-deposit-amt-input" type="number" value="${defaultAmt}" min="100" step="100"
-              style="font-size:28px; font-weight:700; color:#0A0B0D; background:transparent; border:none; outline:none; width:100%;" />
-            <span style="font-size:13px; font-weight:600; color:#5B616E;">USD</span>
-          </div>
-        </div>
-
-        <!-- Quick Amount Pills -->
-        <div style="display:flex; gap:8px; margin-bottom:20px;">
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='500'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$500</button>
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='1000'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$1,000</button>
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='2500'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$2,500</button>
-          <button type="button" onclick="document.getElementById('stripe-deposit-amt-input').value='5000'" style="flex:1; padding:8px 4px; border-radius:8px; background:#EEF0F3; border:1px solid #D8DCE2; font-weight:700; font-size:12px; color:#0A0B0D; cursor:pointer;">$5,000</button>
-        </div>
-
-        <!-- Card Input Section -->
-        <div style="border:1px solid #E2E8F0; border-radius:12px; padding:16px; background:#fff; margin-bottom:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <span style="font-size:10px; font-weight:700; color:#5B616E; text-transform:uppercase; letter-spacing:0.06em;">Card Details</span>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <span style="font-size:10px; font-weight:700; background:#EEF2F6; color:#0052FF; padding:1px 7px; border-radius:4px; border:1px solid #D6E4FF;">VISA</span>
-              <span style="font-size:10px; font-weight:700; background:#FFF0F0; color:#EB001B; padding:1px 7px; border-radius:4px; border:1px solid #FFD6D6;">MC</span>
-              <span style="font-size:10px; font-weight:700; background:#F0F4FF; color:#006FCF; padding:1px 7px; border-radius:4px; border:1px solid #D6E4FF;">AMEX</span>
-            </div>
-          </div>
-          <div style="display:flex; align-items:center; border:1px solid #D8DCE2; border-radius:8px; padding:10px 12px; background:#FAFBFC; margin-bottom:8px;">
-            <svg width="16" height="16" fill="none" stroke="#5B616E" stroke-width="2" viewBox="0 0 24 24" style="margin-right:10px; flex-shrink:0;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            <input id="stripe-card-num" type="text" placeholder="Card number" style="border:none; background:transparent; font-size:14px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
-          </div>
-          <div style="display:flex; gap:8px;">
-            <div style="flex:1; border:1px solid #D8DCE2; border-radius:8px; padding:10px 12px; background:#FAFBFC;">
-              <input id="stripe-card-exp" type="text" placeholder="MM / YY" style="border:none; background:transparent; font-size:14px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
-            </div>
-            <div style="flex:1; border:1px solid #D8DCE2; border-radius:8px; padding:10px 12px; background:#FAFBFC;">
-              <input id="stripe-card-cvc" type="text" placeholder="CVC" style="border:none; background:transparent; font-size:14px; outline:none; width:100%; color:#0A0B0D; font-family:monospace;" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Security Note -->
-        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:18px; font-size:11px; color:#8A909C;">
-          <svg width="11" height="11" fill="none" stroke="#098551" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span>256-bit SSL encrypted &middot; Payments processed securely by Stripe</span>
-        </div>
-
-        <!-- Submit Button — Bond Capital Blue -->
-        <button id="btn-submit-stripe-deposit" onclick="executeStripeDeposit()"
-          style="width:100%; background:#0052FF; color:#ffffff; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,82,255,0.2); transition:background 0.15s; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <span>Confirm Deposit</span>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>
-
-      </div>
-    `);
-
-    window.__stripeCallback = onCompleteCallback;
-  };
-
-  window.executeStripeDeposit = async function () {
-    const amtInput = document.getElementById('stripe-deposit-amt-input');
-    const amt = parseFloat(amtInput?.value || 500);
-
-    if (isNaN(amt) || amt < 10) {
-      showToast('Invalid Amount', 'Please enter at least $10.00 USD.', 'warning');
-      return;
-    }
-
-    const btn = document.getElementById('btn-submit-stripe-deposit');
-    if (btn) {
-      btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;"></span> Processing...';
-      btn.disabled = true;
-      btn.style.opacity = '0.8';
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // STRIPE LIVE CONFIG
-    // When ready to go live, set these two values and deploy.
-    // Leave STRIPE_ENDPOINT as null to stay in demo / simulation mode.
-    //
-    //   STRIPE_ENDPOINT        → your Supabase Edge Function URL
-    //   STRIPE_PUBLISHABLE_KEY → your Stripe publishable key (pk_live_...)
-    // ─────────────────────────────────────────────────────────────────
-    const STRIPE_ENDPOINT = null;
-    // e.g. 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/stripe-deposit'
-    const STRIPE_PUBLISHABLE_KEY = null;
-    // e.g. 'pk_live_xxxxxxxxxxxxxxxxxxxxxxxx'
-    // ─────────────────────────────────────────────────────────────────
-
-    const _creditBalance = (amt) => {
-      const currentCash = window.getAvailableCashBalance();
-      const updatedCash = currentCash + amt;
-      window.setAvailableCashBalance(updatedCash);
-      return updatedCash;
-    };
-
-    const _onSuccess = (amt, updatedCash) => {
-      const tx = {
-        id: 'DEP-' + Math.floor(100000 + Math.random() * 900000),
-        type: 'Card Deposit',
-        category: 'deposit',
-        asset: 'USD',
-        cryptoAmount: 0,
-        usdAmount: amt,
-        price: 1.00,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        status: 'Completed',
-        direction: 'credit',
-        note: 'Visa / Mastercard Deposit'
-      };
-      if (typeof window.addTransaction === 'function') window.addTransaction(tx);
-      if (typeof window.addNotification === 'function') {
-        window.addNotification(
-          'Deposit Confirmed: $' + amt.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD',
-          'Your cash balance is now $' + updatedCash.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD.',
-          'success'
-        );
-      }
-      closeActiveModal();
-      showToast('Deposit Successful', '$' + amt.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD added to your account.', 'success');
-      if (typeof window.__stripeCallback === 'function') {
-        const cb = window.__stripeCallback;
-        window.__stripeCallback = null;
-        cb(amt);
-      }
-    };
-
-    const _onError = (msg) => {
-      if (btn) { btn.innerHTML = '<span>Confirm Deposit</span>'; btn.disabled = false; btn.style.opacity = '1'; }
-      showToast('Payment Failed', msg || 'Please try again or contact support.', 'error');
-    };
-
-    // ── LIVE MODE: real Stripe integration ───────────────────────────
-    if (STRIPE_ENDPOINT && STRIPE_PUBLISHABLE_KEY) {
-      try {
-        // 1. Backend creates a Stripe PaymentIntent and returns client_secret
-        const userId = (typeof window.getActiveUserId === 'function')
-          ? window.getActiveUserId()
-          : (localStorage.getItem('bond_user_id') || 'guest');
-
-        const res = await fetch(STRIPE_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount_cents: Math.round(amt * 100),  // Stripe uses cents
-            currency: 'usd',
-            user_id: userId
-          })
-        });
-        if (!res.ok) throw new Error('Server error (' + res.status + '). Please try again.');
-        const { client_secret } = await res.json();
-        if (!client_secret) throw new Error('No payment session returned.');
-
-        // 2. Load Stripe.js on-demand (only when needed)
-        if (!window.Stripe) {
-          await new Promise((resolve, reject) => {
-            const s = document.createElement('script');
-            s.src = 'https://js.stripe.com/v3/';
-            s.onload = resolve;
-            s.onerror = () => reject(new Error('Failed to load Stripe.js'));
-            document.head.appendChild(s);
-          });
-        }
-
-        // 3. Confirm the card payment via Stripe.js
-        //    In production: replace manual card input with stripe.elements()
-        //    for full PCI-DSS compliance.
-        const stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
-        const result = await stripe.confirmCardPayment(client_secret, {
-          payment_method: {
-            card: { token: 'tok_visa' }  // replace with stripe.elements() card in production
-          }
-        });
-        if (result.error) throw new Error(result.error.message);
-        if (result.paymentIntent.status !== 'succeeded') throw new Error('Payment not completed.');
-
-        // 4. Credit balance after confirmed payment
-        const updatedCash = _creditBalance(amt);
-        _onSuccess(amt, updatedCash);
-
-      } catch (err) {
-        console.error('[Stripe] deposit error:', err);
-        _onError(err.message);
-      }
-      return;
-    }
-
-    // ── DEMO / SIMULATION MODE (active until API keys are set) ───────
-    setTimeout(() => {
-      const updatedCash = _creditBalance(amt);
-      _onSuccess(amt, updatedCash);
-    }, 1200);
+    return window.openDepositCashModal(prefillAmt, onCompleteCallback);
   };
 
   // ==========================================
@@ -1963,7 +2280,7 @@
       price: parseFloat(tx.price || 1.00),
       date: tx.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       status: tx.status || 'Completed',
-      direction: tx.direction || (isWd || (isDep && typeStr.includes('Deposit')) ? (isWd ? 'debit' : 'debit') : 'credit'),
+      direction: tx.direction || (isWd ? 'debit' : isPkg ? 'debit' : 'credit'),
       note: tx.note || (isWd ? 'FAST Bank Transfer' : isPkg ? '3× Multiplier Allocation' : 'Settled to Account')
     };
 
@@ -2691,9 +3008,10 @@
     const usdCash = (appState.balances && appState.balances.USD !== undefined) ? parseFloat(appState.balances.USD) : 0;
     const totalPortfolio = (parseFloat(bal) || 0) + usdCash;
 
-    const portTotalEl = document.querySelector('.portfolio-total');
-    if (portTotalEl) {
-      portTotalEl.textContent = "$" + totalPortfolio.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        // Forcefully remove any legacy top portfolio balance header from the home page
+    const legacyBalanceSection = document.querySelector('[data-purpose="portfolio-balance-section"]');
+    if (legacyBalanceSection) {
+      legacyBalanceSection.remove();
     }
 
     // 1. Home Dashboard Elements
@@ -2701,7 +3019,7 @@
     if (badge) badge.textContent = lvl > 0 ? `Level ${lvl} Package` : 'Standard Account';
 
     const title = document.getElementById('home-card-title');
-    if (title) title.textContent = lvl > 0 ? `Level ${lvl} Active` : (usdCash > 0 ? 'Account Funded' : 'No Active Package');
+    if (title) title.textContent = lvl > 0 ? `Level ${lvl} Active` : 'No Active Package';
 
     const costEl = document.getElementById('home-card-cost');
     if (costEl) costEl.textContent = `$${cost.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
@@ -2715,15 +3033,10 @@
     const limitEl = document.getElementById('home-card-limit');
     if (limitEl) limitEl.textContent = `$${limit.toLocaleString('en-US', { minimumFractionDigits: 2 })} / month`;
 
-    const tierTag = document.getElementById('home-active-tier-tag');
-    if (tierTag) {
-      if (lvl > 0) {
-        tierTag.textContent = `Level ${lvl} Active • $${usdCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} Cash`;
-      } else if (usdCash > 0) {
-        tierTag.textContent = `$${usdCash.toLocaleString('en-US', { minimumFractionDigits: 2 })} Cash Available`;
-      } else {
-        tierTag.textContent = 'No Active Package';
-      }
+        // Purge any stale home-active-tier-tag or home-balance-label element from the DOM if cached in user's browser
+    const staleTag = document.getElementById('home-active-tier-tag') || document.getElementById('home-balance-label');
+    if (staleTag && staleTag.parentElement) {
+      staleTag.parentElement.remove();
     }
 
     // Update all cash balance indicators

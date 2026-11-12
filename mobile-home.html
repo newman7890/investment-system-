@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="en"><head>
   <link rel="icon" type="image/png" href="bond-capital-icon.png"/>
@@ -221,9 +221,7 @@
 <p class="text-[11px] text-gray-500">Fast Bank Transfer</p>
 </div>
 </div>
-<button class="px-3.5 py-1.5 bg-cbBlue hover:bg-cbBlueHover text-white text-xs font-semibold rounded-lg shadow-sm">
-          Top up wallet
-        </button>
+<button onclick="if(typeof openDepositCashModal === 'function') openDepositCashModal();" class="px-3.5 py-1.5 bg-cbBlue hover:bg-cbBlueHover text-white text-xs font-semibold rounded-lg shadow-sm cursor-pointer">Top up wallet</button>
 </section>
 <!-- END: QuickDepositBanner -->
 </main>
